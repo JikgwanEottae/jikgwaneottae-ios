@@ -1,0 +1,46 @@
+PODS:
+  - Alamofire (5.10.2)
+  - Pageboy (4.2.0)
+  - RxCocoa (6.9.0):
+    - RxRelay (= 6.9.0)
+    - RxSwift (= 6.9.0)
+  - RxRelay (6.9.0):
+    - RxSwift (= 6.9.0)
+  - RxSwift (6.9.0)
+  - SnapKit (5.7.1)
+  - Tabman (3.2.0):
+    - Pageboy (~> 4.2.0)
+  - Then (3.0.0)
+
+DEPENDENCIES:
+  - Alamofire
+  - RxCocoa (= 6.9.0)
+  - RxSwift (= 6.9.0)
+  - SnapKit (~> 5.7.0)
+  - Tabman (~> 3.2)
+  - Then
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Pageboy
+    - RxCocoa
+    - RxRelay
+    - RxSwift
+    - SnapKit
+    - Tabman
+    - Then
+
+SPEC CHECKSUMS:
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  Pageboy: 7f7886f61c76633df635861bf7839caf2cabdb3e
+  RxCocoa: ac16414696ae706516be3e1ab00fcce5bdc9be8a
+  RxRelay: 6b0c930e5cef57d5fe2032571e5e65b78e3cbdb1
+  RxSwift: 31649ace6aceeb422e16ff71c60804f9c3281ed9
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+  Tabman: 49f9181a2bfe5c29d002864dac2de8e0b7ea9180
+  Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
+
+PODFILE CHECKSUM: f929a21203892577d686e9705166c2ec6ce7767a
+
+COCOAPODS: 1.16.2
