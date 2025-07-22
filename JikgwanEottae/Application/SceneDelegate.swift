@@ -15,9 +15,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = ViewController()
+        let mainTabBarController = MainTabBarController()
+        window?.rootViewController = mainTabBarController
         window?.makeKeyAndVisible()
         window?.overrideUserInterfaceStyle = .light
+        
+        // 폰트 체크 하기
+        UIFont.familyNames.sorted().forEach { familyName in
+            print("*** \(familyName) ***")
+            UIFont.fontNames(forFamilyName: familyName).forEach { fontName in
+                print("\(fontName)")
+            }
+            print("---------------------")
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
