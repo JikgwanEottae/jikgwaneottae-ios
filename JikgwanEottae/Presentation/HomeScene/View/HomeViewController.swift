@@ -21,11 +21,12 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureNavBarButtonItem()
+        configureNaviBarButtonItem()
     }
     
-    private func configureNavBarButtonItem() {
-        self.navigationItem.leftBarButtonItem = homeView.leftBarButtonItem
+    private func configureNaviBarButtonItem() {
+        let leftBarButtonItem = UIBarButtonItem(customView: homeView.titleLabel)
+        self.navigationItem.leftBarButtonItem = leftBarButtonItem
     }
     
 

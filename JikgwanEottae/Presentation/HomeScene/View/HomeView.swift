@@ -14,14 +14,14 @@ final class HomeView: UIView {
 
     // MARK: - Property
     
-    private let titleLabel = UILabel().then {
+    let titleLabel = UILabel().then {
         $0.text = "직관어때?"
         $0.numberOfLines = 1
         $0.font = UIFont.kbo(size: 25, family: .bold)
         $0.textColor = .black
     }
     
-    public lazy var leftBarButtonItem = UIBarButtonItem(customView: titleLabel)
+    
     
     // MARK: - Init
 
