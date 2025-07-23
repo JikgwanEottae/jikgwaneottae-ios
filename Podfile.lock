@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (5.10.2)
+  - FSCalendar (2.8.4)
   - Pageboy (4.2.0)
   - RxCocoa (6.9.0):
     - RxRelay (= 6.9.0)
@@ -14,6 +15,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
+  - FSCalendar
   - RxCocoa (= 6.9.0)
   - RxSwift (= 6.9.0)
   - SnapKit (~> 5.7.0)
@@ -23,6 +25,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
+    - FSCalendar
     - Pageboy
     - RxCocoa
     - RxRelay
@@ -33,6 +36,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   Pageboy: 7f7886f61c76633df635861bf7839caf2cabdb3e
   RxCocoa: ac16414696ae706516be3e1ab00fcce5bdc9be8a
   RxRelay: 6b0c930e5cef57d5fe2032571e5e65b78e3cbdb1
@@ -41,6 +45,6 @@ SPEC CHECKSUMS:
   Tabman: 49f9181a2bfe5c29d002864dac2de8e0b7ea9180
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: f929a21203892577d686e9705166c2ec6ce7767a
+PODFILE CHECKSUM: c136d16a3152a4abb6ef6f9937904ff5042c9e15
 
 COCOAPODS: 1.16.2

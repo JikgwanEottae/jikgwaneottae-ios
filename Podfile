@@ -12,6 +12,7 @@ target 'JikgwanEottae' do
 	pod 'SnapKit', '~> 5.7.0'
         pod 'Tabman', '~> 3.2'
         pod 'Alamofire'
+	pod 'FSCalendar'
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths
