@@ -22,16 +22,17 @@ final class RecordView: UIView {
         $0.font = UIFont.kbo(size: 25, family: .bold)
         $0.textColor = .black
     }
-    
+    // 스크롤 뷰
     private let scrollView = UIScrollView().then {
         $0.clipsToBounds = true
+        $0.alwaysBounceVertical = true
     }
-    
+    // 스택 뷰
     private lazy var stackView = UIStackView(
         arrangedSubviews: [
             fscalendarView,
-            dateContainerView,
-            view
+            selectedDateContainerView,
+            recordTableView
         ]
     ).then {
         $0.axis = .vertical
@@ -42,11 +43,13 @@ final class RecordView: UIView {
             bottom: 0,
             right: 11
         )
-        $0.spacing = Constants.Layout.spacing
+        $0.spacing = 15
         $0.clipsToBounds = true
     }
-    
+    // 캘린더 뷰
     public let fscalendarView = FSCalendar().then {
+        // 커스텀 셀 등록
+        $0.register(CustomFSCalendarCell.self, forCellReuseIdentifier: CustomFSCalendarCell.ID)
         $0.locale = Locale(identifier: "ko_KR")
         // 년월 헤더 높이
         $0.headerHeight = 0
@@ -68,21 +71,39 @@ final class RecordView: UIView {
         $0.appearance.selectionColor = .calendarSelectionColor
         // 선택된 날짜 텍스트 색상
         $0.appearance.titleSelectionColor = .white
+        $0.appearance.subtitleOffset = CGPoint(x: 0, y: 15)
     }
-    
-    private let dateContainerView = UIView()
-    
-    public let dateLabel = UILabel().then {
+    // 캘린더 아래 구분선 표시를 위한 뷰
+    private let fscalendarBottomLineView = UIView().then {
+        $0.backgroundColor = .systemGray6
+    }
+    // 선택된 날짜 레이블 컨테이너 뷰
+    private let selectedDateContainerView = UIView()
+    // 선택된 날짜 표시 레이블
+    public let selectedDateLabel = UILabel().then {
         $0.text = Date().toFormattedString("d. E")
         $0.font = .pretendard(size: 20, family: .semiBold)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
-    
-    public let view = UIView().then {
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 15
-        $0.backgroundColor = .backgroundColor
+    // 직관 기록을 보여주기 위한 테이블 뷰
+    public lazy var recordTableView = UITableView(frame: .zero, style: .plain).then {
+        $0.register(RecordTableViewCell.self, forCellReuseIdentifier: RecordTableViewCell.ID)
+        $0.showsVerticalScrollIndicator = false
+        $0.isScrollEnabled = false
+    }
+    // 직관 기록을 생성하기 위한 플로팅 버튼
+    public let createRecordButton = UIButton(type: .custom).then {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 23, weight: .medium)
+        $0.setImage(UIImage(systemName: "plus", withConfiguration: imageConfig), for: .normal)
+        $0.backgroundColor = .calendarSelectionColor
+        $0.tintColor = .white
+        $0.layer.shadowColor = UIColor.black.cgColor
+        $0.layer.shadowOpacity = 0.3
+        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
+        $0.layer.shadowRadius = 6
+        $0.layer.cornerRadius = 28
+        $0.adjustsImageWhenHighlighted = false
     }
 
     // MARK: - Init
@@ -101,8 +122,10 @@ final class RecordView: UIView {
     
     private func addSubViews() {
         self.addSubview(scrollView)
+        self.addSubview(createRecordButton)
         self.scrollView.addSubview(stackView)
-        self.dateContainerView.addSubview(dateLabel)
+        self.selectedDateContainerView.addSubview(selectedDateLabel)
+        self.scrollView.addSubview(fscalendarBottomLineView)
     }
     
     // MARK: - UI
@@ -118,37 +141,39 @@ final class RecordView: UIView {
             make in
             make.edges.equalToSuperview()
         }
-        
         self.stackView.snp.makeConstraints {
             make in
             make.edges.equalTo(scrollView.contentLayoutGuide)
             make.width.equalTo(scrollView.frameLayoutGuide)
         }
-        
         self.fscalendarView.snp.makeConstraints {
             make in
-            make.height
-                .equalTo(380)
+            make.height.equalTo(380)
         }
-        
-        self.dateLabel.snp.makeConstraints {
+        self.selectedDateLabel.snp.makeConstraints {
             make in
             make.edges.equalToSuperview().inset(
                 UIEdgeInsets(
                     top: 0,
                     left: 5,
                     bottom: 0,
-                    right: 10
+                    right: 5
                 )
             )
         }
-        
-        self.view.snp.makeConstraints {
+        self.fscalendarBottomLineView.snp.makeConstraints {
             make in
-            make.height
-                .equalTo(700)
+            make.left.right.equalToSuperview()
+            make.top.equalTo(fscalendarView.snp.bottom)
+            make.height.equalTo(1)
         }
-        
+        self.recordTableView.snp.makeConstraints {
+            make in
+            make.height.equalTo(200)
+        }
+        self.createRecordButton.snp.makeConstraints { make in
+            make.width.height.equalTo(56)
+            make.trailing.bottom.equalTo(safeAreaLayoutGuide).inset(20)
+        }
     }
-
 }
