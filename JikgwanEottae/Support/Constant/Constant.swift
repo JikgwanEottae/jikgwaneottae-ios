@@ -12,6 +12,5 @@ enum Constants {
         static let inset = CGFloat(11)
         static let outset = CGFloat(11)
         static let cornerRadius = CGFloat(24)
-        static let spacing = CGFloat(11)
     }
 }

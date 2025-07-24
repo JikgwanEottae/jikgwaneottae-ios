@@ -26,6 +26,7 @@ final class RecordViewController: UIViewController {
         setupFSCalendarDelegate()
         configureNaviBarButtonItem()
         updateNaviTitle(to: Date())
+        updateTableView()
     }
     
     // MARK: - Setup And Configuration
@@ -49,7 +50,16 @@ final class RecordViewController: UIViewController {
     
     private func updateDateLabel(to date: Date) {
         let formattedDate = date.toFormattedString("d. E")
-        self.recordView.dateLabel.text = formattedDate
+        self.recordView.selectedDateLabel.text = formattedDate
+    }
+    
+    private func updateTableView() {
+        recordView.recordTableView.setEmptyView(
+            image: UIImage(resource: .docs),
+            message: "아직 직관 기록이 없어요"
+        )
+        
+//        recordView.recordTableView.restore()
     }
     
 }
@@ -57,6 +67,12 @@ final class RecordViewController: UIViewController {
 // MARK: - FSCalendarDelegate Extension
 
 extension RecordViewController: FSCalendarDelegate {
+    /// placeholder(이전·다음 달) 날짜는 선택을 금지
+    func calendar(_ calendar: FSCalendar,
+                  shouldSelect date: Date,
+                  at monthPosition: FSCalendarMonthPosition) -> Bool {
+      return monthPosition == .current
+    }
     // 캘린더가 좌우로 스와이프될 때 호출되는 함수
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         // 네비게이션 타이틀을 해당 연도와 월로 변경
@@ -77,7 +93,39 @@ extension RecordViewController: FSCalendarDelegate {
     }
 }
 
+// MARK: - FSCalendarDataSource Extension
 
 extension RecordViewController: FSCalendarDataSource {
+    func calendar(
+        _ calendar: FSCalendar,
+        numberOfEventsFor date: Date
+    ) -> Int {
+        return 0
+    }
+    
+//    func calendar(
+//        _ calendar: FSCalendar,
+//        subtitleFor date: Date
+//    ) -> String? {
+//      return "⚾️"
+//    }
+    
+    func calendar(
+      _ calendar: FSCalendar,
+      cellFor date: Date,
+      at position: FSCalendarMonthPosition
+    ) -> FSCalendarCell {
+      return calendar.dequeueReusableCell(
+        withIdentifier: CustomFSCalendarCell.ID,
+        for: date,
+        at: position
+      ) as! CustomFSCalendarCell
+    }
+}
+
+extension RecordViewController: FSCalendarDelegateAppearance {
     
 }
+
+
+
