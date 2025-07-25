@@ -37,12 +37,7 @@ final class RecordView: UIView {
     ).then {
         $0.axis = .vertical
         $0.isLayoutMarginsRelativeArrangement = true
-        $0.layoutMargins = UIEdgeInsets(
-            top: 11,
-            left: 11,
-            bottom: 0,
-            right: 11
-        )
+        $0.layoutMargins = UIEdgeInsets(top: 11, left: 11, bottom: 0, right: 11)
         $0.spacing = 15
         $0.clipsToBounds = true
     }
@@ -86,17 +81,21 @@ final class RecordView: UIView {
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
+    // 테이블 뷰 높이 제약
+    private var recordTableViewHeightConstraint: Constraint?
     // 직관 기록을 보여주기 위한 테이블 뷰
     public lazy var recordTableView = UITableView(frame: .zero, style: .plain).then {
         $0.register(RecordTableViewCell.self, forCellReuseIdentifier: RecordTableViewCell.ID)
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
+        $0.rowHeight = Constants.tableViewRowHeight
+        $0.separatorStyle = .none
     }
     // 직관 기록을 생성하기 위한 플로팅 버튼
     public let createRecordButton = UIButton(type: .custom).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 23, weight: .medium)
         $0.setImage(UIImage(systemName: "plus", withConfiguration: imageConfig), for: .normal)
-        $0.backgroundColor = .calendarSelectionColor
+        $0.backgroundColor = .charcoalColor
         $0.tintColor = .white
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.shadowOpacity = 0.3
@@ -153,12 +152,7 @@ final class RecordView: UIView {
         self.selectedDateLabel.snp.makeConstraints {
             make in
             make.edges.equalToSuperview().inset(
-                UIEdgeInsets(
-                    top: 0,
-                    left: 5,
-                    bottom: 0,
-                    right: 5
-                )
+                UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
             )
         }
         self.fscalendarBottomLineView.snp.makeConstraints {
@@ -169,11 +163,16 @@ final class RecordView: UIView {
         }
         self.recordTableView.snp.makeConstraints {
             make in
-            make.height.equalTo(200)
+            recordTableViewHeightConstraint = make.height.equalTo(Constants.tableViewRowHeight).constraint
         }
         self.createRecordButton.snp.makeConstraints { make in
             make.width.height.equalTo(56)
             make.trailing.bottom.equalTo(safeAreaLayoutGuide).inset(20)
         }
     }
+    
+    public func updateTableViewHeight(to height: CGFloat) {
+        recordTableViewHeightConstraint?.update(offset: height)
+    }
+    
 }
