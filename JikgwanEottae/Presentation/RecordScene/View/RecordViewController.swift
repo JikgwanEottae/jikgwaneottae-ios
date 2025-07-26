@@ -126,15 +126,14 @@ extension RecordViewController: FSCalendarDelegate {
         updateDateLabel(to: date)
     }
     // 성능 최적화를 위해 나중에 리팩토링 필수
-    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
-        print(date)
-        let selectedDate = date.toFormattedString("yyyy-MM-dd")
-        let filtered = testData.filter { $0.date == selectedDate }
-        if !filtered.isEmpty {
-            return "⚾️"
-        }
-        return nil
-    }
+//    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
+//        let selectedDate = date.toFormattedString("yyyy-MM-dd")
+//        let filtered = testData.filter { $0.date == selectedDate }
+//        if !filtered.isEmpty {
+//            return "⚾️"
+//        }
+//        return nil
+//    }
 }
 
 // MARK: - FSCalendarDataSource Extension
@@ -151,6 +150,10 @@ extension RecordViewController: FSCalendarDataSource {
         for: date,
         at: position
       ) as! CustomFSCalendarCell
+    }
+    
+    func maximumDate(for calendar: FSCalendar) -> Date {
+        return Date()
     }
 }
 
