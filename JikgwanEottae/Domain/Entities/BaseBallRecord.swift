@@ -19,7 +19,7 @@ struct BaseBallRecord: Equatable, Identifiable {
     let awayTeam: KBOTeam
     let homeScore: Int
     let awayScore: Int
-    let imageURL: String?
     let seat: String?
     let memo: String?
+    let imageURL: String?
 }

@@ -108,7 +108,7 @@ final class RecordTableViewCell: UITableViewCell {
     }
     
     private func setupUI() {
-        contentView.backgroundColor = .cellBackgroundColor
+        contentView.backgroundColor = .secondaryBackgroundColor
         contentView.layer.borderColor = UIColor.borderColor.cgColor
         contentView.layer.cornerRadius = 24
         contentView.layer.borderWidth = 0.75

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "NoImages.png",
+      "filename" : "free-icon-font-exclamation-3917663_24pt_1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "NoImages2.png",
+      "filename" : "free-icon-font-exclamation-3917663_24pt_2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "NoImages@3x.png",
+      "filename" : "free-icon-font-exclamation-3917663_24pt_3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

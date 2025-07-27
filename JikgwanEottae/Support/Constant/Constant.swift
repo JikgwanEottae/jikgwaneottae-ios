@@ -13,5 +13,7 @@ enum Constants {
         static let outset = CGFloat(11)
         static let cornerRadius = CGFloat(24)
     }
+    static let cornerRadius = CGFloat(24)
     static let tableViewRowHeight = CGFloat(140)
+    static let buttonHeight = CGFloat(57)
 }
