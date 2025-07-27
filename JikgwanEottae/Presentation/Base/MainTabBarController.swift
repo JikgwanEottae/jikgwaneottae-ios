@@ -19,7 +19,7 @@ final class MainTabBarController: UITabBarController {
         super.viewDidLoad()
         setupViewControllers()
         configureTabBarApperance()
-        addTopLine(color: .backgroundColor, height: 0.5)
+        addTopLine(color: .primarybackgroundColor, height: 0.5)
     }
     
     private func configureTabBarApperance() {

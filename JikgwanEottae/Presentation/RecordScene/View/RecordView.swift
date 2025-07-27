@@ -95,7 +95,7 @@ final class RecordView: UIView {
     public let createRecordButton = UIButton(type: .custom).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 23, weight: .medium)
         $0.setImage(UIImage(systemName: "plus", withConfiguration: imageConfig), for: .normal)
-        $0.backgroundColor = .charcoalColor
+        $0.backgroundColor = .mainCharcoalColor
         $0.tintColor = .white
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.shadowOpacity = 0.3

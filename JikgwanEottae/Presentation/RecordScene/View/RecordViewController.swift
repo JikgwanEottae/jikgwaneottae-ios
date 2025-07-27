@@ -41,8 +41,10 @@ final class RecordViewController: UIViewController {
         super.viewDidLoad()
         setupFSCalendarDelegate()
         configureNaviBarButtonItem()
+        configureBackBarButtonItem()
         bindTableView()
         updateNaviTitle(to: Date())
+        createRecordButtonTapped()
     }
     
     // MARK: - Setup And Configuration
@@ -157,4 +159,14 @@ extension RecordViewController: FSCalendarDataSource {
     }
 }
 
-
+extension RecordViewController {
+    private func createRecordButtonTapped() {
+        recordView.createRecordButton.rx.tap
+            .withUnretained(self)
+            .subscribe { owner, _ in
+                let recordDateGameSelectionVC = RecordDateGameSelectionViewController()
+                owner.navigationController?.pushViewController(recordDateGameSelectionVC, animated: true)
+            }
+            .disposed(by: disposeBag)
+    }
+}

@@ -38,7 +38,7 @@ final class HomeView: UIView {
     // MARK: - UI
 
     private func setupUI() {
-        self.backgroundColor = .backgroundColor
+        self.backgroundColor = .primarybackgroundColor
     }
 
 
