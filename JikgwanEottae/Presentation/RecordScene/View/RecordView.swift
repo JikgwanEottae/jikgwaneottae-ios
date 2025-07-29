@@ -51,9 +51,11 @@ final class RecordView: UIView {
         // 요일 텍스트 색상
         $0.appearance.weekdayTextColor = .tertiaryTextColor
         // 요일 폰트 설정
-        $0.appearance.weekdayFont = .pretendard(size: 14, family: .medium)
+//        $0.appearance.weekdayFont = .pretendard(size: 14, family: .medium)
+        $0.appearance.weekdayFont = .gMarketSans(size: 14, family: .medium)
         // 날짜 폰트 설정
-        $0.appearance.titleFont = .pretendard(size: 14, family: .medium)
+//        $0.appearance.titleFont = .pretendard(size: 14, family: .medium)
+        $0.appearance.titleFont = .gMarketSans(size: 14, family: .medium)
         // 해당 월이 아닌 날짜 표시 여부
         $0.placeholderType = .none
         // 해당 월의 날짜 색상
@@ -77,7 +79,8 @@ final class RecordView: UIView {
     // 선택된 날짜 표시 레이블
     public let selectedDateLabel = UILabel().then {
         $0.text = Date().toFormattedString("d. E")
-        $0.font = .pretendard(size: 20, family: .semiBold)
+//        $0.font = .pretendard(size: 20, family: .semiBold)
+        $0.font = .gMarketSans(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
@@ -136,38 +139,45 @@ final class RecordView: UIView {
     // MARK: - Layout
     
     private func setupLayout() {
-        self.scrollView.snp.makeConstraints {
-            make in
-            make.edges.equalToSuperview()
+        self.scrollView.snp.makeConstraints { make in
+            make.edges
+                .equalToSuperview()
         }
-        self.stackView.snp.makeConstraints {
-            make in
-            make.edges.equalTo(scrollView.contentLayoutGuide)
-            make.width.equalTo(scrollView.frameLayoutGuide)
+        self.stackView.snp.makeConstraints { make in
+            make.edges
+                .equalTo(scrollView.contentLayoutGuide)
+            make.width
+                .equalTo(scrollView.frameLayoutGuide)
         }
-        self.fscalendarView.snp.makeConstraints {
-            make in
-            make.height.equalTo(380)
+        self.fscalendarView.snp.makeConstraints { make in
+            make.height
+                .equalTo(380)
         }
-        self.selectedDateLabel.snp.makeConstraints {
-            make in
-            make.edges.equalToSuperview().inset(
-                UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+        self.selectedDateLabel.snp.makeConstraints { make in
+            make.edges
+                .equalToSuperview()
+                .inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
             )
         }
-        self.fscalendarBottomLineView.snp.makeConstraints {
-            make in
-            make.left.right.equalToSuperview()
-            make.top.equalTo(fscalendarView.snp.bottom)
-            make.height.equalTo(1)
+        self.fscalendarBottomLineView.snp.makeConstraints { make in
+            make.left.right
+                .equalToSuperview()
+            make.top
+                .equalTo(fscalendarView.snp.bottom)
+            make.height
+                .equalTo(1)
         }
-        self.recordTableView.snp.makeConstraints {
-            make in
-            recordTableViewHeightConstraint = make.height.equalTo(Constants.tableViewRowHeight).constraint
+        self.recordTableView.snp.makeConstraints { make in
+            recordTableViewHeightConstraint = make.height
+                .equalTo(Constants.tableViewRowHeight)
+                .constraint
         }
         self.createRecordButton.snp.makeConstraints { make in
-            make.width.height.equalTo(56)
-            make.trailing.bottom.equalTo(safeAreaLayoutGuide).inset(20)
+            make.width.height
+                .equalTo(56)
+            make.trailing.bottom
+                .equalTo(safeAreaLayoutGuide)
+                .inset(20)
         }
     }
     

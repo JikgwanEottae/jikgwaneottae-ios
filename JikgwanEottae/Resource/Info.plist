@@ -4,6 +4,9 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>GmarketSansLight.otf</string>
+		<string>GmarketSansMedium.otf</string>
+		<string>GmarketSansBold.otf</string>
 		<string>KBO Dia Gothic_medium.otf</string>
 		<string>KBO Dia Gothic_bold.otf</string>
 		<string>Pretendard-Regular.otf</string>

@@ -165,6 +165,7 @@ extension RecordViewController {
             .withUnretained(self)
             .subscribe { owner, _ in
                 let recordDateGameSelectionVC = RecordDateGameSelectionViewController()
+                recordDateGameSelectionVC.hidesBottomBarWhenPushed = true
                 owner.navigationController?.pushViewController(recordDateGameSelectionVC, animated: true)
             }
             .disposed(by: disposeBag)
