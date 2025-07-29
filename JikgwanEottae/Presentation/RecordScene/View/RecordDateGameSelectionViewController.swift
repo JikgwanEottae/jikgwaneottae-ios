@@ -24,6 +24,7 @@ final class RecordDateGameSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindTableView()
+        configureBackBarButtonItem()
     }
     
     private func fetchRecords(for date: String) -> Observable<[String]> {
@@ -67,9 +68,17 @@ final class RecordDateGameSelectionViewController: UIViewController {
                 } else {
                     owner.recordDateGameSelectionView.tableView.restore()
                 }
-                let height = CGFloat(max(records.count * 100, 100))
+                let height = CGFloat(max(records.count * 110, 110))
                 owner.recordDateGameSelectionView.updateTableViewHeight(to: height)
             }
+            .disposed(by: disposeBag)
+        
+        recordDateGameSelectionView.tableView.rx.itemSelected
+            .withUnretained(self)
+            .subscribe(onNext: { owner, indexPath in
+                let recordDetailInputVC = RecordDetailInputViewController()
+                owner.navigationController?.pushViewController(recordDetailInputVC, animated: true)
+            })
             .disposed(by: disposeBag)
     }
 }

@@ -35,21 +35,23 @@ final class RecordDateGameSelectionView: UIView {
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
-        $0.spacing = 40
+        $0.spacing = 50
         $0.clipsToBounds = true
     }
     
     private let titleLabel = UILabel().then {
         $0.text = "직관한 날짜를 선택해주세요"
         $0.numberOfLines = 1
-        $0.font = .pretendard(size: 23, family: .semiBold)
+//        $0.font = .pretendard(size: 23, family: .semiBold)
+        $0.font = .gMarketSans(size: 22, family: .medium)
         $0.textColor = .primaryTextColor
     }
     
     private let subtitleLabel = UILabel().then {
         $0.text = "날짜에 맞춰 경기 일정을 가져올게요"
         $0.numberOfLines = 1
-        $0.font = .pretendard(size: 16, family: .medium)
+//        $0.font = .pretendard(size: 16, family: .medium)
+        $0.font = .gMarketSans(size: 15, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
     
@@ -69,18 +71,8 @@ final class RecordDateGameSelectionView: UIView {
         $0.register(RecordedGameTableViewCell.self, forCellReuseIdentifier: RecordedGameTableViewCell.ID)
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
-        $0.rowHeight = 100
+        $0.rowHeight = 110
         $0.separatorStyle = .none
-    }
-    
-    // 다음 버튼
-    public let nextButton = UIButton(type: .custom).then {
-        $0.setTitle("다음", for: .normal)
-        $0.titleLabel?.font = .pretendard(size: 18, family: .medium)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .mainCharcoalColor
-        $0.layer.cornerRadius = 17
-        $0.clipsToBounds = true
     }
     
     override init(frame: CGRect) {
@@ -88,7 +80,6 @@ final class RecordDateGameSelectionView: UIView {
         addSubviews()
         setupUI()
         setupLayout()
-        setupCustomSpacing()
     }
     
     @available(*, unavailable)
@@ -98,7 +89,6 @@ final class RecordDateGameSelectionView: UIView {
     
     private func addSubviews() {
         addSubview(scrollView)
-        addSubview(nextButton)
         scrollView.addSubview(stackView)
     }
     
@@ -108,11 +98,10 @@ final class RecordDateGameSelectionView: UIView {
     
     private func setupLayout() {
         scrollView.snp.makeConstraints { make in
-            make.top.leading.trailing
+            make.top.leading.trailing.bottom
                 .equalToSuperview()
-            make.bottom
-                .equalTo(nextButton.snp.top).offset(-10)
         }
+        stackView.setCustomSpacing(10, after: titleLabel)
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
@@ -125,25 +114,11 @@ final class RecordDateGameSelectionView: UIView {
         }
         tableView.snp.makeConstraints { make in
             tableViewHeightConstraint = make.height
-                .equalTo(100).constraint
-        }
-        nextButton.snp.makeConstraints { make in
-            make.bottom
-                .equalTo(safeAreaLayoutGuide)
-                .inset(20)
-            make.leading.trailing
-                .equalToSuperview()
-                .inset(20)
-            make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(110).constraint
         }
     }
     
     public func updateTableViewHeight(to height: CGFloat) {
         tableViewHeightConstraint?.update(offset: height)
-    }
-    
-    private func setupCustomSpacing() {
-        stackView.setCustomSpacing(10, after: titleLabel)
     }
 }

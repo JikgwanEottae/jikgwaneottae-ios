@@ -53,7 +53,8 @@ final class RecordTableViewCell: UITableViewCell {
     // 승패 레이블
     private let outcomeLabel = UILabel().then {
         $0.text = "승리"
-        $0.font = .pretendard(size: 11, family: .semiBold)
+//        $0.font = .pretendard(size: 11, family: .semiBold)
+        $0.font = .gMarketSans(size: 11, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .white
         $0.clipsToBounds = true
@@ -61,15 +62,17 @@ final class RecordTableViewCell: UITableViewCell {
     // 스코어 레이블
     private let scoreLabel = UILabel().then {
         $0.text = "삼성   4 vs 1   롯데"
-        $0.font = .pretendard(size: 25, family: .bold)
+//        $0.font = .pretendard(size: 23, family: .bold)
+        $0.font = .gMarketSans(size: 20, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .secondaryTextColor
         $0.clipsToBounds = true
     }
     // 야구장 이름 레이블
     private let ballParkLabel = UILabel().then {
-        $0.text = "대구삼성라이온즈파크"
-        $0.font = .pretendard(size: 15, family: .bold)
+        $0.text = "대구삼성라이온즈파크 18:30"
+//        $0.font = .pretendard(size: 12, family: .bold)
+        $0.font = .gMarketSans(size: 12, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .tertiaryTextColor
         $0.clipsToBounds = true
@@ -140,15 +143,7 @@ final class RecordTableViewCell: UITableViewCell {
         thumbnailImageView.image = UIImage(named: str)
         outcomeLabel.text = "승리"
         scoreLabel.text = "삼성   4 vs 1   롯데"
-        ballParkLabel.text = "대구삼성라이온즈파크"
-        
-//        if str == "test3" {
-//            outcomeLabel.text = "패배"
-//            outcomeContainerView.backgroundColor = .tossRedColor
-//        } else {
-////            thumbnailImageView.isHidden = true
-////            gameInfoStackView.layoutMargins.left = 15
-//        }
+        ballParkLabel.text = "대구삼성라이온즈파크    18:30"
     }
     
 }
