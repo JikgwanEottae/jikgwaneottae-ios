@@ -11,11 +11,11 @@ import FSCalendar
 import RxSwift
 import RxCocoa
 
-final class RecordViewController: UIViewController {
+final class DiaryViewController: UIViewController {
 
     // MARK: - Properties
 
-    private let recordView = RecordView()
+    private let diaryView = DiaryView()
     // 테스트 데이터 testData 를 날짜‑키 딕셔너리로 미리 만들어 두면 O(1) 조회 가능합니다.
     let testData: [(date: String, imageName: String)] = [
       ("2025-07-23", "test1"),
@@ -34,7 +34,7 @@ final class RecordViewController: UIViewController {
     // MARK: - Life Cycle
     
     override func loadView() {
-        self.view = recordView
+        self.view = diaryView
     }
     
     override func viewDidLoad() {
@@ -50,12 +50,12 @@ final class RecordViewController: UIViewController {
     // MARK: - Setup And Configuration
     
     private func configureNaviBarButtonItem() {
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: recordView.titleLabel)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryView.titleLabel)
     }
     
     private func setupFSCalendarDelegate() {
-        self.recordView.fscalendarView.delegate = self
-        self.recordView.fscalendarView.dataSource = self
+        self.diaryView.fscalendarView.delegate = self
+        self.diaryView.fscalendarView.dataSource = self
     }
     
     // MARK: - UI Update Helpers
@@ -65,7 +65,7 @@ final class RecordViewController: UIViewController {
     }
     
     private func updateDateLabel(to date: Date) {
-        self.recordView.selectedDateLabel.text = date.toFormattedString("d. E")
+        self.diaryView.selectedDateLabel.text = date.toFormattedString("d. E")
     }
     
     private func bindTableView() {
@@ -77,7 +77,7 @@ final class RecordViewController: UIViewController {
             .share(replay: 1, scope: .forever)
         
         filteredRecords
-            .bind(to: recordView.recordTableView.rx.items(
+            .bind(to: diaryView.recordTableView.rx.items(
                 cellIdentifier: RecordTableViewCell.ID,
                 cellType: RecordTableViewCell.self)
             ) { row, element, cell in
@@ -90,15 +90,15 @@ final class RecordViewController: UIViewController {
             .withUnretained(self)
             .subscribe { owner, items in
                 if items.isEmpty {
-                    owner.recordView.recordTableView.setEmptyView(
+                    owner.diaryView.recordTableView.setEmptyView(
                         image: UIImage(resource: .docs),
                         message: "아직 직관 기록이 없어요"
                     )
                 } else {
-                    owner.recordView.recordTableView.restore()
+                    owner.diaryView.recordTableView.restore()
                 }
                 let height = Constants.tableViewRowHeight * CGFloat(max(items.count, 1))
-                owner.recordView.updateTableViewHeight(to: height)
+                owner.diaryView.updateTableViewHeight(to: height)
             }
             .disposed(by: disposeBag)
     }
@@ -106,7 +106,7 @@ final class RecordViewController: UIViewController {
 
 // MARK: - FSCalendarDelegate Extension
 
-extension RecordViewController: FSCalendarDelegate {
+extension DiaryViewController: FSCalendarDelegate {
     // 캘린더가 좌우로 스와이프될 때 호출되는 함수
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         // 네비게이션 타이틀을 해당 연도와 월로 변경
@@ -140,7 +140,7 @@ extension RecordViewController: FSCalendarDelegate {
 
 // MARK: - FSCalendarDataSource Extension
 
-extension RecordViewController: FSCalendarDataSource {
+extension DiaryViewController: FSCalendarDataSource {
     // 커스텀 셀 등록
     func calendar(
       _ calendar: FSCalendar,
@@ -159,9 +159,9 @@ extension RecordViewController: FSCalendarDataSource {
     }
 }
 
-extension RecordViewController {
+extension DiaryViewController {
     private func createRecordButtonTapped() {
-        recordView.createRecordButton.rx.tap
+        diaryView.createRecordButton.rx.tap
             .withUnretained(self)
             .subscribe { owner, _ in
                 let recordDateGameSelectionVC = RecordDateGameSelectionViewController()
