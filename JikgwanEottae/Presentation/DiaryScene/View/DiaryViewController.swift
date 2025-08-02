@@ -16,6 +16,7 @@ final class DiaryViewController: UIViewController {
     // MARK: - Properties
 
     private let diaryView = DiaryView()
+    private let viewModel: ViewModelType
     // 테스트 데이터 testData 를 날짜‑키 딕셔너리로 미리 만들어 두면 O(1) 조회 가능합니다.
     let testData: [(date: String, imageName: String)] = [
       ("2025-07-23", "test1"),
@@ -45,6 +46,16 @@ final class DiaryViewController: UIViewController {
         bindTableView()
         updateNaviTitle(to: Date())
         createRecordButtonTapped()
+    }
+    
+    init(viewModel: any ViewModelType) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Setup And Configuration
