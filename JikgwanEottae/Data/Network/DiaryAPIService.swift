@@ -14,8 +14,8 @@ import Moya
 enum DiaryAPIService {
     // 전체 직관 일기 가져오기
     case fetchAllDiaries
-    // 해당 연도.월 직관 일기 가져오기
-    case fetchDiaries(String, String)
+    // 해당 연도-월 직관 일기 가져오기
+    case fetchDiaries(year: String, month: String)
 }
 
 extension DiaryAPIService: TargetType {

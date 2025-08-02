@@ -25,7 +25,7 @@ final class DiaryNetworkManager {
     
     // 해당 날짜 직관 일기 가져오기
     public func fetchDiaries(year: String, month: String) -> Single<[Diary]> {
-        provider.rx.request(.fetchDiaries(year, month))
+        provider.rx.request(.fetchDiaries(year: year, month: month))
             .map(DiaryResponseDTO.self)
             .map { $0.toDomain() }
     }
