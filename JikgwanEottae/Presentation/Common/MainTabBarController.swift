@@ -19,7 +19,10 @@ final class MainTabBarController: UITabBarController {
         super.viewDidLoad()
         setupViewControllers()
         configureTabBarApperance()
-        addTopLine(color: .primaryBackgroundColor, height: 0.5)
+        addTopLine(
+            color: .primaryBackgroundColor,
+            height: 0.5
+        )
     }
     
     private func configureTabBarApperance() {
@@ -45,18 +48,33 @@ final class MainTabBarController: UITabBarController {
     }
     
     private func setupViewControllers() {
-        // 홈 화면
+        // 홈
         let homeVC = HomeViewController()
         let homeNVC = UINavigationController(rootViewController: homeVC)
         homeNVC.configureBarAppearnace()
-        homeNVC.tabBarItem = UITabBarItem(title: "홈", image: .home, tag: 0)
-        // 직관 기록 화면
-        let diaryVC = DiaryViewController()
-        let diaryNVC = UINavigationController(rootViewController: diaryVC)
-        diaryNVC.configureBarAppearnace()
-        diaryNVC.tabBarItem = UITabBarItem(title: "기록", image: .ticket, tag: 1)
-        // 탭 바 컨트롤러에 화면 추가
-        self.viewControllers = [homeNVC, diaryNVC]
+        homeNVC.tabBarItem = UITabBarItem(
+            title: "홈",
+            image: .home,
+            tag: 0
+        )
+        
+        // 직관 기록
+        let diaryNetworkManager = DiaryNetworkManager.shared
+        let diaryRepository = DiaryRepository(networkManger: diaryNetworkManager)
+        let diartUseCase = DiaryUseCase(repository: diaryRepository)
+        let diaryViewModel = DiaryViewModel(usecase: diartUseCase)
+        let diaryViewController = DiaryViewController(viewModel: diaryViewModel)
+        let diaryNavigationController = UINavigationController(rootViewController: diaryViewController)
+        diaryNavigationController.configureBarAppearnace()
+        diaryNavigationController.tabBarItem = UITabBarItem(
+            title: "기록",
+            image: .ticket,
+            tag: 1
+        )
+        self.viewControllers = [
+            homeNVC,
+            diaryNavigationController
+        ]
     }
     
     private func addTopLine(color: UIColor, height: CGFloat) {
@@ -66,7 +84,8 @@ final class MainTabBarController: UITabBarController {
         stripe.snp.makeConstraints { make in
             make.top.leading.trailing
                 .equalTo(tabBar)
-            make.height.equalTo(height)
+            make.height
+                .equalTo(height)
         }
     }
 }
