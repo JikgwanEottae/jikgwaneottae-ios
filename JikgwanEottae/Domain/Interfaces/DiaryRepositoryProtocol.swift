@@ -7,11 +7,14 @@
 
 import Foundation
 
+import RxSwift
+import RxCocoa
+
 // MARK: - 직관 일기 프로토콜(인터페이스)
 
 protocol DiaryRepositoryProtocol {
     // 전체 직관 일기 가져오기
-    func fetchAllDiaries() -> [Diary]
+    func fetchAllDiaries() -> Single<[Diary]>
     // 해당 연도-월 직관 일기 가져오기
-    func fetchDiaries(year: String, month: String) -> [Diary]
+    func fetchDiaries(year: String, month: String) -> Single<[Diary]>
 }
