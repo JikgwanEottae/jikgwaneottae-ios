@@ -1,24 +1,25 @@
 //
-//  Record.swift
+//  Diary.swift
 //  JikgwanEottae
 //
-//  Created by 7aeHoon on 7/25/25.
+//  Created by 7aeHoon on 8/2/25.
 //
 
 import Foundation
 
 // MARK: - 직관 기록 엔티티
 
-struct BaseBallRecord: Equatable, Identifiable {
+struct Diary: Equatable, Identifiable {
     typealias Identifier = String
     let id: Identifier
-    let date: String
-    let time: String
+    let gameDate: Date
+    let gameTime: String
     let ballpark: String
-    let homeTeam: KBOTeam
-    let awayTeam: KBOTeam
+    let homeTeam: String
+    let awayTeam: String
     let homeScore: Int
-    let awayScore: Int
+    let awayscore: Int
+    let favoriteTeam: String
     let seat: String?
     let memo: String?
     let imageURL: String?

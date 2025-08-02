@@ -11,7 +11,7 @@ target 'JikgwanEottae' do
 	pod 'Then'
 	pod 'SnapKit', '~> 5.7.0'
         pod 'Tabman', '~> 3.2'
-        pod 'Alamofire'
+        pod 'Moya/RxSwift', '~> 15.0'
 	pod 'FSCalendar'
 
   target 'JikgwanEottaeTests' do

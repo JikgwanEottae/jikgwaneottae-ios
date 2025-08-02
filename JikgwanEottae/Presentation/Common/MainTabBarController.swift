@@ -51,12 +51,12 @@ final class MainTabBarController: UITabBarController {
         homeNVC.configureBarAppearnace()
         homeNVC.tabBarItem = UITabBarItem(title: "홈", image: .home, tag: 0)
         // 직관 기록 화면
-        let recordVC = RecordViewController()
-        let recordNVC = UINavigationController(rootViewController: recordVC)
-        recordNVC.configureBarAppearnace()
-        recordNVC.tabBarItem = UITabBarItem(title: "기록", image: .ticket, tag: 1)
+        let diaryVC = DiaryViewController()
+        let diaryNVC = UINavigationController(rootViewController: diaryVC)
+        diaryNVC.configureBarAppearnace()
+        diaryNVC.tabBarItem = UITabBarItem(title: "기록", image: .ticket, tag: 1)
         // 탭 바 컨트롤러에 화면 추가
-        self.viewControllers = [homeNVC, recordNVC]
+        self.viewControllers = [homeNVC, diaryNVC]
     }
     
     private func addTopLine(color: UIColor, height: CGFloat) {

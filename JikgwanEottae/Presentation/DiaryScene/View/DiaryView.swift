@@ -11,7 +11,7 @@ import FSCalendar
 import SnapKit
 import Then
 
-final class RecordView: UIView {
+final class DiaryView: UIView {
 
     // MARK: - Property
     
