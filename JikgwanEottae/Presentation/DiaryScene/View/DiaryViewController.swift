@@ -12,12 +12,9 @@ import RxSwift
 import RxCocoa
 
 final class DiaryViewController: UIViewController {
-
-    // MARK: - Properties
-
+    
     private let diaryView = DiaryView()
-    private let viewModel: ViewModelType
-    // 테스트 데이터 testData 를 날짜‑키 딕셔너리로 미리 만들어 두면 O(1) 조회 가능합니다.
+    private let viewModel: DiaryViewModel
     let testData: [(date: String, imageName: String)] = [
       ("2025-07-23", "test1"),
       ("2025-07-24", "test2"),
@@ -30,9 +27,9 @@ final class DiaryViewController: UIViewController {
     private lazy var recordsBehaviorRelay = BehaviorRelay<[(date: String, imageName: String)]>(value: testData)
     // 선택된 날짜를 뿌려줄 릴레이
     private let selectedDateRelay = BehaviorRelay<String>(value: Date().toFormattedString("yyyy-MM-dd"))
+    // 캘린더에서 선택된 날짜를 방출하는 릴레이
+    private let dateSelectedRelay = PublishRelay<String>()
     private let disposeBag = DisposeBag()
-    
-    // MARK: - Life Cycle
     
     override func loadView() {
         self.view = diaryView
@@ -44,12 +41,14 @@ final class DiaryViewController: UIViewController {
         configureNaviBarButtonItem()
         configureBackBarButtonItem()
         bindTableView()
-        updateNaviTitle(to: Date())
+        configureNaviTitle(to: Date())
         createRecordButtonTapped()
+        
+        bindViewModel()
     }
     
     init(viewModel: any ViewModelType) {
-        self.viewModel = viewModel
+        self.viewModel = viewModel as! DiaryViewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -57,8 +56,6 @@ final class DiaryViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - Setup And Configuration
     
     private func configureNaviBarButtonItem() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryView.titleLabel)
@@ -69,13 +66,11 @@ final class DiaryViewController: UIViewController {
         self.diaryView.fscalendarView.dataSource = self
     }
     
-    // MARK: - UI Update Helpers
-    
-    private func updateNaviTitle(to date: Date) {
+    private func configureNaviTitle(to date: Date) {
         self.navigationItem.title = date.toFormattedString("yyyy년 MM월")
     }
     
-    private func updateDateLabel(to date: Date) {
+    private func configureDateLabel(to date: Date) {
         self.diaryView.selectedDateLabel.text = date.toFormattedString("d. E")
     }
     
@@ -113,6 +108,19 @@ final class DiaryViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
+    
+    private func bindViewModel() {
+        let input = DiaryViewModel.Input(
+            selectedDate: dateSelectedRelay.asSignal()
+        )
+        
+        let output = viewModel.transform(input: input)
+        output.allDiaries
+            .drive { diaries in
+                print(diaries)
+            }
+            .disposed(by: disposeBag)
+    }
 }
 
 // MARK: - FSCalendarDelegate Extension
@@ -121,50 +129,28 @@ extension DiaryViewController: FSCalendarDelegate {
     // 캘린더가 좌우로 스와이프될 때 호출되는 함수
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         // 네비게이션 타이틀을 해당 연도와 월로 변경
-        updateNaviTitle(to: calendar.currentPage)
+        configureNaviTitle(to: calendar.currentPage)
     }
+    
     // 캘린더에서 날짜가 선택됬을 때 호출되는 함수
-    func calendar(
-        _ calendar: FSCalendar,
-        didSelect date: Date,
-        at monthPosition: FSCalendarMonthPosition
-    ) {
-        // 오늘 날짜 원 색상 변경
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         calendar.appearance.todayColor = .systemGray5
-        // 오늘 날짜 텍스트 색상 변경
         calendar.appearance.titleTodayColor = .primaryTextColor
-        // 날짜 레이블을 선택 날짜로 업데이트
+        configureDateLabel(to: date)
         let dateString = date.toFormattedString("yyyy-MM-dd")
         selectedDateRelay.accept(dateString)
-        updateDateLabel(to: date)
+        dateSelectedRelay.accept(dateString)
     }
-    // 성능 최적화를 위해 나중에 리팩토링 필수
-//    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
-//        let selectedDate = date.toFormattedString("yyyy-MM-dd")
-//        let filtered = testData.filter { $0.date == selectedDate }
-//        if !filtered.isEmpty {
-//            return "⚾️"
-//        }
-//        return nil
-//    }
 }
 
 // MARK: - FSCalendarDataSource Extension
 
 extension DiaryViewController: FSCalendarDataSource {
     // 커스텀 셀 등록
-    func calendar(
-      _ calendar: FSCalendar,
-      cellFor date: Date,
-      at position: FSCalendarMonthPosition
-    ) -> FSCalendarCell {
-      return calendar.dequeueReusableCell(
-        withIdentifier: CustomFSCalendarCell.ID,
-        for: date,
-        at: position
-      ) as! CustomFSCalendarCell
+    func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
+      return calendar.dequeueReusableCell(withIdentifier: CustomFSCalendarCell.ID, for: date, at: position) as! CustomFSCalendarCell
     }
-    
+    // 표시가능한 최대 날짜
     func maximumDate(for calendar: FSCalendar) -> Date {
         return Date()
     }
