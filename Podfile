@@ -13,6 +13,7 @@ target 'JikgwanEottae' do
         pod 'Tabman', '~> 3.2'
         pod 'Moya/RxSwift', '~> 15.0'
 	pod 'FSCalendar'
+	pod 'KeychainAccess'
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths
