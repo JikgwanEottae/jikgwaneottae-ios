@@ -18,10 +18,10 @@ enum DiaryAPIService {
     case fetchDiaries(year: String, month: String)
 }
 
-extension DiaryAPIService: TargetType {
+extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
     // 기본 URL
     var baseURL: URL {
-        URL(string: "https://api.jikgwaneottae.com/")!
+        URL(string: "https://contributors-gentleman-david-packs.trycloudflare.com")!
     }
     // 엔드 포인트
     var path: String {
@@ -60,6 +60,15 @@ extension DiaryAPIService: TargetType {
     // 헤더
     var headers: [String : String]? {
         return ["Content-Type": "application/json"]
+    }
+    // 토큰
+    var authorizationType: Moya.AuthorizationType? {
+        switch self {
+        case .fetchAllDiaries:
+            return .bearer
+        case .fetchDiaries:
+            return .bearer
+        }
     }
     
 }
