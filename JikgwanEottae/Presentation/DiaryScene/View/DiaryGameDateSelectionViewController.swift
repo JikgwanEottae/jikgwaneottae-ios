@@ -10,15 +10,15 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-final class RecordDateGameSelectionViewController: UIViewController {
+final class DiaryGameDateSelectionViewController: UIViewController {
     
-    private let recordDateGameSelectionView = RecordDateGameSelectionView()
+    private let diaryGameDateSelectionView = DiaryGameDateSelectionView()
     private let testData: [String] = ["2025-07-25", "2025-07-25", "2025-07-27"]
     private lazy var recordedGameBehaviorRelay = BehaviorRelay<[String]>(value: testData)
     private let disposeBag = DisposeBag()
     
     override func loadView() {
-        self.view = recordDateGameSelectionView
+        self.view = diaryGameDateSelectionView
     }
     
     override func viewDidLoad() {
@@ -35,7 +35,7 @@ final class RecordDateGameSelectionViewController: UIViewController {
     }
     
     private func bindTableView() {
-        let selectedDate = recordDateGameSelectionView.datePicker.rx.date
+        let selectedDate = diaryGameDateSelectionView.datePicker.rx.date
             .distinctUntilChanged()
             .map { $0.toFormattedString("yyyy-MM-dd") }
             .share()
@@ -49,7 +49,7 @@ final class RecordDateGameSelectionViewController: UIViewController {
               .share()
         
         recordsForDate
-            .bind(to: recordDateGameSelectionView.tableView.rx.items(
+            .bind(to: diaryGameDateSelectionView.tableView.rx.items(
                 cellIdentifier: RecordedGameTableViewCell.ID,
                 cellType: RecordedGameTableViewCell.self)
             ) { row, element, cell in
@@ -61,19 +61,19 @@ final class RecordDateGameSelectionViewController: UIViewController {
             .withUnretained(self)
             .bind { owner, records in
                 if records.isEmpty {
-                    owner.recordDateGameSelectionView.tableView.setEmptyView(
+                    owner.diaryGameDateSelectionView.tableView.setEmptyView(
                         image: UIImage(resource: .exclamation),
                         message: "경기 일정이 없거나 아직 경기 중이에요"
                     )
                 } else {
-                    owner.recordDateGameSelectionView.tableView.restore()
+                    owner.diaryGameDateSelectionView.tableView.restore()
                 }
                 let height = CGFloat(max(records.count * 110, 110))
-                owner.recordDateGameSelectionView.updateTableViewHeight(to: height)
+                owner.diaryGameDateSelectionView.updateTableViewHeight(to: height)
             }
             .disposed(by: disposeBag)
         
-        recordDateGameSelectionView.tableView.rx.itemSelected
+        diaryGameDateSelectionView.tableView.rx.itemSelected
             .withUnretained(self)
             .subscribe(onNext: { owner, indexPath in
                 let recordDetailInputVC = RecordDetailInputViewController()

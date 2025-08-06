@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class RecordDateGameSelectionView: UIView {
+final class DiaryGameDateSelectionView: UIView {
     
     private let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false

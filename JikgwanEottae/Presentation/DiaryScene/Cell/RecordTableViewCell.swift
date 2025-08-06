@@ -53,7 +53,6 @@ final class RecordTableViewCell: UITableViewCell {
     // 승패 레이블
     private let outcomeLabel = UILabel().then {
         $0.text = "승리"
-//        $0.font = .pretendard(size: 11, family: .semiBold)
         $0.font = .gMarketSans(size: 11, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .white
@@ -62,7 +61,6 @@ final class RecordTableViewCell: UITableViewCell {
     // 스코어 레이블
     private let scoreLabel = UILabel().then {
         $0.text = "삼성   4 vs 1   롯데"
-//        $0.font = .pretendard(size: 23, family: .bold)
         $0.font = .gMarketSans(size: 20, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .secondaryTextColor
@@ -71,7 +69,6 @@ final class RecordTableViewCell: UITableViewCell {
     // 야구장 이름 레이블
     private let ballParkLabel = UILabel().then {
         $0.text = "대구삼성라이온즈파크 18:30"
-//        $0.font = .pretendard(size: 12, family: .bold)
         $0.font = .gMarketSans(size: 12, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .tertiaryTextColor
@@ -99,6 +96,7 @@ final class RecordTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        outcomeContainerView.backgroundColor = .tossBlueColor
         thumbnailImageView.image = nil
         outcomeLabel.text = nil
         scoreLabel.text = nil
@@ -139,11 +137,19 @@ final class RecordTableViewCell: UITableViewCell {
         }
     }
     
-    public func configure(str: String) {
-        thumbnailImageView.image = UIImage(named: str)
-        outcomeLabel.text = "승리"
-        scoreLabel.text = "삼성   4 vs 1   롯데"
-        ballParkLabel.text = "대구삼성라이온즈파크    18:30"
+    public func configure(diary: Diary) {
+        if diary.result == "WIN" {
+            outcomeContainerView.backgroundColor = .tossBlueColor
+            outcomeLabel.text = "승리"
+        } else if diary.result == "LOSE" {
+            outcomeContainerView.backgroundColor = .tossRedColor
+            outcomeLabel.text = "패배"
+        } else {
+            outcomeLabel.text = "무승부"
+        }
+        scoreLabel.text = "\(diary.homeTeam)   \(diary.homeScore) vs \(diary.awayScore)   \(diary.awayTeam)"
+        ballParkLabel.text = "\(diary.ballpark)    \(diary.gameTime)"
+        thumbnailImageView.image = UIImage(named: "test2")
     }
     
 }

@@ -51,10 +51,8 @@ final class DiaryView: UIView {
         // 요일 텍스트 색상
         $0.appearance.weekdayTextColor = .tertiaryTextColor
         // 요일 폰트 설정
-//        $0.appearance.weekdayFont = .pretendard(size: 14, family: .medium)
         $0.appearance.weekdayFont = .gMarketSans(size: 14, family: .medium)
         // 날짜 폰트 설정
-//        $0.appearance.titleFont = .pretendard(size: 14, family: .medium)
         $0.appearance.titleFont = .gMarketSans(size: 14, family: .medium)
         // 해당 월이 아닌 날짜 표시 여부
         $0.placeholderType = .none
@@ -69,6 +67,8 @@ final class DiaryView: UIView {
         // 선택된 날짜 텍스트 색상
         $0.appearance.titleSelectionColor = .white
         $0.appearance.subtitleOffset = CGPoint(x: 0, y: 15)
+        $0.appearance.eventDefaultColor = .tossRedColor
+        $0.appearance.eventSelectionColor = .tossRedColor
     }
     // 캘린더 아래 구분선 표시를 위한 뷰
     private let fscalendarBottomLineView = UIView().then {
