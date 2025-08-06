@@ -22,13 +22,19 @@ final class KBOGameNetworkManager {
         self.provider = MoyaProvider(plugins: [authPlugin])
     }
     
-    /// 특정 일자 KBO 경기를 조회하기
+    /// 특정 일자 KBO 경기 조회하기
     public func fetchDailyGames(date: Date) -> Single<[KBOGame]> {
         return provider.rx.request(.fetchDailyGames(date))
             .map(KBOGameResponseDTO.self)
             .map { $0.toDomain() }
-            .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .background))
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
     }
-
     
+    /// 특정 연·월 KBO 경기 조회하기
+    public func fetchMonthlyGames(date: Date) -> Single<[KBOGame]> {
+        return provider.rx.request(.fetchMonthlyGames(date))
+            .map(KBOGameResponseDTO.self)
+            .map { $0.toDomain() }
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+    }
 }

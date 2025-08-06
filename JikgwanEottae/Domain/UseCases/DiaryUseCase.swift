@@ -10,19 +10,18 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-// MARK: - DiaryUseCase 프로토콜
+// MARK: - 직관 일기 유스케이스 프로토콜
 
 protocol DiaryUseCaseProtocol {
     func fetchAllDiaries() -> Single<[Diary]>
     func fetchDiaries(year: String, month: String) -> Single<[Diary]>
 }
 
-// MARK: - DiaryUseCase. DiaryUseCaseProtocol를 채택
+// MARK: - 직관 일기 유스케이스
 
 final class DiaryUseCase: DiaryUseCaseProtocol {
     private let repository: DiaryRepositoryProtocol
     
-    // DiaryRepositoryProtocol을 채택한 repository 주입
     init(repository: DiaryRepositoryProtocol) {
         self.repository = repository
     }

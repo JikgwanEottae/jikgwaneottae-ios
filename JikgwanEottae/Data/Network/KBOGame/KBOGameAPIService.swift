@@ -15,7 +15,7 @@ enum KBOGameAPIService {
     // 특정 일자 KBO 경기 조회
     case fetchDailyGames(Date)
     // 특정 연·월 KBO 경기 조회
-    case fetchMonthlyGames(year: String, month: String)
+    case fetchMonthlyGames(Date)
 }
 
 extension KBOGameAPIService: TargetType, AccessTokenAuthorizable {
@@ -45,7 +45,10 @@ extension KBOGameAPIService: TargetType, AccessTokenAuthorizable {
         switch self {
         case .fetchDailyGames:
             return .requestPlain
-        case .fetchMonthlyGames(let year, let month):
+        case .fetchMonthlyGames(let date):
+            let formattedDateStr = date.toFormattedString("yyyy-MM").split(separator: "-").map { String($0) }
+            let year = formattedDateStr[0]
+            let month = formattedDateStr[1]
             let params = ["year": year, "month": month]
             return .requestParameters(parameters: params, encoding: URLEncoding.queryString)
         }
