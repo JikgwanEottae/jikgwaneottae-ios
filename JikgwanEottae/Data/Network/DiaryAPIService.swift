@@ -29,7 +29,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
         case .fetchAllDiaries:
             return "/api/diaries"
         case .fetchDiaries:
-            return "/api/diaries/calendar"
+            return "/api/diaries/month"
         }
     }
     // HTTP 메소드
