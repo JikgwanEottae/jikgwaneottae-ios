@@ -16,6 +16,6 @@ struct DiaryResponseDTO: Decodable {
 
 extension DiaryResponseDTO {
     func toDomain() -> [Diary] {
-        data.map { $0.toDomain() }
+        return data.map { $0.toDomain() }
     }
 }
