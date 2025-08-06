@@ -12,9 +12,9 @@ import Moya
 // MARK: - 직관 일기 API 서비스
 
 enum DiaryAPIService {
-    // 전체 직관 일기 가져오기
+    // 전체 직관 일기 조회
     case fetchAllDiaries
-    // 해당 연도-월 직관 일기 가져오기
+    // 해당 연·월 직관 일기 조회
     case fetchDiaries(year: String, month: String)
 }
 
