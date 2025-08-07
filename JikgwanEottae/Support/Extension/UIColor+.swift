@@ -25,4 +25,6 @@ extension UIColor {
     static let dottedBorderColor = #colorLiteral(red: 0.6117647059, green: 0.6392156863, blue: 0.6862745098, alpha: 1)
     
     static let placeholderColor = #colorLiteral(red: 0.5490196078, green: 0.5882352941, blue: 0.6274509804, alpha: 1)
+    
+    static let tagBackgroundColor = #colorLiteral(red: 0.2705882353, green: 0.2705882353, blue: 0.2705882353, alpha: 1)
 }

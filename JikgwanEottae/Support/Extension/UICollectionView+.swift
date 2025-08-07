@@ -1,8 +1,8 @@
 //
-//  UITableView+.swift
+//  UICollectionView+.swift
 //  JikgwanEottae
 //
-//  Created by 7aeHoon on 7/24/25.
+//  Created by 7aeHoon on 8/8/25.
 //
 
 import UIKit
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-extension UITableView {
+extension UICollectionView {
     /// empty 백그라운드 뷰를 생성하는 함수
     func setEmptyView(image: UIImage?, message: String) {
         let stackView = UIStackView().then {
