@@ -13,6 +13,10 @@ import RxSwift
 final class DiaryGameDateSelectionViewController: UIViewController {
     private let diaryGameDateSelectionView = DiaryGameDateSelectionView()
     private let viewModel: DiaryGameDateSelectionViewModel
+    private var dataSource: UICollectionViewDiffableDataSource<Section, KBOGame>!
+    private enum Section: CaseIterable {
+        case main
+    }
     private let disposeBag = DisposeBag()
     
     init(viewModel: DiaryGameDateSelectionViewModel) {
@@ -32,69 +36,81 @@ final class DiaryGameDateSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackBarButtonItem()
-        bindTableView()
+        configureDataSource()
         bindViewModel()
-    }
-    
-    private func bindTableView() {
-//        diaryGameDateSelectionView.tableView.rx.itemSelected
-//            .withUnretained(self)
-//            .subscribe(onNext: { owner, indexPath in
-//
-//                let recordDetailInputVC = RecordDetailInputViewController()
-//                owner.navigationController?.pushViewController(recordDetailInputVC, animated: true)
-//            })
-//            .disposed(by: disposeBag)
-        diaryGameDateSelectionView.tableView.rx
-            .modelSelected(KBOGame.self)
-            .subscribe(onNext: { game in
-                print(game)
-            })
-            .disposed(by: disposeBag)
+        bindCollectionView()
     }
     
     private func bindViewModel() {
         let input = DiaryGameDateSelectionViewModel.Input(
-            selectedDate: diaryGameDateSelectionView.datePicker.rx.date
-                .distinctUntilChanged()
-                .asDriver(onErrorDriveWith: .empty())
+            selectedDate: diaryGameDateSelectionView.datePicker.rx.date.asDriver()
         )
         
         let output = viewModel.transform(input: input)
-        
-        // 테이블 뷰와 바인드
-        output.dailyGames
-            .drive(diaryGameDateSelectionView.tableView.rx.items(
-                cellIdentifier: KBOGameTableViewCell.ID,
-                cellType: KBOGameTableViewCell.self)
-            ) { row, games, cell in
-                cell.configure(game: games)
-            }
-            .disposed(by: disposeBag)
-        
+        // 날짜에 맞는 경기 리스트 바인딩
         output.dailyGames
             .drive(onNext: { [weak self] games in
                 if games.isEmpty {
-                    self?.diaryGameDateSelectionView.tableView.setEmptyView(
-                        image: UIImage(resource: .exclamation),
-                        message: "경기 일정이 없거나 아직 경기 중이에요"
+                    self?.diaryGameDateSelectionView.collectionView.setEmptyView(
+                        image: UIImage(systemName: "exclamationmark.circle"),
+                        message: "경기 일정이 없어요"
                     )
                 } else {
-                    self?.diaryGameDateSelectionView.tableView.restore()
+                    self?.diaryGameDateSelectionView.collectionView.restore()
                 }
-                let height = CGFloat(max(games.count * 110, 110))
-                self?.diaryGameDateSelectionView.updateTableViewHeight(to: height)
+                self?.updateSnapshot(games: games)
             })
             .disposed(by: disposeBag)
         
-        // 로딩 인디케이터 
+        // 로딩 인디케이터 바인딩
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
                 self?.diaryGameDateSelectionView.interactionBlocker.isHidden = !isLoading
-                isLoading
-                ? self?.diaryGameDateSelectionView.activityIndicator.startAnimating()
-                : self?.diaryGameDateSelectionView.activityIndicator.stopAnimating()
+                if isLoading {
+                    self?.diaryGameDateSelectionView.activityIndicator.startAnimating()
+                } else {
+                    self?.diaryGameDateSelectionView.activityIndicator.stopAnimating()
+                }
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func bindCollectionView() {
+        // 선택한 경기 아이템을 제공받고, 직관 일기 생성 화면으로 전환
+        diaryGameDateSelectionView.collectionView.rx
+            .itemSelected
+            .compactMap { [weak self] indexPath in
+                return self?.dataSource.itemIdentifier(for: indexPath)
+            }
+            .subscribe(onNext: { [weak self] selectedGame in
+                let diaryEditViewController = DiaryEditViewController()
+                self?.navigationController?.pushViewController(diaryEditViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func configureDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, KBOGame>(
+            collectionView: diaryGameDateSelectionView.collectionView,
+            cellProvider: { collectionView, indexPath, game in
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: KBOGameCollectionViewCell.ID,
+                    for: indexPath
+                ) as! KBOGameCollectionViewCell
+                cell.configure(game: game)
+                return cell
+            }
+        )
+        
+        var snapshot = NSDiffableDataSourceSnapshot<Section, KBOGame>()
+        snapshot.appendSections(Section.allCases)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func updateSnapshot(games: [KBOGame]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, KBOGame>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(games, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
 }

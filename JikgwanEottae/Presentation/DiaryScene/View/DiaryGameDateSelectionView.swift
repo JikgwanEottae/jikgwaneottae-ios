@@ -11,50 +11,53 @@ import SnapKit
 import Then
 
 final class DiaryGameDateSelectionView: UIView {
-    
+    // 액티비티 인티케이터
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    // 사용자의 상호작용 블로커
+    public let interactionBlocker = UIControl().then {
+        $0.isHidden = true
+    }
+    // 스크롤 뷰
     private let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.showsHorizontalScrollIndicator = false
         $0.alwaysBounceVertical = true
     }
-    
+    // 스택 뷰
     private lazy var stackView = UIStackView(
-        arrangedSubviews:[
+        arrangedSubviews: [
             titleLabel,
             subtitleLabel,
             datePicker,
-            tableView
+            collectionView
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(
-            top: 20,
-            left: 20,
-            bottom: 20,
-            right: 20
-        )
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
-        $0.spacing = 50
+        $0.spacing = 40
         $0.clipsToBounds = true
     }
-    
+    // 타이틀 레이블
     private let titleLabel = UILabel().then {
         $0.text = "직관한 날짜를 선택해주세요"
         $0.numberOfLines = 1
-//        $0.font = .pretendard(size: 23, family: .semiBold)
         $0.font = .gMarketSans(size: 22, family: .medium)
         $0.textColor = .primaryTextColor
     }
-    
+    // 서브 타이틀 레이블
     private let subtitleLabel = UILabel().then {
         $0.text = "날짜에 맞춰 경기 일정을 가져올게요"
         $0.numberOfLines = 1
-//        $0.font = .pretendard(size: 16, family: .medium)
         $0.font = .gMarketSans(size: 15, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
-    
+    // 경기 날짜 선택 데이트 피커
     public let datePicker = UIDatePicker().then {
         $0.datePickerMode = .date
         $0.preferredDatePickerStyle = .wheels
@@ -64,28 +67,16 @@ final class DiaryGameDateSelectionView: UIView {
         $0.backgroundColor = .secondaryBackgroundColor
         $0.layer.cornerRadius = Constants.cornerRadius
     }
-    // 테이블 뷰 높이 제약
-    private var tableViewHeightConstraint: Constraint?
-    
-    // 테이블 뷰
-    public let tableView = UITableView(frame: .zero, style: .plain).then {
-        $0.register(KBOGameTableViewCell.self, forCellReuseIdentifier: KBOGameTableViewCell.ID)
-        $0.showsVerticalScrollIndicator = false
-        $0.isScrollEnabled = false
-        $0.rowHeight = 110
-        $0.separatorStyle = .none
-    }
-    
-    // 액티비티 인티케이터
-    public let activityIndicator = UIActivityIndicatorView().then {
-        $0.style = .medium
-        $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
-    }
-    
-    // 사용자의 상호작용 블로커
-    public let interactionBlocker = UIControl().then {
-        $0.isHidden = true
+    // 경기 정보를 보여줄 컬렉션 뷰
+    public lazy var collectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: makeLayout()
+    ).then {
+        $0.register(
+            KBOGameCollectionViewCell.self,
+            forCellWithReuseIdentifier: KBOGameCollectionViewCell.ID
+        )
+        $0.showsHorizontalScrollIndicator = false
     }
     
     override init(frame: CGRect) {
@@ -125,23 +116,39 @@ final class DiaryGameDateSelectionView: UIView {
         }
         datePicker.snp.makeConstraints { make in
             make.height
-                .equalTo(270)
+                .equalTo(250)
         }
-        tableView.snp.makeConstraints { make in
-            tableViewHeightConstraint = make.height
-                .equalTo(110).constraint
+        collectionView.snp.makeConstraints { make in
+            make.height
+                .equalTo(211)
         }
         activityIndicator.snp.makeConstraints { make in
             make.centerX.centerY
                 .equalToSuperview()
         }
         interactionBlocker.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges
+                .equalToSuperview()
         }
-        
     }
-    
-    public func updateTableViewHeight(to height: CGFloat) {
-        tableViewHeightConstraint?.update(offset: height)
+}
+
+// MARK: - DiaryGameDateSelectionView Extension
+
+extension DiaryGameDateSelectionView {
+    private func makeLayout() -> UICollectionViewCompositionalLayout {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(230),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: itemSize,
+            subitems: [item]
+        )
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+        section.interGroupSpacing = 20
+        return UICollectionViewCompositionalLayout(section: section)
     }
 }

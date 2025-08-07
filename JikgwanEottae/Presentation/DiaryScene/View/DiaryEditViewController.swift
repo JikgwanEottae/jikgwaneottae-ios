@@ -11,15 +11,12 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-final class RecordDetailInputViewController: UIViewController {
-
-    
-    
-    private let recordDetailInputView = RecordDetailInputView()
+final class DiaryEditViewController: UIViewController {
+    private let diaryEditView = DiaryEditView()
     private let disposeBag = DisposeBag()
     
     override func loadView() {
-        self.view = recordDetailInputView
+        self.view = diaryEditView
     }
     
     override func viewDidLoad() {
@@ -31,11 +28,11 @@ final class RecordDetailInputViewController: UIViewController {
     }
     
     private func setupDelegate() {
-        recordDetailInputView.reviewTextView.delegate = self
+        diaryEditView.reviewTextView.delegate = self
     }
     
     private func photoSelectionButtonTapped() {
-        recordDetailInputView.selectPhotoButton.rx.tap
+        diaryEditView.selectPhotoButton.rx.tap
             .withUnretained(self)
             .bind { owner, _ in
                 owner.presentPhotoPicker()
@@ -44,10 +41,10 @@ final class RecordDetailInputViewController: UIViewController {
     }
     
     private func photoRemoveButtonTapped() {
-        recordDetailInputView.removePhotoButton.rx.tap
+        diaryEditView.removePhotoButton.rx.tap
             .withUnretained(self)
             .bind { owner, _ in
-                owner.recordDetailInputView.removePhoto()
+                owner.diaryEditView.removePhoto()
             }
             .disposed(by: disposeBag)
     }
@@ -69,7 +66,7 @@ final class RecordDetailInputViewController: UIViewController {
 
 // MARK: - UITextViewDelegate extension
 
-extension RecordDetailInputViewController: UITextViewDelegate {
+extension DiaryEditViewController: UITextViewDelegate {
     // MARK: - textViewDidBeginEditing
     public func textViewDidBeginEditing(_ textView: UITextView) {
         // 텍스트뷰의 텍스트 컬러가 placeholderText일 경우. 즉 텍스트가 없는 상태
@@ -84,13 +81,13 @@ extension RecordDetailInputViewController: UITextViewDelegate {
         // 사용자가 입력을 하지 않았을 때
         if textView.text.isEmpty {
             // placeholder 설정
-            textView.text = RecordDetailInputView.memoTextViewPlaceholderText
+            textView.text = DiaryEditView.memoTextViewPlaceholderText
             textView.textColor = .placeholderText
         }
     }
 }
 
-extension RecordDetailInputViewController: PHPickerViewControllerDelegate {
+extension DiaryEditViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         // 피커 창 닫기
         picker.dismiss(animated: true)
@@ -105,8 +102,8 @@ extension RecordDetailInputViewController: PHPickerViewControllerDelegate {
                 guard let self = self else { return }
                 if let error = error { return }
                 guard let selectedImage = object as? UIImage else { return }
-                self.recordDetailInputView.didPickImage(selectedImage)
-                self.recordDetailInputView.removePhotoButton.isHidden = false
+                self.diaryEditView.didPickImage(selectedImage)
+                self.diaryEditView.removePhotoButton.isHidden = false
             }
         }
     }

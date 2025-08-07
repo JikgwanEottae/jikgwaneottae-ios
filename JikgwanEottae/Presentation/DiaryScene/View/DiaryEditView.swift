@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class RecordDetailInputView: UIView {
+final class DiaryEditView: UIView {
     static let memoTextViewPlaceholderText = "직관 후기를 작성해보세요"
     
     private let scrollView = UIScrollView().then {
@@ -77,7 +77,6 @@ final class RecordDetailInputView: UIView {
     
     private let supportTeamTitleLabel = UILabel().then {
         $0.text = "응원팀"
-//        $0.font = .pretendard(size: 14, family: .medium)
         $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textColor = .primaryTextColor
     }
@@ -93,14 +92,12 @@ final class RecordDetailInputView: UIView {
     
     private let reviewTitleLabel = UILabel().then {
         $0.text = "후기"
-//        $0.font = .pretendard(size: 14, family: .medium)
         $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textColor = .primaryTextColor
     }
     
     public let reviewTextView = UITextView().then {
         $0.text = memoTextViewPlaceholderText
-//        $0.font = .pretendard(size: 18, family: .semiBold)
         $0.font = .gMarketSans(size: 17, family: .medium)
         $0.textColor = .placeholderText
         $0.backgroundColor = .secondaryBackgroundColor
@@ -115,7 +112,6 @@ final class RecordDetailInputView: UIView {
     
     public let recordButton = UIButton(type: .custom).then {
         $0.setTitle("기록하기", for: .normal)
-//        $0.titleLabel?.font = .pretendard(size: 18, family: .medium)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
         $0.backgroundColor = .mainCharcoalColor
@@ -137,7 +133,6 @@ final class RecordDetailInputView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        // 점선 그리기
         setDashedBorder()
     }
     

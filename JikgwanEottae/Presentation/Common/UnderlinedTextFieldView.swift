@@ -22,7 +22,6 @@ final class UnderlinedTextFieldView: UIView {
         $0.spacing = 10
     }
     private let titleLabel = UILabel().then {
-//        $0.font = .pretendard(size: 14, family: .medium)
         $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
@@ -31,7 +30,6 @@ final class UnderlinedTextFieldView: UIView {
     private let textField = UITextField().then {
         $0.placeholder = "좌석을 입력해주세요"
         $0.setPlaceholder(color: .placeholderColor)
-//        $0.font = .pretendard(size: 18, family: .semiBold)
         $0.font = .gMarketSans(size: 18, family: .medium)
         $0.textColor = .primaryTextColor
         $0.clearButtonMode = .whileEditing
