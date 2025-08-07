@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - KBO 경기 정보 엔티티
 
-struct KBOGame: Equatable, Identifiable {
+struct KBOGame: Hashable, Identifiable {
     typealias Identifier = Int
     let id: Identifier
     let gameDate: String
@@ -17,7 +17,8 @@ struct KBOGame: Equatable, Identifiable {
     let ballpark: String
     let homeTeam: String
     let awayTeam: String
-    let homeScore: Int
-    let awayScore: Int
+    let homeScore: Int?
+    let awayScore: Int?
     let note: String?
+    let status: String
 }

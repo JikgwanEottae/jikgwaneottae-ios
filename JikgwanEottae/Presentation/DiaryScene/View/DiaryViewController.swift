@@ -22,6 +22,16 @@ final class DiaryViewController: UIViewController {
     private let diariesRelay = BehaviorRelay<[Diary]>(value: [])
     private let disposeBag = DisposeBag()
     
+    init(viewModel: DiaryViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func loadView() {
         self.view = diaryView
     }
@@ -382,17 +392,6 @@ final class DiaryViewController: UIViewController {
         diariesRelay.accept(monthlyDiaries)
 
     }
-
-    
-    init(viewModel: any ViewModelType) {
-        self.viewModel = viewModel as! DiaryViewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     private func configureNaviBarButtonItem() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryView.titleLabel)
@@ -513,7 +512,10 @@ extension DiaryViewController {
         diaryView.createRecordButton.rx.tap
             .withUnretained(self)
             .subscribe { owner, _ in
-                let diaryGameDateSelectionViewController = DiaryGameDateSelectionViewController()
+                let KBOGameRepository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
+                let KBOGameUseCase = KBOGameUseCase(repository: KBOGameRepository)
+                let diaryGameDateSelectionViewModel = DiaryGameDateSelectionViewModel(useCase: KBOGameUseCase)
+                let diaryGameDateSelectionViewController = DiaryGameDateSelectionViewController(viewModel: diaryGameDateSelectionViewModel)
                 diaryGameDateSelectionViewController.hidesBottomBarWhenPushed = true
                 owner.navigationController?.pushViewController(diaryGameDateSelectionViewController, animated: true)
             }

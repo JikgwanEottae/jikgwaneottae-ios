@@ -14,12 +14,11 @@ struct KBOGameDTO: Decodable {
     let homeTeam: String
     let awayTeam: String
     let stadium: String
-    let tvChannel: String
     let note: String?
-    let homeScore: Int
-    let awayScore: Int
+    let homeScore: Int?
+    let awayScore: Int?
     let status: String
-    let winTeam: String
+    let winTeam: String?
 }
 
 extension KBOGameDTO {
@@ -33,7 +32,8 @@ extension KBOGameDTO {
             awayTeam: awayTeam,
             homeScore: homeScore,
             awayScore: awayScore,
-            note: note
+            note: note,
+            status: status
         )
     }
 }
