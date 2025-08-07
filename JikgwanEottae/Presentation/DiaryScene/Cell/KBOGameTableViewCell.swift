@@ -10,9 +10,9 @@ import UIKit
 import SnapKit
 import Then
 
-final class RecordedGameTableViewCell: UITableViewCell {
+final class KBOGameTableViewCell: UITableViewCell {
     // 셀 아이디
-    static let ID = "RecordedGameTableViewCell"
+    static let ID = "KBOGameTableViewCell"
     
     private lazy var containerStackView = UIStackView(
         arrangedSubviews: [
@@ -126,12 +126,19 @@ final class RecordedGameTableViewCell: UITableViewCell {
         }
     }
     
-    public func configure(num: String) {
-        homeTeamLabel.text = "삼성    12"
-        awayTeamLabel.text = "SSG    4"
-        ballParkLabel.text = "대구삼성라이온즈파크"
-        startTimeLabel.text = "18:00"
+    public func configure(game: KBOGame) {
+        // 경기 예정
+        if game.status == "SCHEDULED" {
+            
+        }
+        // 경기 종료
+        else if game.status == "PLAYED" {
+
+        }
+        // 경기 취소
+        else if game.status == "CANCELLED" {
+            
+        }
     }
-    
 }
 

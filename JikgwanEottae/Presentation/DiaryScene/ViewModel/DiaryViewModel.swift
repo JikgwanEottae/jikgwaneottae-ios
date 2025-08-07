@@ -12,7 +12,6 @@ import RxCocoa
 
 final class DiaryViewModel: ViewModelType {
     private let usecase: DiaryUseCaseProtocol
-    
     private let disposeBag = DisposeBag()
     
     // 뷰 컨트롤러부터 전달
@@ -37,7 +36,6 @@ final class DiaryViewModel: ViewModelType {
                 return self.usecase.fetchDiaries(year: year, month: month).asDriver(onErrorJustReturn: [])
             }
 
-        
         return Output(
             monthlyDiaries: monthlyDiaries
         )
@@ -45,4 +43,5 @@ final class DiaryViewModel: ViewModelType {
 }
 
 extension DiaryViewModel {
+    
 }

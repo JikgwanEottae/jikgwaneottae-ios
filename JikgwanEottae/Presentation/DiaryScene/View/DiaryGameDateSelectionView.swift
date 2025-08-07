@@ -67,12 +67,25 @@ final class DiaryGameDateSelectionView: UIView {
     // 테이블 뷰 높이 제약
     private var tableViewHeightConstraint: Constraint?
     
+    // 테이블 뷰
     public let tableView = UITableView(frame: .zero, style: .plain).then {
-        $0.register(RecordedGameTableViewCell.self, forCellReuseIdentifier: RecordedGameTableViewCell.ID)
+        $0.register(KBOGameTableViewCell.self, forCellReuseIdentifier: KBOGameTableViewCell.ID)
         $0.showsVerticalScrollIndicator = false
         $0.isScrollEnabled = false
         $0.rowHeight = 110
         $0.separatorStyle = .none
+    }
+    
+    // 액티비티 인티케이터
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    
+    // 사용자의 상호작용 블로커
+    public let interactionBlocker = UIControl().then {
+        $0.isHidden = true
     }
     
     override init(frame: CGRect) {
@@ -89,6 +102,8 @@ final class DiaryGameDateSelectionView: UIView {
     
     private func addSubviews() {
         addSubview(scrollView)
+        addSubview(interactionBlocker)
+        interactionBlocker.addSubview(activityIndicator)
         scrollView.addSubview(stackView)
     }
     
@@ -116,6 +131,14 @@ final class DiaryGameDateSelectionView: UIView {
             tableViewHeightConstraint = make.height
                 .equalTo(110).constraint
         }
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.centerY
+                .equalToSuperview()
+        }
+        interactionBlocker.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
     }
     
     public func updateTableViewHeight(to height: CGFloat) {

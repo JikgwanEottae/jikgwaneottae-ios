@@ -59,8 +59,7 @@ final class MainTabBarController: UITabBarController {
         )
         
         // 직관 기록
-        let diaryNetworkManager = DiaryNetworkManager.shared
-        let diaryRepository = DiaryRepository(networkManger: diaryNetworkManager)
+        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
         let diartUseCase = DiaryUseCase(repository: diaryRepository)
         let diaryViewModel = DiaryViewModel(usecase: diartUseCase)
         let diaryViewController = DiaryViewController(viewModel: diaryViewModel)
