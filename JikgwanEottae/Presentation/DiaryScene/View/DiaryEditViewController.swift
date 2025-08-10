@@ -47,6 +47,7 @@ final class DiaryEditViewController: UIViewController {
     
     private func bindViewModel() {
         let teamSegmentControl = diaryEditView.teamSegmentControl
+        
         let input = DiaryEditViewModel.Input(
             createButtonTapped: diaryEditView.createButton.rx
                 .tap
@@ -64,11 +65,25 @@ final class DiaryEditViewController: UIViewController {
             selectedPhotoData: selectedPhotoDataRelay
                 .asObservable()
         )
+        
         let output = viewModel.transform(input: input)
+        
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
                 self?.diaryEditView.interactionBlocker.isHidden = !isLoading
                 isLoading ? self?.showLoadingIndicator() : self?.hideLoadingIndicator()
+            })
+            .disposed(by: disposeBag)
+        
+        output.editResult
+            .withUnretained(self)
+            .emit(onNext: { owner, result in
+                switch result {
+                case .success:
+                    owner.presentPopup()
+                case .failure(let error):
+                    print(error)
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -98,6 +113,19 @@ final class DiaryEditViewController: UIViewController {
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         present(picker, animated: true)
+    }
+    
+    private func presentPopup() {
+        let popupViewController = PopupViewController(
+            titleText: "작성 완료",
+            subtitleText: "캘린더에서 일기를 확인해보세요"
+        )
+        popupViewController.modalPresentationStyle = .overFullScreen
+        popupViewController.modalTransitionStyle = .crossDissolve
+        popupViewController.onConfirm = { [weak self] in
+            self?.navigationController?.popToRootViewController(animated: true)
+        }
+        present(popupViewController, animated: true)
     }
     
     private func showLoadingIndicator() {
