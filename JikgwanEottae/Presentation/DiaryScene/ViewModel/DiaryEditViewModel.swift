@@ -13,7 +13,8 @@ import RxCocoa
 final class DiaryEditViewModel: ViewModelType {
     private let usecase: DiaryUseCaseProtocol
     public let selectedKBOGame: KBOGame
-    private let isLoadingRelay  = BehaviorRelay<Bool>(value: false)
+    private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
+    private let editResultRelay = PublishRelay<Result<Void, Error>>()
     private let disposeBag = DisposeBag()
     
     struct Input {
@@ -26,6 +27,7 @@ final class DiaryEditViewModel: ViewModelType {
     
     struct Output {
         let isLoading: Driver<Bool>
+        let editResult: Signal<Result<Void, Error>>
     }
     
     public init(usecase: DiaryUseCaseProtocol, selectedKBOGame: KBOGame) {
@@ -65,7 +67,8 @@ final class DiaryEditViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         return Output(
-            isLoading: isLoadingRelay.asDriver()
+            isLoading: isLoadingRelay.asDriver(),
+            editResult: editResultRelay.asSignal()
         )
     }
 }
@@ -90,10 +93,11 @@ extension DiaryEditViewModel {
         .subscribe(
             onCompleted: { [weak self] in
                 self?.isLoadingRelay.accept(false)
+                self?.editResultRelay.accept(.success(()))
         },
             onError: { [weak self] error in
-                print(error)
                 self?.isLoadingRelay.accept(false)
+                self?.editResultRelay.accept(.failure(error))
         })
         .disposed(by: disposeBag)
     }
