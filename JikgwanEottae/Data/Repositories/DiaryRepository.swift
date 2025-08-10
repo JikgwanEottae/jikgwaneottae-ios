@@ -17,12 +17,33 @@ final class DiaryRepository: DiaryRepositoryProtocol {
         self.networkManger = networkManger
     }
     
-    func fetchAllDiaries() -> Single<[Diary]> {
+    public func fetchAllDiaries() -> Single<[Diary]> {
         return self.networkManger.fetchAllDiaries()
     }
     
-    func fetchDiaries(year: String, month: String) -> Single<[Diary]> {
+    public func fetchDiaries(
+        year: String,
+        month: String
+    ) -> Single<[Diary]> {
         return self.networkManger.fetchDiaries(year: year, month: month)
     }
     
+    public func createDiary(
+        gameId: Int,
+        favoriteTeam: String,
+        seat: String?,
+        memo: String?,
+        photoData: Data?
+    ) -> Completable {
+        let diaryCreateRequestDTO = DiaryCreateRequestDTO(
+            gameId: gameId,
+            favoriteTeam: favoriteTeam,
+            seat: seat,
+            memo: memo
+        )
+        return self.networkManger.createDiary(
+            diaryCreateRequestDTO: diaryCreateRequestDTO,
+            photoData: photoData
+        )
+    }
 }
