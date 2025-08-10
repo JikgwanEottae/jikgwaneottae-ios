@@ -13,6 +13,15 @@ import Then
 final class DiaryEditView: UIView {
     static let memoTextViewPlaceholderText = "직관 후기를 작성해보세요"
     
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    
+    public let interactionBlocker = UIControl().then {
+        $0.isHidden = true
+    }
     private let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.showsHorizontalScrollIndicator = false
@@ -80,8 +89,8 @@ final class DiaryEditView: UIView {
         $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textColor = .primaryTextColor
     }
-    
-    public let supportTeamSegmentedControl = CustomSegmentedControl(titles: ["삼성", "SSG"])
+
+    public let teamSegmentControl: TeamSegmentedControl
     
     public let seatInputFieldView = LabeledInputFieldView(
         title: "좌석",
@@ -96,9 +105,9 @@ final class DiaryEditView: UIView {
         $0.textColor = .primaryTextColor
     }
     
-    public let reviewTextView = UITextView().then {
+    public let memoTextView = UITextView().then {
         $0.text = memoTextViewPlaceholderText
-        $0.font = .gMarketSans(size: 17, family: .medium)
+        $0.font = .gMarketSans(size: 15, family: .medium)
         $0.textColor = .placeholderText
         $0.backgroundColor = .secondaryBackgroundColor
         $0.layer.cornerRadius = 15
@@ -110,7 +119,7 @@ final class DiaryEditView: UIView {
         $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
     }
     
-    public let recordButton = UIButton(type: .custom).then {
+    public let createButton = UIButton(type: .custom).then {
         $0.setTitle("기록하기", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
@@ -118,9 +127,10 @@ final class DiaryEditView: UIView {
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+
+    init(gameInfo: KBOGame) {
+        self.teamSegmentControl = TeamSegmentedControl(titles: [gameInfo.homeTeam, gameInfo.awayTeam])
+        super.init(frame: .zero)
         addSubviews()
         setupUI()
         setupLayout()
@@ -138,14 +148,16 @@ final class DiaryEditView: UIView {
     
     private func addSubviews() {
         addSubview(scrollView)
-        addSubview(recordButton)
+        addSubview(createButton)
+        addSubview(interactionBlocker)
+        interactionBlocker.addSubview(activityIndicator)
         scrollView.addSubview(stackView)
         photoSelectionButtonContainerView.addSubview(selectPhotoButton)
         photoSelectionButtonContainerView.addSubview(removePhotoButton)
         supportTeamContainerView.addSubview(supportTeamTitleLabel)
-        supportTeamContainerView.addSubview(supportTeamSegmentedControl)
+        supportTeamContainerView.addSubview(teamSegmentControl)
         reviewContainerView.addSubview(reviewTitleLabel)
-        reviewContainerView.addSubview(reviewTextView)
+        reviewContainerView.addSubview(memoTextView)
     }
     
     private func setupUI() {
@@ -159,7 +171,7 @@ final class DiaryEditView: UIView {
             make.leading.trailing
                 .equalToSuperview()
             make.bottom
-                .equalTo(recordButton.snp.top)
+                .equalTo(createButton.snp.top)
                 .offset(-10)
         }
         stackView.snp.makeConstraints { make in
@@ -187,23 +199,27 @@ final class DiaryEditView: UIView {
                 .inset(20)
         }
         stackView.setCustomSpacing(20, after: photoSelectionButtonContainerView)
+        
+        supportTeamTitleLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         supportTeamTitleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing
+            make.leading.centerY
                 .equalToSuperview()
         }
-        supportTeamSegmentedControl.snp.makeConstraints { make in
-            make.top
-                .equalTo(supportTeamTitleLabel.snp.bottom)
-                .offset(10)
-            make.leading.trailing.bottom
+        teamSegmentControl.snp.makeConstraints { make in
+            make.leading
+                .equalTo(supportTeamTitleLabel.snp.trailing)
+                .offset(80)
+            make.top.bottom.trailing.centerY
                 .equalToSuperview()
-            make.height.equalTo(55)
+            make.height
+                .equalTo(50)
         }
+        
         reviewTitleLabel.snp.makeConstraints { make in
             make.top.leading.trailing
                 .equalToSuperview()
         }
-        reviewTextView.snp.makeConstraints { make in
+        memoTextView.snp.makeConstraints { make in
             make.top
                 .equalTo(reviewTitleLabel.snp.bottom)
                 .offset(10)
@@ -212,7 +228,7 @@ final class DiaryEditView: UIView {
             make.height
                 .equalTo(200)
         }
-        recordButton.snp.makeConstraints { make in
+        createButton.snp.makeConstraints { make in
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
                 .offset(-10)
@@ -221,6 +237,14 @@ final class DiaryEditView: UIView {
                 .inset(20)
             make.height
                 .equalTo(Constants.buttonHeight)
+        }
+        interactionBlocker.snp.makeConstraints { make in
+            make.edges
+                .equalToSuperview()
+        }
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.centerY
+                .equalToSuperview()
         }
     }
     

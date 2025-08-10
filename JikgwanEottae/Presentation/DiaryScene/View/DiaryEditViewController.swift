@@ -12,8 +12,21 @@ import RxCocoa
 import RxSwift
 
 final class DiaryEditViewController: UIViewController {
-    private let diaryEditView = DiaryEditView()
+    private let diaryEditView: DiaryEditView
+    private let viewModel: DiaryEditViewModel
     private let disposeBag = DisposeBag()
+    private var selectedPhotoDataRelay = PublishRelay<Data?>()
+    
+    init(viewModel: DiaryEditViewModel) {
+        self.viewModel = viewModel
+        self.diaryEditView = DiaryEditView(gameInfo: viewModel.selectedKBOGame)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         self.view = diaryEditView
@@ -22,13 +35,42 @@ final class DiaryEditViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupDelegate()
+        bindViewModel()
         hideKeyboardWhenTappedAround()
         photoSelectionButtonTapped()
         photoRemoveButtonTapped()
     }
     
     private func setupDelegate() {
-        diaryEditView.reviewTextView.delegate = self
+        diaryEditView.memoTextView.delegate = self
+    }
+    
+    private func bindViewModel() {
+        let teamSegmentControl = diaryEditView.teamSegmentControl
+        let input = DiaryEditViewModel.Input(
+            createButtonTapped: diaryEditView.createButton.rx
+                .tap
+                .asObservable(),
+            favoriteTeam: diaryEditView.teamSegmentControl.rx
+                .controlEvent(.valueChanged)
+                .map { teamSegmentControl.selectedTeam }
+                .asObservable(),
+            seatText: diaryEditView.seatInputFieldView.textField.rx
+                .text
+                .asObservable(),
+            memoText: diaryEditView.memoTextView.rx
+                .text
+                .asObservable(),
+            selectedPhotoData: selectedPhotoDataRelay
+                .asObservable()
+        )
+        let output = viewModel.transform(input: input)
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                self?.diaryEditView.interactionBlocker.isHidden = !isLoading
+                isLoading ? self?.showLoadingIndicator() : self?.hideLoadingIndicator()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func photoSelectionButtonTapped() {
@@ -51,23 +93,28 @@ final class DiaryEditViewController: UIViewController {
     
     private func presentPhotoPicker() {
         var config = PHPickerConfiguration()
-        // 최대로 선택 가능한 수
         config.selectionLimit = 1
-        // 이미지만 선택 가능
         config.filter = .images
-        // picker 생성
         let picker = PHPickerViewController(configuration: config)
-        // 델리게이트 설정
         picker.delegate = self
         present(picker, animated: true)
     }
+    
+    private func showLoadingIndicator() {
+        self.diaryEditView.activityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        self.diaryEditView.activityIndicator.stopAnimating()
+    }
+    
+
 
 }
 
 // MARK: - UITextViewDelegate extension
 
 extension DiaryEditViewController: UITextViewDelegate {
-    // MARK: - textViewDidBeginEditing
     public func textViewDidBeginEditing(_ textView: UITextView) {
         // 텍스트뷰의 텍스트 컬러가 placeholderText일 경우. 즉 텍스트가 없는 상태
         if textView.textColor == .placeholderText {
@@ -76,7 +123,6 @@ extension DiaryEditViewController: UITextViewDelegate {
         }
     }
     
-    // MARK: - textViewDidEndEditing
     public func textViewDidEndEditing(_ textView: UITextView) {
         // 사용자가 입력을 하지 않았을 때
         if textView.text.isEmpty {
@@ -87,23 +133,21 @@ extension DiaryEditViewController: UITextViewDelegate {
     }
 }
 
+// MARK: - PHPickerViewControllerDelegate extension
+
 extension DiaryEditViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        // 피커 창 닫기
         picker.dismiss(animated: true)
-        // 선택된 사진들 중 첫 번째 사진만 가져오기
-        guard let result = results.first else { return }
-        let provider = result.itemProvider
-        // 오브젝트를 UIImage로 로드 가능한지 체크
-        guard provider.canLoadObject(ofClass: UIImage.self) else { return }
-        // 비동기로 UIImage 로드
-        provider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                if let error = error { return }
-                guard let selectedImage = object as? UIImage else { return }
-                self.diaryEditView.didPickImage(selectedImage)
-                self.diaryEditView.removePhotoButton.isHidden = false
+        guard let result = results.first,
+              result.itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
+        result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+            guard let self, let selectedImage = object as? UIImage else { return }
+            DispatchQueue.global(qos: .background).async {
+                self.selectedPhotoDataRelay.accept(selectedImage.jpegData(compressionQuality: 0.8))
+                DispatchQueue.main.async {
+                    self.diaryEditView.didPickImage(selectedImage)
+                    self.diaryEditView.removePhotoButton.isHidden = false
+                }
             }
         }
     }
