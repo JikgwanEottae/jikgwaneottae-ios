@@ -12,15 +12,16 @@ import RxCocoa
 
 final class DiaryViewModel: ViewModelType {
     private let usecase: DiaryUseCaseProtocol
+    private let monthlyDiariesRelay = PublishRelay<[Diary]>()
     private let disposeBag = DisposeBag()
     
     // 뷰 컨트롤러부터 전달
     struct Input {
-        let currentMonth: Signal<Date>
+        let currentMonth: BehaviorRelay<Date>
     }
     // 뷰 컨트롤러에 전달
     struct Output {
-        let monthlyDiaries: Driver<[Diary]>
+        let monthlyDiaries: PublishRelay<[Diary]>
     }
     
     public init(usecase: DiaryUseCaseProtocol) {
@@ -28,20 +29,30 @@ final class DiaryViewModel: ViewModelType {
     }
     
     public func transform(input: Input) -> Output {
-        let monthlyDiaries = input.currentMonth
+        input.currentMonth
             .distinctUntilChanged()
-            .flatMapLatest { [unowned self] date -> Driver<[Diary]> in
-                let yearAndmonth = date.toFormattedString("yyyy-MM").split(separator: "-").map { String($0) }
-                let year = yearAndmonth[0], month = yearAndmonth[1]
-                return self.usecase.fetchDiaries(year: year, month: month).asDriver(onErrorJustReturn: [])
-            }
+            .subscribe(onNext: { [weak self] currentMonth in
+                let formattedCurrentMonth = currentMonth
+                    .toFormattedString("yyyy-MM")
+                    .split(separator: "-")
+                    .map { String($0) }
+                let year = formattedCurrentMonth[0], month = formattedCurrentMonth[1]
+                self?.fetchDiaries(year: year, month: month)
+            })
+            .disposed(by: disposeBag)
 
         return Output(
-            monthlyDiaries: monthlyDiaries
+            monthlyDiaries: monthlyDiariesRelay
         )
     }
 }
 
 extension DiaryViewModel {
-    
+    private func fetchDiaries(year: String, month: String) {
+        usecase.fetchDiaries(year: year, month: month)
+            .subscribe(onSuccess: { [weak self] diaries in
+                self?.monthlyDiariesRelay.accept(diaries)
+            })
+            .disposed(by: disposeBag)
+    }
 }

@@ -19,9 +19,6 @@ final class DiaryEditView: UIView {
         $0.color = .mainCharcoalColor
     }
     
-    public let interactionBlocker = UIControl().then {
-        $0.isHidden = true
-    }
     private let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.showsHorizontalScrollIndicator = false
@@ -149,8 +146,7 @@ final class DiaryEditView: UIView {
     private func addSubviews() {
         addSubview(scrollView)
         addSubview(createButton)
-        addSubview(interactionBlocker)
-        interactionBlocker.addSubview(activityIndicator)
+        addSubview(activityIndicator)
         scrollView.addSubview(stackView)
         photoSelectionButtonContainerView.addSubview(selectPhotoButton)
         photoSelectionButtonContainerView.addSubview(removePhotoButton)
@@ -238,17 +234,12 @@ final class DiaryEditView: UIView {
             make.height
                 .equalTo(Constants.buttonHeight)
         }
-        interactionBlocker.snp.makeConstraints { make in
-            make.edges
-                .equalToSuperview()
-        }
         activityIndicator.snp.makeConstraints { make in
             make.centerX.centerY
                 .equalToSuperview()
         }
     }
     
-    // 선택된 이미지로 변경
     public func didPickImage(_ image: UIImage) {
         selectPhotoButton.setImage(image, for: .normal)
         selectPhotoButton.contentHorizontalAlignment = .fill
@@ -261,7 +252,6 @@ final class DiaryEditView: UIView {
             .forEach { $0.removeFromSuperlayer() }
     }
     
-    // 선택된 이미지 제거 및 원상복구
     public func removePhoto() {
         print("remove")
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
@@ -277,7 +267,6 @@ final class DiaryEditView: UIView {
         setDashedBorder()
     }
     
-    // 이미지 첨부 점선 레이어 설정
     public func setDashedBorder() {
         selectPhotoButton.layer.sublayers?
             .filter { $0.name == "dashedBorder" }
