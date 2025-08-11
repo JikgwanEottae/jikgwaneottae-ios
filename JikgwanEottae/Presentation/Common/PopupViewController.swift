@@ -125,6 +125,7 @@ final class PopupViewController: UIViewController {
 extension PopupViewController {
     @objc
     private func confirmButtonTapped() {
+        print("버튼 터치")
         dismiss(animated: true) { [weak self] in
             self?.onConfirm?()
         }

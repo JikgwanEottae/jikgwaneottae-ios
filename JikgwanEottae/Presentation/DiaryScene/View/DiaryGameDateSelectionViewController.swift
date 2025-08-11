@@ -14,9 +14,7 @@ final class DiaryGameDateSelectionViewController: UIViewController {
     private let diaryGameDateSelectionView = DiaryGameDateSelectionView()
     private let viewModel: DiaryGameDateSelectionViewModel
     private var dataSource: UICollectionViewDiffableDataSource<Section, KBOGame>!
-    private enum Section: CaseIterable {
-        case main
-    }
+    private enum Section: CaseIterable { case main }
     private let disposeBag = DisposeBag()
     
     init(viewModel: DiaryGameDateSelectionViewModel) {
@@ -35,7 +33,7 @@ final class DiaryGameDateSelectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureBackBarButtonItem()
+        hideBackBarButtonItem()
         configureDataSource()
         bindViewModel()
         bindCollectionView()

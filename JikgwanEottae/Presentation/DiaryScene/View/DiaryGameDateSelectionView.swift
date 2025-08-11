@@ -17,16 +17,19 @@ final class DiaryGameDateSelectionView: UIView {
         $0.hidesWhenStopped = true
         $0.color = .mainCharcoalColor
     }
+    
     // 사용자의 상호작용 블로커
     public let interactionBlocker = UIControl().then {
         $0.isHidden = true
     }
+    
     // 스크롤 뷰
     private let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.showsHorizontalScrollIndicator = false
         $0.alwaysBounceVertical = true
     }
+    
     // 스택 뷰
     private lazy var stackView = UIStackView(
         arrangedSubviews: [
@@ -43,6 +46,7 @@ final class DiaryGameDateSelectionView: UIView {
         $0.spacing = 40
         $0.clipsToBounds = true
     }
+    
     // 타이틀 레이블
     private let titleLabel = UILabel().then {
         $0.text = "직관한 날짜를 선택해주세요"
@@ -50,6 +54,7 @@ final class DiaryGameDateSelectionView: UIView {
         $0.font = .gMarketSans(size: 22, family: .medium)
         $0.textColor = .primaryTextColor
     }
+    
     // 서브 타이틀 레이블
     private let subtitleLabel = UILabel().then {
         $0.text = "날짜에 맞춰 경기 일정을 가져올게요"
@@ -57,6 +62,7 @@ final class DiaryGameDateSelectionView: UIView {
         $0.font = .gMarketSans(size: 15, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
+    
     // 경기 날짜 선택 데이트 피커
     public let datePicker = UIDatePicker().then {
         $0.datePickerMode = .date
@@ -67,6 +73,7 @@ final class DiaryGameDateSelectionView: UIView {
         $0.backgroundColor = .secondaryBackgroundColor
         $0.layer.cornerRadius = Constants.cornerRadius
     }
+    
     // 경기 정보를 보여줄 컬렉션 뷰
     public lazy var collectionView = UICollectionView(
         frame: .zero,

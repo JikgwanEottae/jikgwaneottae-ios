@@ -13,7 +13,7 @@ struct DiaryDTO: Decodable {
     let gameTime: String
     let homeScore: Int
     let awayScore: Int
-    let winTeam: String
+    let winTeam: String?
     let favoriteTeam: String
     let homeTeam: String
     let awayTeam: String

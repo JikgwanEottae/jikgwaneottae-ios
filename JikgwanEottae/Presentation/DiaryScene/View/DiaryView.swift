@@ -32,7 +32,7 @@ final class DiaryView: UIView {
         arrangedSubviews: [
             fscalendarView,
             selectedDateContainerView,
-            recordTableView
+            collectionView
         ]
     ).then {
         $0.axis = .vertical
@@ -84,18 +84,21 @@ final class DiaryView: UIView {
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
-    // 테이블 뷰 높이 제약
-    private var recordTableViewHeightConstraint: Constraint?
-    // 직관 기록을 보여주기 위한 테이블 뷰
-    public lazy var recordTableView = UITableView(frame: .zero, style: .plain).then {
-        $0.register(RecordTableViewCell.self, forCellReuseIdentifier: RecordTableViewCell.ID)
-        $0.showsVerticalScrollIndicator = false
-        $0.isScrollEnabled = false
-        $0.rowHeight = Constants.tableViewRowHeight
-        $0.separatorStyle = .none
+    
+    // 작성된 직관 일기를 보여줄 컬렉션 뷰
+    public lazy var collectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: makeLayout()
+    ).then {
+        $0.register(
+            DiaryCollectionViewCell.self,
+            forCellWithReuseIdentifier: DiaryCollectionViewCell.ID
+        )
+        $0.showsHorizontalScrollIndicator = false
     }
+    
     // 직관 기록을 생성하기 위한 플로팅 버튼
-    public let createRecordButton = UIButton(type: .custom).then {
+    public let createDiaryButton = UIButton(type: .custom).then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 23, weight: .medium)
         $0.setImage(UIImage(systemName: "plus", withConfiguration: imageConfig), for: .normal)
         $0.backgroundColor = .mainCharcoalColor
@@ -124,42 +127,38 @@ final class DiaryView: UIView {
     
     private func addSubViews() {
         self.addSubview(scrollView)
-        self.addSubview(createRecordButton)
+        self.addSubview(createDiaryButton)
         self.scrollView.addSubview(stackView)
         self.selectedDateContainerView.addSubview(selectedDateLabel)
         self.scrollView.addSubview(fscalendarBottomLineView)
     }
     
-    // MARK: - UI
-    
     private func setupUI() {
         self.backgroundColor = .white
     }
     
-    // MARK: - Layout
-    
     private func setupLayout() {
-        self.scrollView.snp.makeConstraints { make in
+        scrollView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
         }
-        self.stackView.snp.makeConstraints { make in
+        stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
-        self.fscalendarView.snp.makeConstraints { make in
+        fscalendarView.snp.makeConstraints { make in
             make.height
                 .equalTo(380)
         }
-        self.selectedDateLabel.snp.makeConstraints { make in
+        selectedDateLabel.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
                 .inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
             )
         }
-        self.fscalendarBottomLineView.snp.makeConstraints { make in
+        fscalendarBottomLineView.snp.makeConstraints { make in
             make.left.right
                 .equalToSuperview()
             make.top
@@ -167,12 +166,13 @@ final class DiaryView: UIView {
             make.height
                 .equalTo(1)
         }
-        self.recordTableView.snp.makeConstraints { make in
-            recordTableViewHeightConstraint = make.height
-                .equalTo(Constants.tableViewRowHeight)
-                .constraint
+        
+        collectionView.snp.makeConstraints { make in
+            make.height
+                .equalTo(400)
         }
-        self.createRecordButton.snp.makeConstraints { make in
+        
+        createDiaryButton.snp.makeConstraints { make in
             make.width.height
                 .equalTo(56)
             make.trailing.bottom
@@ -181,8 +181,20 @@ final class DiaryView: UIView {
         }
     }
     
-    public func updateTableViewHeight(to height: CGFloat) {
-        recordTableViewHeightConstraint?.update(offset: height)
+    private func makeLayout() -> UICollectionViewCompositionalLayout {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .absolute(260),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: itemSize,
+            subitems: [item]
+        )
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
+        section.orthogonalScrollingBehavior = .continuous
+        section.interGroupSpacing = 30
+        return UICollectionViewCompositionalLayout(section: section)
     }
-    
 }

@@ -70,7 +70,6 @@ final class DiaryEditViewController: UIViewController {
         
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
-                self?.diaryEditView.interactionBlocker.isHidden = !isLoading
                 isLoading ? self?.showLoadingIndicator() : self?.hideLoadingIndicator()
             })
             .disposed(by: disposeBag)
@@ -80,6 +79,7 @@ final class DiaryEditViewController: UIViewController {
             .emit(onNext: { owner, result in
                 switch result {
                 case .success:
+                    owner.view.endEditing(true)
                     owner.presentPopup()
                 case .failure(let error):
                     print(error)

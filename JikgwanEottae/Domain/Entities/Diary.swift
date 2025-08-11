@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - 직관 기록 엔티티
 
-struct Diary: Equatable, Identifiable {
+struct Diary: Hashable, Identifiable {
     typealias Identifier = Int
     let id: Identifier
     let gameDate: String

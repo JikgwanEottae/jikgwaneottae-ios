@@ -96,37 +96,48 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     private func setupLayout() {
         statusContainerView.snp.makeConstraints { make in
             make.top.leading
-                .equalToSuperview().offset(17)
+                .equalToSuperview()
+                .offset(17)
         }
         statusLabel.snp.makeConstraints { make in
             make.leading.trailing
-                .equalToSuperview().inset(6)
+                .equalToSuperview()
+                .inset(6)
             make.top.bottom
-                .equalToSuperview().inset(4)
+                .equalToSuperview()
+                .inset(4)
         }
         homeTeamScoreView.snp.makeConstraints { make in
             make.top
-                .equalTo(statusContainerView.snp.bottom).offset(20)
+                .equalTo(statusContainerView.snp.bottom)
+                .offset(20)
             make.leading.trailing
-                .equalToSuperview().inset(17)
+                .equalToSuperview()
+                .inset(17)
         }
         versusLabel.snp.makeConstraints { make in
             make.top
-                .equalTo(homeTeamScoreView.snp.bottom).offset(15)
+                .equalTo(homeTeamScoreView.snp.bottom)
+                .offset(15)
             make.leading.trailing
-                .equalToSuperview().inset(17)
+                .equalToSuperview()
+                .inset(17)
         }
         awayTeamScoreView.snp.makeConstraints { make in
             make.top
-                .equalTo(versusLabel.snp.bottom).offset(15)
+                .equalTo(versusLabel.snp.bottom)
+                .offset(15)
             make.leading.trailing
-                .equalToSuperview().inset(17)
+                .equalToSuperview()
+                .inset(17)
         }
         ballparkAndGameTimeLabel.snp.makeConstraints { make in
             make.top
-                .equalTo(awayTeamScoreView.snp.bottom).offset(20)
+                .equalTo(awayTeamScoreView.snp.bottom)
+                .offset(20)
             make.leading.trailing
-                .equalToSuperview().inset(17)
+                .equalToSuperview()
+                .inset(17)
         }
     }
     

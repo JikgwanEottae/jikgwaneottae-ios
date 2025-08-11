@@ -20,6 +20,7 @@ extension UIColor {
     static let mainCharcoalColor = #colorLiteral(red: 0.1921568627, green: 0.1921568627, blue: 0.1921568627, alpha: 1)
     static let tossBlueColor = #colorLiteral(red: 0.1921568627, green: 0.5098039216, blue: 0.9647058824, alpha: 1)
     static let tossRedColor = #colorLiteral(red: 0.9411764706, green: 0.2666666667, blue: 0.3215686275, alpha: 1)
+    static let yellowColor = #colorLiteral(red: 1, green: 0.6901960784, blue: 0.1254901961, alpha: 1)
     
     static let borderColor = #colorLiteral(red: 0.9098039216, green: 0.9176470588, blue: 0.9254901961, alpha: 1)
     static let dottedBorderColor = #colorLiteral(red: 0.6117647059, green: 0.6392156863, blue: 0.6862745098, alpha: 1)

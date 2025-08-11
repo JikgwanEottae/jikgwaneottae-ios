@@ -8,8 +8,8 @@
 import UIKit
 
 extension UIViewController {
-    // 네비게이션 바의 백 버튼 아이템을 "뒤로"에서 공백으로 설정
-    func configureBackBarButtonItem() {
+    /// 네비게이션 바의 백 버튼 아이템을 "뒤로"에서 공백으로 설정
+    func hideBackBarButtonItem() {
         let backBarButtonItem = UIBarButtonItem(
             title: "",
             style: .plain,
@@ -20,7 +20,7 @@ extension UIViewController {
         self.navigationItem.backBarButtonItem = backBarButtonItem
     }
     
-    // 제스처에 탭을 등록하고, 탭 이벤트가 발생할 경우 키보드 내리기
+    /// 제스처에 탭을 등록하고, 탭 이벤트가 발생할 경우 키보드 내리기
     func hideKeyboardWhenTappedAround() {
         let tap = UITapGestureRecognizer(
             target: self,
