@@ -2,6 +2,7 @@ PODS:
   - Alamofire (5.10.2)
   - FSCalendar (2.8.4)
   - KeychainAccess (4.2.2)
+  - Kingfisher (8.3.1)
   - Moya/Core (15.0.0):
     - Alamofire (~> 5.0)
   - Moya/RxSwift (15.0.0):
@@ -22,6 +23,7 @@ PODS:
 DEPENDENCIES:
   - FSCalendar
   - KeychainAccess
+  - Kingfisher (~> 8.0)
   - Moya/RxSwift (~> 15.0)
   - RxCocoa (= 6.9.0)
   - RxSwift (= 6.9.0)
@@ -34,6 +36,7 @@ SPEC REPOS:
     - Alamofire
     - FSCalendar
     - KeychainAccess
+    - Kingfisher
     - Moya
     - Pageboy
     - RxCocoa
@@ -47,6 +50,7 @@ SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
+  Kingfisher: 3204d23de16b5ea53541c44ca5a8efb55741dec3
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   Pageboy: 7f7886f61c76633df635861bf7839caf2cabdb3e
   RxCocoa: ac16414696ae706516be3e1ab00fcce5bdc9be8a
@@ -56,6 +60,6 @@ SPEC CHECKSUMS:
   Tabman: 49f9181a2bfe5c29d002864dac2de8e0b7ea9180
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: d46f7dd9ab5f26684cd9651e3e65df499233e268
+PODFILE CHECKSUM: c75143c829e20869a661e8530eecc333b44224fa
 
 COCOAPODS: 1.16.2

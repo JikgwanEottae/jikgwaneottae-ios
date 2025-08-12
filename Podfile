@@ -14,6 +14,7 @@ target 'JikgwanEottae' do
         pod 'Moya/RxSwift', '~> 15.0'
 	pod 'FSCalendar'
 	pod 'KeychainAccess'
+	pod 'Kingfisher', '~> 8.0'
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths
