@@ -76,12 +76,16 @@ final class DiaryViewController: UIViewController {
     /// 셀 아이템 클릭 시 직관 일기 편집화면으로 이동합니다.
     private func bindCollectionView() {
         diaryView.collectionView.rx.itemSelected
-            .withUnretained(self)
-            .compactMap { owner, indexPath in
-                return owner.dataSource.itemIdentifier(for: indexPath)
+            .compactMap { [weak self] indexPath in
+                return self?.dataSource.itemIdentifier(for: indexPath)
             }
-            .subscribe(onNext: { diary in
-                
+            .subscribe(onNext: { [weak self] selectedDiary in
+                let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+                let diaryUseCase = DiaryUseCase(repository: diaryRepository)
+                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .edit(diary: selectedDiary))
+                let diaryEditViewController = DiaryEditViewController(viewModel: diaryEditViewModel)
+//                diaryEditViewController.modalPresentationStyle = .fullScreen
+                self?.present(diaryEditViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }

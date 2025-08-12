@@ -17,7 +17,7 @@ struct DiaryDTO: Decodable {
     let favoriteTeam: String
     let homeTeam: String
     let awayTeam: String
-    let result: String
+    let result: String?
     let stadium: String
     let seat: String?
     let memo: String?
