@@ -19,7 +19,7 @@ final class DiaryEditViewController: UIViewController {
     
     init(viewModel: DiaryEditViewModel) {
         self.viewModel = viewModel
-        self.diaryEditView = DiaryEditView(gameInfo: viewModel.selectedKBOGame)
+        self.diaryEditView = DiaryEditView()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -41,10 +41,12 @@ final class DiaryEditViewController: UIViewController {
         photoRemoveButtonTapped()
     }
     
+    /// 델리게이트를 설정합니다.
     private func setupDelegate() {
         diaryEditView.memoTextView.delegate = self
     }
     
+    /// 뷰 모델과 바인딩합니다.
     private func bindViewModel() {
         let teamSegmentControl = diaryEditView.teamSegmentControl
         
@@ -52,28 +54,72 @@ final class DiaryEditViewController: UIViewController {
             createButtonTapped: diaryEditView.createButton.rx
                 .tap
                 .asObservable(),
+            
             favoriteTeam: diaryEditView.teamSegmentControl.rx
                 .controlEvent(.valueChanged)
                 .map { teamSegmentControl.selectedTeam }
+                .distinctUntilChanged()
                 .asObservable(),
+            
             seatText: diaryEditView.seatInputFieldView.textField.rx
                 .text
+                .orEmpty
+                .distinctUntilChanged()
                 .asObservable(),
+            
             memoText: diaryEditView.memoTextView.rx
                 .text
+                .orEmpty
+                .distinctUntilChanged()
                 .asObservable(),
+            
             selectedPhotoData: selectedPhotoDataRelay
+                .startWith(nil)
                 .asObservable()
         )
         
         let output = viewModel.transform(input: input)
         
-        output.isLoading
-            .drive(onNext: { [weak self] isLoading in
-                isLoading ? self?.showLoadingIndicator() : self?.hideLoadingIndicator()
+        // 홈팀 및 어웨이팀 그리고 응원팀을 세그먼트 컨트롤과 연결합니다.
+        Driver.zip(
+            output.initialHomeTeam,
+            output.initialAwayTeam,
+            output.initialFavoriteTeam
+        ).drive(onNext: { [weak self] homeTeam, awayTeam, favoriteTeam in
+            self?.diaryEditView.teamSegmentControl.configure(
+                homeTeam: homeTeam,
+                awayTeam: awayTeam,
+                favoriteTeam: favoriteTeam
+            )
+        })
+        .disposed(by: disposeBag)
+        
+        // 초기 좌석 상태를 텍스트 필드와 연결합니다.
+        output.initialSeat
+            .drive(diaryEditView.seatInputFieldView.textField.rx.text)
+            .disposed(by: disposeBag)
+        
+        // 초기 메모 상태를 텍스트 뷰와 연결합니다.
+        output.initialMemo
+            .drive(onNext: { [weak self] memoText in
+                self?.diaryEditView.configureMemoText(memoText)
             })
             .disposed(by: disposeBag)
         
+        // 초기 이미지 상태를 버튼의 이미지와 연결합니다.
+        output.initialPhotoData
+            .drive(onNext: { [weak self] photoURL in
+                guard let self = self, let url = photoURL else { return }
+                self.diaryEditView.configureImage(url)
+            })
+            .disposed(by: disposeBag)
+        
+        // 네트워크 통신 중 로딩 인디케이터를 보여줍니다.
+        output.isLoading
+            .drive(diaryEditView.activityIndicator.rx.isAnimating)
+            .disposed(by: disposeBag)
+        
+        // 네트워크 통신 후 성공/실패 결과를 보여줍니다.
         output.editResult
             .withUnretained(self)
             .emit(onNext: { owner, result in
@@ -88,6 +134,7 @@ final class DiaryEditViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    /// 직관 인증 사진을 업로드하는 버튼 클릭 이벤트를 받습니다.
     private func photoSelectionButtonTapped() {
         diaryEditView.selectPhotoButton.rx.tap
             .withUnretained(self)
@@ -97,6 +144,7 @@ final class DiaryEditViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    /// 직관 인증 사진을 제거하는 버튼 클릭 이벤트를 받습니다.
     private func photoRemoveButtonTapped() {
         diaryEditView.removePhotoButton.rx.tap
             .withUnretained(self)
@@ -106,6 +154,7 @@ final class DiaryEditViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    ///  PHPickerViewController를 띄워줍니다.
     private func presentPhotoPicker() {
         var config = PHPickerConfiguration()
         config.selectionLimit = 1
@@ -115,6 +164,7 @@ final class DiaryEditViewController: UIViewController {
         present(picker, animated: true)
     }
     
+    /// 직관 일기를 생성했을 때 성공 팝업을 표시합니다.
     private func presentPopup() {
         let popupViewController = PopupViewController(
             titleText: "작성 완료",
@@ -127,17 +177,6 @@ final class DiaryEditViewController: UIViewController {
         }
         present(popupViewController, animated: true)
     }
-    
-    private func showLoadingIndicator() {
-        self.diaryEditView.activityIndicator.startAnimating()
-    }
-    
-    private func hideLoadingIndicator() {
-        self.diaryEditView.activityIndicator.stopAnimating()
-    }
-    
-
-
 }
 
 // MARK: - UITextViewDelegate extension

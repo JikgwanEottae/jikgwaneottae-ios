@@ -83,7 +83,7 @@ final class DiaryGameDateSelectionViewController: UIViewController {
             .subscribe(onNext: { [weak self] selectedKBOGame in
                 let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
                 let diaryUseCase = DiaryUseCase(repository: diaryRepository)
-                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, selectedKBOGame: selectedKBOGame)
+                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .create(game: selectedKBOGame))
                 let diaryEditViewController = DiaryEditViewController(viewModel: diaryEditViewModel)
                 self?.navigationController?.pushViewController(diaryEditViewController, animated: true)
             })

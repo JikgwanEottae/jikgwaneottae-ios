@@ -186,6 +186,15 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     }
     
     public func configure(diary: Diary) {
+        homeTeamLabel.text = diary.homeTeam
+        homeTeamLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
+        homeScoreLabel.text = String(diary.homeScore)
+        homeScoreLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
+        awayTeamLabel.text = diary.awayTeam
+        awayTeamLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
+        awayScoreLabel.text = String(diary.awayScore)
+        awayScoreLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
+        ballparkLabel.text = diary.ballpark
         switch diary.result {
         case "WIN":
             resultContainerView.backgroundColor = .tossBlueColor
@@ -199,15 +208,8 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
         default:
             resultContainerView.backgroundColor = .mainCharcoalColor
             resultLabel.text = "경기취소"
+            homeScoreLabel.textColor = .clear
+            awayScoreLabel.textColor = .clear
         }
-        homeTeamLabel.text = diary.homeTeam
-        homeTeamLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
-        homeScoreLabel.text = String(diary.homeScore)
-        homeScoreLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
-        awayTeamLabel.text = diary.awayTeam
-        awayTeamLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
-        awayScoreLabel.text = String(diary.awayScore)
-        awayScoreLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
-        ballparkLabel.text = diary.ballpark
     }
 }

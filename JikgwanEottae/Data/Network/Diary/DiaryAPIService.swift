@@ -68,7 +68,9 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                 encoding: URLEncoding.queryString
             )
         case .createDiary(let diaryCreateRequestDTO, let photoData):
+            print(diaryCreateRequestDTO, photoData)
             let json = try! JSONEncoder().encode(diaryCreateRequestDTO)
+
             var multipartFormData: [MultipartFormData] = []
             multipartFormData.append(
                 MultipartFormData(

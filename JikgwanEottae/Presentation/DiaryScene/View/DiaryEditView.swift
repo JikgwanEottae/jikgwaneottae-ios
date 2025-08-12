@@ -87,7 +87,7 @@ final class DiaryEditView: UIView {
         $0.textColor = .primaryTextColor
     }
 
-    public let teamSegmentControl: TeamSegmentedControl
+    public let teamSegmentControl = TeamSegmentedControl()
     
     public let seatInputFieldView = LabeledInputFieldView(
         title: "좌석",
@@ -124,10 +124,9 @@ final class DiaryEditView: UIView {
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
-
-    init(gameInfo: KBOGame) {
-        self.teamSegmentControl = TeamSegmentedControl(titles: [gameInfo.homeTeam, gameInfo.awayTeam])
-        super.init(frame: .zero)
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         addSubviews()
         setupUI()
         setupLayout()
@@ -250,6 +249,29 @@ final class DiaryEditView: UIView {
         selectPhotoButton.layer.sublayers?
             .filter { $0.name == "dashedBorder" }
             .forEach { $0.removeFromSuperlayer() }
+    }
+    
+    public func configureImage(_ imageURL: String) {
+        
+        selectPhotoButton.contentHorizontalAlignment = .fill
+        selectPhotoButton.contentVerticalAlignment   = .fill
+        selectPhotoButton.contentMode = .scaleAspectFill
+        selectPhotoButton.imageView?.contentMode = .scaleAspectFill
+        // 점선 레이어 제거
+        selectPhotoButton.layer.sublayers?
+            .filter { $0.name == "dashedBorder" }
+            .forEach { $0.removeFromSuperlayer() }
+    }
+    
+    /// 직관 후기 텍스트 작성 여부에 따른 메모 텍스트 뷰를 설정합니다.
+    public func configureMemoText(_ text: String?) {
+        if let text = text {
+            memoTextView.text = text
+            memoTextView.textColor = .primaryTextColor
+        } else {
+            memoTextView.text = DiaryEditView.memoTextViewPlaceholderText
+            memoTextView.textColor = .placeholderText
+        }
     }
     
     public func removePhoto() {
