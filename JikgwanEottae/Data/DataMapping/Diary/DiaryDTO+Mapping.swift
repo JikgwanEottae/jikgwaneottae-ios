@@ -39,7 +39,7 @@ extension DiaryDTO {
             result: result,
             seat: seat,
             memo: memo,
-            imageURL: photoUrl
+            image: photoUrl
         )
     }
 }

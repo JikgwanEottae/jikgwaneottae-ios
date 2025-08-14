@@ -84,8 +84,10 @@ final class DiaryViewController: UIViewController {
                 let diaryUseCase = DiaryUseCase(repository: diaryRepository)
                 let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .edit(diary: selectedDiary))
                 let diaryEditViewController = DiaryEditViewController(viewModel: diaryEditViewModel)
-//                diaryEditViewController.modalPresentationStyle = .fullScreen
-                self?.present(diaryEditViewController, animated: true)
+                let navigationController = UINavigationController(rootViewController: diaryEditViewController)
+                navigationController.configureBarAppearnace()
+                navigationController.modalPresentationStyle = .pageSheet
+                self?.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
     }

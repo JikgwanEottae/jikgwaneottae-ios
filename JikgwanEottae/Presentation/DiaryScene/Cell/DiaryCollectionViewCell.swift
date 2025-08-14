@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -14,7 +15,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     static let ID = "DiaryCollectionViewCell"
     
     public let thumbnailImageView = UIImageView().then {
-        $0.image = UIImage(resource: .post5)
+        $0.image = UIImage(resource: .empty)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 14
@@ -109,7 +110,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-//        thumbnailImageView.image = nil
+        thumbnailImageView.image = UIImage(resource: .empty)
         homeTeamLabel.text = nil
         awayTeamLabel.text = nil
         homeScoreLabel.text = nil
@@ -186,6 +187,10 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     }
     
     public func configure(diary: Diary) {
+        if let image = diary.image, let imageURL = URL(string: image) {
+            thumbnailImageView.kf.setImage(with: imageURL)
+        }
+        ballparkLabel.text = diary.ballpark
         homeTeamLabel.text = diary.homeTeam
         homeTeamLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
         homeScoreLabel.text = String(diary.homeScore)
@@ -194,20 +199,24 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
         awayTeamLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
         awayScoreLabel.text = String(diary.awayScore)
         awayScoreLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
-        ballparkLabel.text = diary.ballpark
         switch diary.result {
         case "WIN":
-            resultContainerView.backgroundColor = .tossBlueColor
             resultLabel.text = "승리"
+            resultContainerView.backgroundColor = .tossBlueColor
         case "LOSS":
-            resultContainerView.backgroundColor = .tossRedColor
             resultLabel.text = "패배"
+            resultContainerView.backgroundColor = .tossRedColor
         case "DRAW":
-            resultContainerView.backgroundColor = .yellowColor
             resultLabel.text = "무승부"
-        default:
+            resultContainerView.backgroundColor = .yellowColor
+        case "SCHEDULED":
+            resultLabel.text = "경기예정"
             resultContainerView.backgroundColor = .mainCharcoalColor
+            homeScoreLabel.textColor = .clear
+            awayScoreLabel.textColor = .clear
+        default:
             resultLabel.text = "경기취소"
+            resultContainerView.backgroundColor = .mainCharcoalColor
             homeScoreLabel.textColor = .clear
             awayScoreLabel.textColor = .clear
         }

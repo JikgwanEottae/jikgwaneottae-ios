@@ -193,7 +193,7 @@ final class DiaryView: UIView {
         )
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
-        section.orthogonalScrollingBehavior = .continuous
+        section.orthogonalScrollingBehavior = .groupPaging
         section.interGroupSpacing = 30
         return UICollectionViewCompositionalLayout(section: section)
     }

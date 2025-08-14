@@ -45,7 +45,7 @@ final class TeamSegmentedControl: UIControl {
     }
 
     // 현재 선택된 구단을 강조하기 위한 뷰
-    private let selectorView = UIView().then {
+    public let selectorView = UIView().then {
         $0.backgroundColor = .white
         $0.layer.cornerRadius = 11
         $0.layer.masksToBounds = true
@@ -65,8 +65,6 @@ final class TeamSegmentedControl: UIControl {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        // 버튼의 프레임이 정해진 후 설렉터 뷰의 프레임을 정하기 위해 호출
-        updateUI(animated: false)
     }
     
     private func setupUI() {
@@ -87,11 +85,8 @@ final class TeamSegmentedControl: UIControl {
         buttons.forEach { $0.removeFromSuperview() }
         buttons.removeAll()
         createButton()
-        
         if let favoriteTeam = favoriteTeam {
-            selectedSegmentIndex = (homeTeam == favoriteTeam ? 0 : 1)
-        } else {
-            selectedSegmentIndex = 0
+            selectedSegmentIndex = (homeTeam != favoriteTeam ? 1 : 0)
         }
     }
     
@@ -111,7 +106,7 @@ final class TeamSegmentedControl: UIControl {
     }
     
     /// 세그먼트 컨트롤의 버튼 클릭에 따른 셀렉터 뷰를 이동시킵니다.
-    private func updateUI(animated: Bool) {
+    public func updateUI(animated: Bool) {
         guard buttons.indices.contains(selectedSegmentIndex) else { return }
         let selectorViewFrame = buttons[selectedSegmentIndex].frame.insetBy(dx: 4, dy: 4)
         if animated {
@@ -126,7 +121,6 @@ final class TeamSegmentedControl: UIControl {
     /// 세그먼트 컨트롤의 버튼이 클릭됬을 때 호출됩니다.
     @objc private func tapSegment(_ sender: UIButton) {
         selectionFeedback.selectionChanged()
-        // 버튼의 태그를 저장
         selectedSegmentIndex = sender.tag
     }
 }

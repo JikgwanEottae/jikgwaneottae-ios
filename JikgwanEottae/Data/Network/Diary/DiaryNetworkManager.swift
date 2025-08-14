@@ -17,7 +17,7 @@ final class DiaryNetworkManager {
     private let provider: MoyaProvider<DiaryAPIService>
     
     private init() {
-        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NDY1NzM5MCwiZXhwIjoxNzU1MjYyMTkwfQ.9DQWrGKa0jdDNWg1pKMHowMGPT8rZwadGJbB1J0NKyk"
+        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NTE1Njg5OCwiZXhwIjoxNzU1NzYxNjk4fQ.Jek5PaOBKVcKN3tMIeTf8AIYDWT325zurBY5w1fLm-E"
         let authPlugin = AccessTokenPlugin { _ in token }
         self.provider = MoyaProvider(plugins: [authPlugin])
     }
@@ -41,8 +41,16 @@ final class DiaryNetworkManager {
         diaryCreateRequestDTO: DiaryCreateRequestDTO,
         photoData: Data?
     ) -> Completable {
-        return provider.rx.request(
-            .createDiary(diaryCreateRequestDTO: diaryCreateRequestDTO, photoData: photoData))
+        return provider.rx.request(.createDiary(diaryCreateRequestDTO: diaryCreateRequestDTO, photoData: photoData))
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
+    }
+    
+    /// 직관 일기 삭제를 수행합니다.
+    public func deleteDiary(
+        diaryId: Int
+    ) -> Completable {
+        return provider.rx.request(.deleteDiary(DiaryId: diaryId))
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }

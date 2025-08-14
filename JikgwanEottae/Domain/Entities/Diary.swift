@@ -23,6 +23,6 @@ struct Diary: Hashable, Identifiable {
     let result: String?
     let seat: String?
     let memo: String?
-    let imageURL: String?
+    let image: String?
 }
 

@@ -12,18 +12,20 @@ import Moya
 // MARK: - 직관 일기 API 서비스
 
 enum DiaryAPIService {
-    // 전체 직관 일기 조회
+    // 전체 직관 일기를 조회합니다.
     case fetchAllDiaries
-    // 해당 연·월 직관 일기 조회
+    // 해당 연·월 직관 일기를 조회합니다.
     case fetchDiaries(
         year: String,
         month: String
     )
-    // 직관 일기 생성
+    // 직관 일기를 생성합니다.
     case createDiary(
         diaryCreateRequestDTO: DiaryCreateRequestDTO,
         photoData: Data?
     )
+    // 직관 일기를 삭제합니다.
+    case deleteDiary(DiaryId: Int)
 }
 
 extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
@@ -40,6 +42,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             return "/api/diaries/month"
         case .createDiary:
             return "/api/diaries"
+        case .deleteDiary(DiaryId: let diaryId):
+            return "/api/diaries/\(diaryId)"
         }
     }
     // HTTP 메소드
@@ -51,6 +55,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             return .get
         case .createDiary:
             return .post
+        case .deleteDiary:
+            return .delete
         }
     }
     // 요청 파라미터
@@ -68,7 +74,6 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                 encoding: URLEncoding.queryString
             )
         case .createDiary(let diaryCreateRequestDTO, let photoData):
-            print(diaryCreateRequestDTO, photoData)
             let json = try! JSONEncoder().encode(diaryCreateRequestDTO)
 
             var multipartFormData: [MultipartFormData] = []
@@ -91,6 +96,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                 )
             }
             return .uploadMultipart(multipartFormData)
+        case .deleteDiary:
+            return .requestPlain
         }
     }
     // 헤더
@@ -102,6 +109,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             return ["Content-Type": "application/json"]
         case .createDiary:
             return ["Content-Type": "multipart/form-data"]
+        case .deleteDiary:
+            return ["Content-Type": "application/json"]
         }
     }
     // 토큰
@@ -112,6 +121,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
         case .fetchDiaries:
             return .bearer
         case .createDiary:
+            return .bearer
+        case .deleteDiary:
             return .bearer
         }
     }

@@ -28,6 +28,7 @@ final class DiaryEditViewModel: ViewModelType {
     
     struct Input {
         let createButtonTapped: Observable<Void>
+//        let deleteButtonTapped: Observable<Void>
         let favoriteTeam: Observable<String>
         let seatText: Observable<String>
         let memoText: Observable<String>
@@ -42,6 +43,7 @@ final class DiaryEditViewModel: ViewModelType {
         let initialMemo: Driver<String?>
         let initialPhotoData: Driver<String?>
         let isLoading: Driver<Bool>
+        let isCreateMode: Signal<Bool>
         let editResult: Signal<Result<Void, Error>>
     }
     
@@ -61,7 +63,7 @@ final class DiaryEditViewModel: ViewModelType {
         let memoText = input.memoText
             
         let selectedPhotoData = input.selectedPhotoData
-
+        
         let form = Observable
             .combineLatest(favoriteTeam, seatText, memoText, selectedPhotoData)
             .share(replay: 1, scope: .whileConnected)
@@ -70,6 +72,7 @@ final class DiaryEditViewModel: ViewModelType {
             .throttle(.milliseconds(1000), scheduler: MainScheduler.instance)
             .withLatestFrom(form)
             .subscribe(onNext: { [weak self] favoriteTeam, seat, memo, photoData in
+                print("생성버튼클릭")
                 guard let self = self else { return }
                 let _seat = (!seat.isEmpty ? seat : nil)
                 let _memo = (memo != "직관 후기를 작성해보세요" && !memo.isEmpty ? memo : nil)
@@ -81,6 +84,13 @@ final class DiaryEditViewModel: ViewModelType {
                 }
             })
             .disposed(by: disposeBag)
+        
+//        input.deleteButtonTapped
+//            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+//            .subscribe(onNext: {
+//                
+//            })
+//            .disposed(by: disposeBag)
 
         return Output(
             initialHomeTeam: Driver.just(initialState.homeTeam),
@@ -90,6 +100,7 @@ final class DiaryEditViewModel: ViewModelType {
             initialMemo: Driver.just(initialState.memo),
             initialPhotoData: Driver.just(initialState.photoData),
             isLoading: isLoadingRelay.asDriver(),
+            isCreateMode: Signal.just(isCreateMode()),
             editResult: editResultRelay.asSignal()
         )
     }
@@ -122,8 +133,18 @@ extension DiaryEditViewModel {
                 favoriteTeam: diary.favoriteTeam,
                 seat: diary.seat,
                 memo: diary.memo,
-                photoData: diary.imageURL
+                photoData: diary.image
             )
+        }
+    }
+    
+    /// 직관 일기의 편집 모드를 체크합니다.
+    private func isCreateMode() -> Bool {
+        switch mode {
+        case .create:
+            return true
+        case .edit:
+            return false
         }
     }
 }

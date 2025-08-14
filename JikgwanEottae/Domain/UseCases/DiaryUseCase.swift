@@ -27,6 +27,10 @@ protocol DiaryUseCaseProtocol {
         memo: String?,
         photoData: Data?
     ) -> Completable
+    
+    func deleteDiary(
+        diaryId: Int
+    ) -> Completable
 }
 
 // MARK: - 직관 일기 유스케이스
@@ -66,5 +70,11 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
             memo: memo,
             photoData: photoData
         )
+    }
+    
+    public func deleteDiary(
+        diaryId: Int
+    ) -> Completable {
+        return self.repository.deleteDiary(diaryId: diaryId)
     }
 }
