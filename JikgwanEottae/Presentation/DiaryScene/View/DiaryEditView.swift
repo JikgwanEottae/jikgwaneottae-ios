@@ -7,12 +7,27 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
 final class DiaryEditView: UIView {
     static let memoTextViewPlaceholderText = "직관 후기를 작성해보세요"
     
+    // 편집모드에서 직관 일기를 삭제하기 위한 바 버튼 아이템입니다.
+    public let deleteDiaryBarButtonItem = UIBarButtonItem(
+        title: "삭제",
+        style: .plain,
+        target: nil,
+        action: nil).then {
+            let attrs: [NSAttributedString.Key: Any] = [.font: UIFont.gMarketSans(size: 17, family: .medium)]
+            $0.setTitleTextAttributes(attrs, for: .normal)
+            $0.setTitleTextAttributes(attrs, for: .highlighted)
+            $0.setTitleTextAttributes(attrs, for: .disabled)
+            $0.tintColor = .tossRedColor
+        }
+    
+    // 로딩 인디케이터입니다.
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
@@ -50,6 +65,7 @@ final class DiaryEditView: UIView {
         $0.clipsToBounds = true
     }
     
+    // 업로드할 사진을 선택하기 위한 버튼입니다.
     public let selectPhotoButton = UIButton(type: .custom).then {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
         let image = UIImage(systemName: "photo.stack")?
@@ -57,13 +73,17 @@ final class DiaryEditView: UIView {
             .withTintColor(.secondaryTextColor, renderingMode: .alwaysOriginal)
         $0.setImage(image, for: .normal)
         $0.contentHorizontalAlignment = .center
+        $0.contentVerticalAlignment = .center
         $0.contentMode = .scaleAspectFit
-        $0.backgroundColor = .clear
+        $0.backgroundColor = .secondaryBackgroundColor
+        $0.layer.borderWidth = 1
+        $0.layer.borderColor = UIColor.borderColor.cgColor
         $0.layer.cornerRadius = Constants.cornerRadius
         $0.clipsToBounds = true
         $0.adjustsImageWhenHighlighted = false
     }
     
+    // 업로드할 사진을 제거하기 위한 버튼입니다.
     public let removePhotoButton = UIButton(type: .custom).then {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .light)
         let image = UIImage(named: "xMark")?
@@ -73,9 +93,9 @@ final class DiaryEditView: UIView {
         $0.contentHorizontalAlignment = .center
         $0.contentMode = .scaleAspectFit
         $0.backgroundColor = .mainCharcoalColor
-        $0.layer.cornerRadius = 12
         $0.clipsToBounds = true
         $0.adjustsImageWhenHighlighted = false
+        $0.layer.cornerRadius = 13
         $0.isHidden = true
     }
     
@@ -137,18 +157,13 @@ final class DiaryEditView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        setDashedBorder()
-    }
-    
     private func addSubviews() {
         addSubview(scrollView)
         addSubview(createButton)
         addSubview(activityIndicator)
         scrollView.addSubview(stackView)
         photoSelectionButtonContainerView.addSubview(selectPhotoButton)
-        photoSelectionButtonContainerView.addSubview(removePhotoButton)
+        selectPhotoButton.addSubview(removePhotoButton)
         supportTeamContainerView.addSubview(supportTeamTitleLabel)
         supportTeamContainerView.addSubview(teamSegmentControl)
         reviewContainerView.addSubview(reviewTitleLabel)
@@ -181,20 +196,19 @@ final class DiaryEditView: UIView {
         }
         removePhotoButton.snp.makeConstraints { make in
             make.top.trailing
-                .equalToSuperview()
+                .equalToSuperview().inset(10)
             make.size
-                .equalTo(24)
+                .equalTo(26)
         }
         selectPhotoButton.snp.makeConstraints { make in
             make.top.bottom
                 .equalToSuperview()
-                .inset(20)
+                .inset(25)
             make.leading.trailing
                 .equalToSuperview()
-                .inset(20)
+                .inset(25)
         }
         stackView.setCustomSpacing(20, after: photoSelectionButtonContainerView)
-        
         supportTeamTitleLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         supportTeamTitleLabel.snp.makeConstraints { make in
             make.leading.centerY
@@ -238,29 +252,21 @@ final class DiaryEditView: UIView {
                 .equalToSuperview()
         }
     }
-    
-    public func didPickImage(_ image: UIImage) {
+}
+
+extension DiaryEditView {
+    /// PHPicker로 사진이 선택됬을 때 해당 사진으로 교체합니다.
+    public func didPickPhoto(_ image: UIImage) {
         selectPhotoButton.setImage(image, for: .normal)
-        selectPhotoButton.contentHorizontalAlignment = .fill
-        selectPhotoButton.contentVerticalAlignment   = .fill
-        selectPhotoButton.contentMode = .scaleAspectFill
-        selectPhotoButton.imageView?.contentMode = .scaleAspectFill
-        // 점선 레이어 제거
-        selectPhotoButton.layer.sublayers?
-            .filter { $0.name == "dashedBorder" }
-            .forEach { $0.removeFromSuperlayer() }
+        setFillPhoto()
     }
     
-    public func configureImage(_ imageURL: String) {
-        
-        selectPhotoButton.contentHorizontalAlignment = .fill
-        selectPhotoButton.contentVerticalAlignment   = .fill
-        selectPhotoButton.contentMode = .scaleAspectFill
-        selectPhotoButton.imageView?.contentMode = .scaleAspectFill
-        // 점선 레이어 제거
-        selectPhotoButton.layer.sublayers?
-            .filter { $0.name == "dashedBorder" }
-            .forEach { $0.removeFromSuperlayer() }
+    /// 저장된 사진이 있다면 초기에 보여줄 사진으로 설정합니다.
+    public func configurePhoto(_ imageURL: String) {
+        guard let url = URL(string: imageURL) else { return }
+        selectPhotoButton.kf.setImage(with: url, for: .normal)
+        setFillPhoto()
+        removePhotoButton.isHidden = false
     }
     
     /// 직관 후기 텍스트 작성 여부에 따른 메모 텍스트 뷰를 설정합니다.
@@ -274,40 +280,32 @@ final class DiaryEditView: UIView {
         }
     }
     
+    /// 선택된 사진을 제거하기 위해 기본 사진으로 대체합니다.
     public func removePhoto() {
-        print("remove")
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
         let image = UIImage(systemName: "photo.stack")?
             .withConfiguration(symbolConfig)
             .withTintColor(.secondaryTextColor, renderingMode: .alwaysOriginal)
         selectPhotoButton.setImage(image, for: .normal)
+        setFitPhoto()
+        removePhotoButton.isHidden = true
+    }
+}
+
+extension DiaryEditView {
+    /// 사진이 선택된 후의 레이아웃을 설정합니다.
+    private func setFillPhoto() {
+        selectPhotoButton.contentHorizontalAlignment = .fill
+        selectPhotoButton.contentVerticalAlignment   = .fill
+        selectPhotoButton.contentMode = .scaleAspectFill
+        selectPhotoButton.imageView?.contentMode = .scaleAspectFill
+    }
+    
+    /// 사진이 제거된 후의 레이아웃을 설정합니다.
+    private func setFitPhoto() {
         selectPhotoButton.contentHorizontalAlignment = .center
         selectPhotoButton.contentVerticalAlignment = .center
         selectPhotoButton.contentMode = .scaleAspectFit
         selectPhotoButton.imageView?.contentMode = .scaleAspectFit
-        removePhotoButton.isHidden = true
-        setDashedBorder()
     }
-    
-    public func setDashedBorder() {
-        selectPhotoButton.layer.sublayers?
-            .filter { $0.name == "dashedBorder" }
-            .forEach { $0.removeFromSuperlayer() }
-
-      let borderLayer = CAShapeLayer()
-      borderLayer.name = "dashedBorder"
-      borderLayer.strokeColor = UIColor.dottedBorderColor.cgColor
-      borderLayer.lineDashPattern = [5, 5]
-      borderLayer.lineWidth = 2.5
-      borderLayer.fillColor = nil
-      borderLayer.frame = selectPhotoButton.bounds
-      borderLayer.path = UIBezierPath(
-        roundedRect: selectPhotoButton.bounds,
-        cornerRadius: Constants.cornerRadius
-      ).cgPath
-        selectPhotoButton.layer.addSublayer(borderLayer)
-    }
-    
 }
-
-

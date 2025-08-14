@@ -30,4 +30,9 @@ protocol DiaryRepositoryProtocol {
         memo: String?,
         photoData: Data?
     ) -> Completable
+    
+    /// 직관 일기 삭제
+    func deleteDiary(
+        diaryId: Int
+    ) -> Completable
 }

@@ -46,4 +46,10 @@ final class DiaryRepository: DiaryRepositoryProtocol {
             photoData: photoData
         )
     }
+    
+    public func deleteDiary(
+        diaryId: Int
+    ) -> Completable {
+        return self.networkManger.deleteDiary(diaryId: diaryId)
+    }
 }

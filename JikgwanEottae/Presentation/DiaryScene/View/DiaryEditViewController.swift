@@ -12,14 +12,13 @@ import RxCocoa
 import RxSwift
 
 final class DiaryEditViewController: UIViewController {
-    private let diaryEditView: DiaryEditView
+    private let diaryEditView = DiaryEditView()
     private let viewModel: DiaryEditViewModel
     private let disposeBag = DisposeBag()
     private var selectedPhotoDataRelay = PublishRelay<Data?>()
     
     init(viewModel: DiaryEditViewModel) {
         self.viewModel = viewModel
-        self.diaryEditView = DiaryEditView()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,11 +33,31 @@ final class DiaryEditViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupBarButtonItems()
         setupDelegate()
         bindViewModel()
         hideKeyboardWhenTappedAround()
         photoSelectionButtonTapped()
         photoRemoveButtonTapped()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        diaryEditView.teamSegmentControl.layoutIfNeeded()
+        diaryEditView.teamSegmentControl.updateUI(animated: true)
+    }
+    
+    /// 네비게이션 바 버튼 아이템을 설정합니다.
+    private func setupBarButtonItems() {
+        navigationItem.rightBarButtonItem = diaryEditView.deleteDiaryBarButtonItem
+        diaryEditView.deleteDiaryBarButtonItem.rx.tap
+            .withUnretained(self)
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { owner, _ in
+                owner.view.endEditing(true)
+                owner.presentDeletePopup()
+            })
+            .disposed(by: disposeBag)
     }
     
     /// 델리게이트를 설정합니다.
@@ -51,10 +70,17 @@ final class DiaryEditViewController: UIViewController {
         let teamSegmentControl = diaryEditView.teamSegmentControl
         
         let input = DiaryEditViewModel.Input(
+            // 직관 일기 생성 버튼 클릭 이벤트입니다.
             createButtonTapped: diaryEditView.createButton.rx
                 .tap
                 .asObservable(),
             
+//            // 직관 일기 삭제 버튼 클릭 이벤트입니다.
+//            deleteButtonTapped: diaryEditView.deleteDiaryBarButtonItem.rx
+//                .tap
+//                .asObservable(),
+            
+            // 팀 선택 세그먼트 컨트롤 이벤트입니다.
             favoriteTeam: diaryEditView.teamSegmentControl.rx
                 .controlEvent(.valueChanged)
                 .map { teamSegmentControl.selectedTeam }
@@ -79,6 +105,10 @@ final class DiaryEditViewController: UIViewController {
         )
         
         let output = viewModel.transform(input: input)
+        // 직관 일기의 모드를 직관 일기 삭제 바 버튼 아이템과 연결합니다.
+        output.isCreateMode
+            .emit(to: diaryEditView.deleteDiaryBarButtonItem.rx.isHidden)
+            .disposed(by: disposeBag)
         
         // 홈팀 및 어웨이팀 그리고 응원팀을 세그먼트 컨트롤과 연결합니다.
         Driver.zip(
@@ -110,7 +140,7 @@ final class DiaryEditViewController: UIViewController {
         output.initialPhotoData
             .drive(onNext: { [weak self] photoURL in
                 guard let self = self, let url = photoURL else { return }
-                self.diaryEditView.configureImage(url)
+                self.diaryEditView.configurePhoto(url)
             })
             .disposed(by: disposeBag)
         
@@ -153,30 +183,6 @@ final class DiaryEditViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-    
-    ///  PHPickerViewController를 띄워줍니다.
-    private func presentPhotoPicker() {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 1
-        config.filter = .images
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self
-        present(picker, animated: true)
-    }
-    
-    /// 직관 일기를 생성했을 때 성공 팝업을 표시합니다.
-    private func presentPopup() {
-        let popupViewController = PopupViewController(
-            titleText: "작성 완료",
-            subtitleText: "캘린더에서 일기를 확인해보세요"
-        )
-        popupViewController.modalPresentationStyle = .overFullScreen
-        popupViewController.modalTransitionStyle = .crossDissolve
-        popupViewController.onConfirm = { [weak self] in
-            self?.navigationController?.popToRootViewController(animated: true)
-        }
-        present(popupViewController, animated: true)
-    }
 }
 
 // MARK: - UITextViewDelegate extension
@@ -212,7 +218,7 @@ extension DiaryEditViewController: PHPickerViewControllerDelegate {
             DispatchQueue.global(qos: .background).async {
                 self.selectedPhotoDataRelay.accept(selectedImage.jpegData(compressionQuality: 0.8))
                 DispatchQueue.main.async {
-                    self.diaryEditView.didPickImage(selectedImage)
+                    self.diaryEditView.didPickPhoto(selectedImage)
                     self.diaryEditView.removePhotoButton.isHidden = false
                 }
             }
@@ -220,3 +226,44 @@ extension DiaryEditViewController: PHPickerViewControllerDelegate {
     }
 }
 
+extension DiaryEditViewController {
+    ///  PHPickerViewController를 띄워줍니다.
+    private func presentPhotoPicker() {
+        var config = PHPickerConfiguration()
+        config.selectionLimit = 1
+        config.filter = .images
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    /// 직관 일기를 생성했을 때 성공 팝업을 표시합니다.
+    private func presentPopup() {
+//        let popupViewController = PopupViewController(
+//            titleText: "작성 완료",
+//            subtitleText: "캘린더에서 일기를 확인해보세요"
+//        )
+//        popupViewController.modalPresentationStyle = .overFullScreen
+//        popupViewController.modalTransitionStyle = .crossDissolve
+//        popupViewController.onConfirm = { [weak self] in
+//            self?.navigationController?.popToRootViewController(animated: true)
+//        }
+//        present(popupViewController, animated: true)
+    }
+    
+    /// // 직관 일기 삭제 버튼 클릭에 따른 팝업을 표시합니다.
+    private func presentDeletePopup() {
+        let popupViewController = PopupViewController(
+            title: "일기 삭제",
+            subtitle: "정말로 일기를 삭제할까요?",
+            mainButtonStyle: .init(title: "삭제", backgroundColor: .tossRedColor),
+            subButtonStyle: .init(title: "취소", backgroundColor: .primaryBackgroundColor),
+            blurEffect: .init(style: .systemUltraThinMaterialDark))
+        popupViewController.modalPresentationStyle = .overFullScreen
+        popupViewController.modalTransitionStyle = .crossDissolve
+        popupViewController.onMainAction = { [weak self] in
+
+        }
+        present(popupViewController, animated: true)
+    }
+}
