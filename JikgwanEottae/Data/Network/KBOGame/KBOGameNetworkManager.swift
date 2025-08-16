@@ -17,7 +17,7 @@ final class KBOGameNetworkManager {
     private let provider: MoyaProvider<KBOGameAPIService>
     
     private init() {
-        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NDY1NzM5MCwiZXhwIjoxNzU1MjYyMTkwfQ.9DQWrGKa0jdDNWg1pKMHowMGPT8rZwadGJbB1J0NKyk"
+        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NTI2NjI4NiwiZXhwIjoxNzU1ODcxMDg2fQ.QYh8duAdo6m9o_tZzMvfWsN_FDO9G5BJEVFMlJrla18"
         let authPlugin = AccessTokenPlugin { _ in token }
         self.provider = MoyaProvider(plugins: [authPlugin])
     }

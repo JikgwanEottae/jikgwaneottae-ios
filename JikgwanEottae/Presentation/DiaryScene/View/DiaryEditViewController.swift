@@ -15,7 +15,9 @@ final class DiaryEditViewController: UIViewController {
     private let diaryEditView = DiaryEditView()
     private let viewModel: DiaryEditViewModel
     private let disposeBag = DisposeBag()
-    private var selectedPhotoDataRelay = PublishRelay<Data?>()
+    private let selectedPhotoDataRelay = PublishRelay<Data?>()
+    private let photoChangedTriggered = PublishRelay<Void>()
+    private let deleteConfirmRelay = PublishRelay<Void>()
     
     init(viewModel: DiaryEditViewModel) {
         self.viewModel = viewModel
@@ -71,36 +73,34 @@ final class DiaryEditViewController: UIViewController {
         
         let input = DiaryEditViewModel.Input(
             // 직관 일기 생성 버튼 클릭 이벤트입니다.
-            createButtonTapped: diaryEditView.createButton.rx
+            recordButtonTapped: diaryEditView.recordButton.rx
                 .tap
                 .asObservable(),
             
-//            // 직관 일기 삭제 버튼 클릭 이벤트입니다.
-//            deleteButtonTapped: diaryEditView.deleteDiaryBarButtonItem.rx
-//                .tap
-//                .asObservable(),
+            // 직관 일기 삭제 버튼 클릭 이벤트입니다.
+            deleteButtonTapped: deleteConfirmRelay.asObservable(),
             
             // 팀 선택 세그먼트 컨트롤 이벤트입니다.
             favoriteTeam: diaryEditView.teamSegmentControl.rx
                 .controlEvent(.valueChanged)
                 .map { teamSegmentControl.selectedTeam }
-                .distinctUntilChanged()
                 .asObservable(),
             
-            seatText: diaryEditView.seatInputFieldView.textField.rx
-                .text
+            seatText: diaryEditView.seatInputFieldView.textField.rx.text
                 .orEmpty
                 .distinctUntilChanged()
                 .asObservable(),
             
-            memoText: diaryEditView.memoTextView.rx
-                .text
+            memoText: diaryEditView.memoTextView.rx.text
                 .orEmpty
                 .distinctUntilChanged()
                 .asObservable(),
             
             selectedPhotoData: selectedPhotoDataRelay
-                .startWith(nil)
+                .asObservable(),
+            
+            // 사진 수정 여부를 체크할 트리거입니다.
+            isPhotoChanged: photoChangedTriggered
                 .asObservable()
         )
         
@@ -111,18 +111,15 @@ final class DiaryEditViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 홈팀 및 어웨이팀 그리고 응원팀을 세그먼트 컨트롤과 연결합니다.
-        Driver.zip(
-            output.initialHomeTeam,
-            output.initialAwayTeam,
-            output.initialFavoriteTeam
-        ).drive(onNext: { [weak self] homeTeam, awayTeam, favoriteTeam in
-            self?.diaryEditView.teamSegmentControl.configure(
-                homeTeam: homeTeam,
-                awayTeam: awayTeam,
-                favoriteTeam: favoriteTeam
-            )
-        })
-        .disposed(by: disposeBag)
+        output.initialTeams
+            .drive(onNext: { [weak self] homeTeam, awayTeam, favoriteTeam in
+                self?.diaryEditView.teamSegmentControl.configure(
+                    homeTeam: homeTeam,
+                    awayTeam: awayTeam,
+                    favoriteTeam: favoriteTeam
+                )
+            })
+            .disposed(by: disposeBag)
         
         // 초기 좌석 상태를 텍스트 필드와 연결합니다.
         output.initialSeat
@@ -137,10 +134,10 @@ final class DiaryEditViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 초기 이미지 상태를 버튼의 이미지와 연결합니다.
-        output.initialPhotoData
-            .drive(onNext: { [weak self] photoURL in
-                guard let self = self, let url = photoURL else { return }
-                self.diaryEditView.configurePhoto(url)
+        output.initialImageURL
+            .drive(onNext: { [weak self] imageURL in
+                guard let self = self, let url = imageURL else { return }
+                self.diaryEditView.configureImage(url)
             })
             .disposed(by: disposeBag)
         
@@ -149,14 +146,42 @@ final class DiaryEditViewController: UIViewController {
             .drive(diaryEditView.activityIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
-        // 네트워크 통신 후 성공/실패 결과를 보여줍니다.
-        output.editResult
+        // 직관 일기 생성 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
+        output.createResult
             .withUnretained(self)
             .emit(onNext: { owner, result in
                 switch result {
                 case .success:
                     owner.view.endEditing(true)
-                    owner.presentPopup()
+                    owner.presentDiaryCreateSuccessPopup()
+                case .failure(let error):
+                    print(error)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 직관 일기 수정 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
+        output.updateResult
+            .withUnretained(self)
+            .emit(onNext: { owner, result in
+                switch result {
+                case .success:
+                    owner.view.endEditing(true)
+                    owner.dismiss(animated: true)
+                case .failure(let error):
+                    print(error)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 직관 일기 삭제 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
+        output.deleteResult
+            .withUnretained(self)
+            .emit(onNext: { owner, result in
+                switch result {
+                case .success:
+                    owner.view.endEditing(true)
+                    owner.dismiss(animated: true)
                 case .failure(let error):
                     print(error)
                 }
@@ -166,7 +191,7 @@ final class DiaryEditViewController: UIViewController {
     
     /// 직관 인증 사진을 업로드하는 버튼 클릭 이벤트를 받습니다.
     private func photoSelectionButtonTapped() {
-        diaryEditView.selectPhotoButton.rx.tap
+        diaryEditView.selectImageButton.rx.tap
             .withUnretained(self)
             .bind { owner, _ in
                 owner.presentPhotoPicker()
@@ -176,10 +201,12 @@ final class DiaryEditViewController: UIViewController {
     
     /// 직관 인증 사진을 제거하는 버튼 클릭 이벤트를 받습니다.
     private func photoRemoveButtonTapped() {
-        diaryEditView.removePhotoButton.rx.tap
+        diaryEditView.removeImageButton.rx.tap
             .withUnretained(self)
             .bind { owner, _ in
-                owner.diaryEditView.removePhoto()
+                owner.diaryEditView.removeImage()
+                owner.selectedPhotoDataRelay.accept(nil)
+                owner.photoChangedTriggered.accept(())
             }
             .disposed(by: disposeBag)
     }
@@ -189,7 +216,7 @@ final class DiaryEditViewController: UIViewController {
 
 extension DiaryEditViewController: UITextViewDelegate {
     public func textViewDidBeginEditing(_ textView: UITextView) {
-        // 텍스트뷰의 텍스트 컬러가 placeholderText일 경우. 즉 텍스트가 없는 상태
+        // placeholder 상태일 때, placeholder 상태를 해제합니다.
         if textView.textColor == .placeholderText {
             textView.text = nil
             textView.textColor = .primaryTextColor
@@ -197,10 +224,9 @@ extension DiaryEditViewController: UITextViewDelegate {
     }
     
     public func textViewDidEndEditing(_ textView: UITextView) {
-        // 사용자가 입력을 하지 않았을 때
+        // 빈 문자열일 때, placeholder를 설정합니다.
         if textView.text.isEmpty {
-            // placeholder 설정
-            textView.text = DiaryEditView.memoTextViewPlaceholderText
+            textView.text = "직관 후기를 작성해보세요"
             textView.textColor = .placeholderText
         }
     }
@@ -217,9 +243,10 @@ extension DiaryEditViewController: PHPickerViewControllerDelegate {
             guard let self, let selectedImage = object as? UIImage else { return }
             DispatchQueue.global(qos: .background).async {
                 self.selectedPhotoDataRelay.accept(selectedImage.jpegData(compressionQuality: 0.8))
+                self.photoChangedTriggered.accept(())
                 DispatchQueue.main.async {
-                    self.diaryEditView.didPickPhoto(selectedImage)
-                    self.diaryEditView.removePhotoButton.isHidden = false
+                    self.diaryEditView.didPickImage(selectedImage)
+                    self.diaryEditView.removeImageButton.isHidden = false
                 }
             }
         }
@@ -237,18 +264,19 @@ extension DiaryEditViewController {
         present(picker, animated: true)
     }
     
-    /// 직관 일기를 생성했을 때 성공 팝업을 표시합니다.
-    private func presentPopup() {
-//        let popupViewController = PopupViewController(
-//            titleText: "작성 완료",
-//            subtitleText: "캘린더에서 일기를 확인해보세요"
-//        )
-//        popupViewController.modalPresentationStyle = .overFullScreen
-//        popupViewController.modalTransitionStyle = .crossDissolve
-//        popupViewController.onConfirm = { [weak self] in
-//            self?.navigationController?.popToRootViewController(animated: true)
-//        }
-//        present(popupViewController, animated: true)
+    /// 직관 일기 생성에 성공했을 때 팝업을 표시합니다.
+    private func presentDiaryCreateSuccessPopup() {
+        let popupViewController = PopupViewController(
+            title: "기록 완료",
+            subtitle: "캘린더에서 일기를 확인해보세요",
+            mainButtonStyle: .init(title: "확인", backgroundColor: .mainCharcoalColor),
+            blurEffect: .init(style: .systemUltraThinMaterialLight))
+        popupViewController.modalPresentationStyle = .overFullScreen
+        popupViewController.modalTransitionStyle = .crossDissolve
+        popupViewController.onMainAction = { [weak self] in
+            self?.navigationController?.popToRootViewController(animated: true)
+        }
+        present(popupViewController, animated: true)
     }
     
     /// // 직관 일기 삭제 버튼 클릭에 따른 팝업을 표시합니다.
@@ -262,7 +290,7 @@ extension DiaryEditViewController {
         popupViewController.modalPresentationStyle = .overFullScreen
         popupViewController.modalTransitionStyle = .crossDissolve
         popupViewController.onMainAction = { [weak self] in
-
+            self?.deleteConfirmRelay.accept(())
         }
         present(popupViewController, animated: true)
     }

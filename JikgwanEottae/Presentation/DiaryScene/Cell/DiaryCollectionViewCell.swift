@@ -187,7 +187,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     }
     
     public func configure(diary: Diary) {
-        if let image = diary.image, let imageURL = URL(string: image) {
+        if let imageURLString = diary.imageURL, let imageURL = URL(string: imageURLString) {
             thumbnailImageView.kf.setImage(with: imageURL)
         }
         ballparkLabel.text = diary.ballpark

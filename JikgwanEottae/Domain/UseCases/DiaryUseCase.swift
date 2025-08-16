@@ -14,7 +14,7 @@ import RxCocoa
 
 protocol DiaryUseCaseProtocol {
     func fetchAllDiaries() -> Single<[Diary]>
-    
+
     func fetchDiaries(
         year: String,
         month: String
@@ -23,14 +23,21 @@ protocol DiaryUseCaseProtocol {
     func createDiary(
         gameId: Int,
         favoriteTeam: String,
-        seat: String?,
-        memo: String?,
-        photoData: Data?
+        seat: String,
+        memo: String,
+        imageData: Data?
     ) -> Completable
     
-    func deleteDiary(
-        diaryId: Int
+    func updateDiary(
+        diaryId: Int,
+        favoriteTeam: String,
+        seat: String,
+        memo: String,
+        imageData: Data?,
+        isImageRemoved: Bool
     ) -> Completable
+    
+    func deleteDiary(diaryId: Int) -> Completable
 }
 
 // MARK: - 직관 일기 유스케이스
@@ -59,22 +66,38 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
     public func createDiary(
         gameId: Int,
         favoriteTeam: String,
-        seat: String?,
-        memo: String?,
-        photoData: Data?
+        seat: String,
+        memo: String,
+        imageData: Data?
     ) -> Completable {
         return self.repository.createDiary(
             gameId: gameId,
             favoriteTeam: favoriteTeam,
             seat: seat,
             memo: memo,
-            photoData: photoData
+            imageData: imageData
         )
     }
     
-    public func deleteDiary(
-        diaryId: Int
+    public func updateDiary(
+        diaryId: Int,
+        favoriteTeam: String,
+        seat: String,
+        memo: String,
+        imageData: Data?,
+        isImageRemoved: Bool
     ) -> Completable {
+        return self.repository.updateDiary(
+            diaryId: diaryId,
+            favoriteTeam: favoriteTeam,
+            seat: seat,
+            memo: memo,
+            imageData: imageData,
+            isImageRemoved: isImageRemoved
+        )
+    }
+    
+    public func deleteDiary(diaryId: Int) -> Completable {
         return self.repository.deleteDiary(diaryId: diaryId)
     }
 }

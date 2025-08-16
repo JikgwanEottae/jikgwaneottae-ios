@@ -19,8 +19,8 @@ struct DiaryDTO: Decodable {
     let awayTeam: String
     let result: String?
     let stadium: String
-    let seat: String?
-    let memo: String?
+    let seat: String
+    let memo: String
     let photoUrl: String?
 }
 
@@ -39,7 +39,7 @@ extension DiaryDTO {
             result: result,
             seat: seat,
             memo: memo,
-            image: photoUrl
+            imageURL: photoUrl
         )
     }
 }
