@@ -82,7 +82,7 @@ final class DiaryViewController: UIViewController {
             .subscribe(onNext: { [weak self] selectedDiary in
                 let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
                 let diaryUseCase = DiaryUseCase(repository: diaryRepository)
-                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .edit(diary: selectedDiary))
+                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .edit(diaryInfo: selectedDiary))
                 let diaryEditViewController = DiaryEditViewController(viewModel: diaryEditViewModel)
                 let navigationController = UINavigationController(rootViewController: diaryEditViewController)
                 navigationController.configureBarAppearnace()

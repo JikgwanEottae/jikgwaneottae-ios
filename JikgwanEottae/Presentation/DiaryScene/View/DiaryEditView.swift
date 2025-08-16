@@ -12,8 +12,6 @@ import SnapKit
 import Then
 
 final class DiaryEditView: UIView {
-    static let memoTextViewPlaceholderText = "직관 후기를 작성해보세요"
-    
     // 편집모드에서 직관 일기를 삭제하기 위한 바 버튼 아이템입니다.
     public let deleteDiaryBarButtonItem = UIBarButtonItem(
         title: "삭제",
@@ -42,7 +40,7 @@ final class DiaryEditView: UIView {
     
     private lazy var stackView = UIStackView(
         arrangedSubviews:[
-            photoSelectionButtonContainerView,
+            ImageSelectionButtonContainerView,
             supportTeamContainerView,
             seatInputFieldView,
             reviewContainerView
@@ -61,12 +59,12 @@ final class DiaryEditView: UIView {
         $0.clipsToBounds = true
     }
     
-    private let photoSelectionButtonContainerView = UIView().then {
+    private let ImageSelectionButtonContainerView = UIView().then {
         $0.clipsToBounds = true
     }
     
     // 업로드할 사진을 선택하기 위한 버튼입니다.
-    public let selectPhotoButton = UIButton(type: .custom).then {
+    public let selectImageButton = UIButton(type: .custom).then {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
         let image = UIImage(systemName: "photo.stack")?
             .withConfiguration(symbolConfig)
@@ -84,7 +82,7 @@ final class DiaryEditView: UIView {
     }
     
     // 업로드할 사진을 제거하기 위한 버튼입니다.
-    public let removePhotoButton = UIButton(type: .custom).then {
+    public let removeImageButton = UIButton(type: .custom).then {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .light)
         let image = UIImage(named: "xMark")?
             .withConfiguration(symbolConfig)
@@ -123,7 +121,7 @@ final class DiaryEditView: UIView {
     }
     
     public let memoTextView = UITextView().then {
-        $0.text = memoTextViewPlaceholderText
+        $0.text = "직관 후기를 작성해보세요"
         $0.font = .gMarketSans(size: 15, family: .medium)
         $0.textColor = .placeholderText
         $0.backgroundColor = .secondaryBackgroundColor
@@ -136,7 +134,7 @@ final class DiaryEditView: UIView {
         $0.textContainerInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
     }
     
-    public let createButton = UIButton(type: .custom).then {
+    public let recordButton = UIButton(type: .custom).then {
         $0.setTitle("기록하기", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
@@ -159,11 +157,11 @@ final class DiaryEditView: UIView {
     
     private func addSubviews() {
         addSubview(scrollView)
-        addSubview(createButton)
+        addSubview(recordButton)
         addSubview(activityIndicator)
         scrollView.addSubview(stackView)
-        photoSelectionButtonContainerView.addSubview(selectPhotoButton)
-        selectPhotoButton.addSubview(removePhotoButton)
+        ImageSelectionButtonContainerView.addSubview(selectImageButton)
+        selectImageButton.addSubview(removeImageButton)
         supportTeamContainerView.addSubview(supportTeamTitleLabel)
         supportTeamContainerView.addSubview(teamSegmentControl)
         reviewContainerView.addSubview(reviewTitleLabel)
@@ -181,7 +179,7 @@ final class DiaryEditView: UIView {
             make.leading.trailing
                 .equalToSuperview()
             make.bottom
-                .equalTo(createButton.snp.top)
+                .equalTo(recordButton.snp.top)
                 .offset(-10)
         }
         stackView.snp.makeConstraints { make in
@@ -190,17 +188,17 @@ final class DiaryEditView: UIView {
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
-        photoSelectionButtonContainerView.snp.makeConstraints { make in
+        ImageSelectionButtonContainerView.snp.makeConstraints { make in
             make.height
-                .equalTo(photoSelectionButtonContainerView.snp.width)
+                .equalTo(ImageSelectionButtonContainerView.snp.width)
         }
-        removePhotoButton.snp.makeConstraints { make in
+        removeImageButton.snp.makeConstraints { make in
             make.top.trailing
                 .equalToSuperview().inset(10)
             make.size
                 .equalTo(26)
         }
-        selectPhotoButton.snp.makeConstraints { make in
+        selectImageButton.snp.makeConstraints { make in
             make.top.bottom
                 .equalToSuperview()
                 .inset(25)
@@ -208,7 +206,7 @@ final class DiaryEditView: UIView {
                 .equalToSuperview()
                 .inset(25)
         }
-        stackView.setCustomSpacing(20, after: photoSelectionButtonContainerView)
+        stackView.setCustomSpacing(20, after: ImageSelectionButtonContainerView)
         supportTeamTitleLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         supportTeamTitleLabel.snp.makeConstraints { make in
             make.leading.centerY
@@ -237,7 +235,7 @@ final class DiaryEditView: UIView {
             make.height
                 .equalTo(200)
         }
-        createButton.snp.makeConstraints { make in
+        recordButton.snp.makeConstraints { make in
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
                 .offset(-10)
@@ -256,56 +254,56 @@ final class DiaryEditView: UIView {
 
 extension DiaryEditView {
     /// PHPicker로 사진이 선택됬을 때 해당 사진으로 교체합니다.
-    public func didPickPhoto(_ image: UIImage) {
-        selectPhotoButton.setImage(image, for: .normal)
-        setFillPhoto()
+    public func didPickImage(_ image: UIImage) {
+        selectImageButton.setImage(image, for: .normal)
+        setFillImage()
     }
     
     /// 저장된 사진이 있다면 초기에 보여줄 사진으로 설정합니다.
-    public func configurePhoto(_ imageURL: String) {
+    public func configureImage(_ imageURL: String) {
         guard let url = URL(string: imageURL) else { return }
-        selectPhotoButton.kf.setImage(with: url, for: .normal)
-        setFillPhoto()
-        removePhotoButton.isHidden = false
+        selectImageButton.kf.setImage(with: url, for: .normal)
+        setFillImage()
+        removeImageButton.isHidden = false
     }
     
     /// 직관 후기 텍스트 작성 여부에 따른 메모 텍스트 뷰를 설정합니다.
-    public func configureMemoText(_ text: String?) {
-        if let text = text {
+    public func configureMemoText(_ text: String) {
+        if !text.isEmpty {
             memoTextView.text = text
             memoTextView.textColor = .primaryTextColor
         } else {
-            memoTextView.text = DiaryEditView.memoTextViewPlaceholderText
+            memoTextView.text = "직관 후기를 작성해보세요"
             memoTextView.textColor = .placeholderText
         }
     }
     
     /// 선택된 사진을 제거하기 위해 기본 사진으로 대체합니다.
-    public func removePhoto() {
+    public func removeImage() {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
         let image = UIImage(systemName: "photo.stack")?
             .withConfiguration(symbolConfig)
             .withTintColor(.secondaryTextColor, renderingMode: .alwaysOriginal)
-        selectPhotoButton.setImage(image, for: .normal)
-        setFitPhoto()
-        removePhotoButton.isHidden = true
+        selectImageButton.setImage(image, for: .normal)
+        setFitImage()
+        removeImageButton.isHidden = true
     }
 }
 
 extension DiaryEditView {
     /// 사진이 선택된 후의 레이아웃을 설정합니다.
-    private func setFillPhoto() {
-        selectPhotoButton.contentHorizontalAlignment = .fill
-        selectPhotoButton.contentVerticalAlignment   = .fill
-        selectPhotoButton.contentMode = .scaleAspectFill
-        selectPhotoButton.imageView?.contentMode = .scaleAspectFill
+    private func setFillImage() {
+        selectImageButton.contentHorizontalAlignment = .fill
+        selectImageButton.contentVerticalAlignment   = .fill
+        selectImageButton.contentMode = .scaleAspectFill
+        selectImageButton.imageView?.contentMode = .scaleAspectFill
     }
     
     /// 사진이 제거된 후의 레이아웃을 설정합니다.
-    private func setFitPhoto() {
-        selectPhotoButton.contentHorizontalAlignment = .center
-        selectPhotoButton.contentVerticalAlignment = .center
-        selectPhotoButton.contentMode = .scaleAspectFit
-        selectPhotoButton.imageView?.contentMode = .scaleAspectFit
+    private func setFitImage() {
+        selectImageButton.contentHorizontalAlignment = .center
+        selectImageButton.contentVerticalAlignment = .center
+        selectImageButton.contentMode = .scaleAspectFit
+        selectImageButton.imageView?.contentMode = .scaleAspectFit
     }
 }

@@ -17,17 +17,19 @@ final class DiaryNetworkManager {
     private let provider: MoyaProvider<DiaryAPIService>
     
     private init() {
-        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NTE1Njg5OCwiZXhwIjoxNzU1NzYxNjk4fQ.Jek5PaOBKVcKN3tMIeTf8AIYDWT325zurBY5w1fLm-E"
+        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NTI2NjI4NiwiZXhwIjoxNzU1ODcxMDg2fQ.QYh8duAdo6m9o_tZzMvfWsN_FDO9G5BJEVFMlJrla18"
         let authPlugin = AccessTokenPlugin { _ in token }
         self.provider = MoyaProvider(plugins: [authPlugin])
     }
     
+    /// 전체 직관 일기 조회를 요청합니다.
     public func fetchAllDiaries() -> Single<[Diary]> {
         return provider.rx.request(.fetchAllDiaries)
             .map(DiaryResponseDTO.self)
             .map { $0.toDomain() }
     }
     
+    /// 해당 연·월 직관 일기 조회를 요청합니다
     public func fetchDiaries(
         year: String,
         month: String
@@ -37,16 +39,28 @@ final class DiaryNetworkManager {
             .map { $0.toDomain() }
     }
     
+    /// 직관 일기 생성을 요청합니다.
     public func createDiary(
-        diaryCreateRequestDTO: DiaryCreateRequestDTO,
-        photoData: Data?
+        dto: DiaryCreateRequestDTO,
+        imageData: Data?
     ) -> Completable {
-        return provider.rx.request(.createDiary(diaryCreateRequestDTO: diaryCreateRequestDTO, photoData: photoData))
+        return provider.rx.request(.createDiary(dto: dto, imageData: imageData))
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }
     
-    /// 직관 일기 삭제를 수행합니다.
+    /// 직관 일기 수정을 요청합니다.
+    public func updateDiary(
+        diaryId: Int,
+        dto: DiaryUpdateRequestDTO,
+        imageData: Data?
+    ) -> Completable {
+        return provider.rx.request(.updateDiary(diaryId: diaryId, dto: dto, imageData: imageData))
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
+    }
+    
+    /// 직관 일기 삭제를 요청합니다.
     public func deleteDiary(
         diaryId: Int
     ) -> Completable {
