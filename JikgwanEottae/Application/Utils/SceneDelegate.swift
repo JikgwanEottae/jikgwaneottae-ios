@@ -19,6 +19,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = mainTabBarController
         window?.makeKeyAndVisible()
         window?.overrideUserInterfaceStyle = .light
+        
+//        guard let url = Bundle.main.url(forResource: "Info", withExtension: "plist") else { return }
+//        guard let dic = NSDictionary(contentsOf: url, error: ()) else { return }
+//        print(dic["KakaoAppKey"] as! String)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
