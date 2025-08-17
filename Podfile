@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+platform :ios, '16.6'
 
 target 'JikgwanEottae' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -15,6 +15,7 @@ target 'JikgwanEottae' do
 	pod 'FSCalendar'
 	pod 'KeychainAccess'
 	pod 'Kingfisher', '~> 8.0'
+	pod 'KakaoMapsSDK'
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths
