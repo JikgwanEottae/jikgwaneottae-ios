@@ -10,9 +10,8 @@ import UIKit
 
 // MARK: - KBO 구단
 
-enum KBOTeam: String, CaseIterable {
+enum KBOTeam: String, CaseIterable, Hashable {
     case doosan = "두산"
-    case lg = "LG"
     case kiwoom = "키움"
     case samsung = "삼성"
     case lotte = "롯데"
@@ -20,13 +19,12 @@ enum KBOTeam: String, CaseIterable {
     case hanwha = "한화"
     case ssg = "SSG"
     case nc = "NC"
+    case lg = "LG"
     case kt = "KT"
     
     var ballpark: String {
         switch self {
         case .doosan:
-            return "서울잠실야구장"
-        case .lg:           
             return "서울잠실야구장"
         case .kiwoom: 
             return "고척스카이돔"
@@ -42,7 +40,9 @@ enum KBOTeam: String, CaseIterable {
             return "인천SSG랜더스필드"
         case .nc:       
             return "창원NC파크"
-        case .kt:        
+        case .lg:
+            return "서울잠실야구장"
+        case .kt:
             return "수원케이티위즈파크"
         }
     }
@@ -51,8 +51,6 @@ enum KBOTeam: String, CaseIterable {
         switch self {
         case .doosan:
             return #colorLiteral(red: 0.1019607843, green: 0.09019607843, blue: 0.2823529412, alpha: 1)
-        case .lg:
-            return #colorLiteral(red: 0.7647058824, green: 0.01568627451, blue: 0.3215686275, alpha: 1)
         case .kiwoom:
             return #colorLiteral(red: 0.3411764706, green: 0.01960784314, blue: 0.07843137255, alpha: 1)
         case .samsung:
@@ -67,6 +65,8 @@ enum KBOTeam: String, CaseIterable {
             return #colorLiteral(red: 0.8078431373, green: 0.05490196078, blue: 0.1764705882, alpha: 1)
         case .nc:
             return #colorLiteral(red: 0.192, green: 0.322, blue: 0.533, alpha: 1)
+        case .lg:
+            return #colorLiteral(red: 0.7647058824, green: 0.01568627451, blue: 0.3215686275, alpha: 1)
         case .kt:
             return #colorLiteral(red: 0.000, green: 0.000, blue: 0.000, alpha: 1)
         }
