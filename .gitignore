@@ -3,6 +3,7 @@
 
 ### Build Configurations (xcconfig) ###
 *.xcconfig            # 모든 *.xcconfig 파일 무시
+JikgwanEottae/Resource/Secrets.xcconfig
 
 ### Carthage ###
 # Carthage
@@ -123,3 +124,4 @@ xcuserdata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.toptal.com/developers/gitignore/api/xcode,swift,cocoapods,swiftpackagemanager,carthage
+
