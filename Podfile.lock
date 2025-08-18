@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (5.10.2)
   - FSCalendar (2.8.4)
+  - KakaoMapsSDK (2.12.9)
   - KeychainAccess (4.2.2)
   - Kingfisher (8.3.1)
   - Moya/Core (15.0.0):
@@ -22,6 +23,7 @@ PODS:
 
 DEPENDENCIES:
   - FSCalendar
+  - KakaoMapsSDK
   - KeychainAccess
   - Kingfisher (~> 8.0)
   - Moya/RxSwift (~> 15.0)
@@ -35,6 +37,7 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - FSCalendar
+    - KakaoMapsSDK
     - KeychainAccess
     - Kingfisher
     - Moya
@@ -49,6 +52,7 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
+  KakaoMapsSDK: d45fb0428c45d3f90acd724893fd30846527f514
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   Kingfisher: 3204d23de16b5ea53541c44ca5a8efb55741dec3
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
@@ -60,6 +64,6 @@ SPEC CHECKSUMS:
   Tabman: 49f9181a2bfe5c29d002864dac2de8e0b7ea9180
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: c75143c829e20869a661e8530eecc333b44224fa
+PODFILE CHECKSUM: 7a46c535cdb3a15819c671093b472ac8c7f0bb00
 
 COCOAPODS: 1.16.2
