@@ -7,6 +7,9 @@
 
 import UIKit
 
+import RxSwift
+import RxCocoa
+
 enum HomeSection: Int, CaseIterable, Hashable {
     case tour
     
@@ -25,6 +28,7 @@ enum HomeItem: Hashable {
 final class HomeViewController: UIViewController {
     private let homeView = HomeView()
     private var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomeItem>!
+    private let disposeBag = DisposeBag()
     
     override func loadView() {
         self.view = homeView
@@ -35,6 +39,7 @@ final class HomeViewController: UIViewController {
         configureNaviBarButtonItem()
         setupDatasource()
         applySnapshot()
+        bindCollectionView()
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
@@ -55,7 +60,19 @@ final class HomeViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
-
+    private func bindCollectionView() {
+        homeView.collectionView.rx.itemSelected
+            .bind(onNext: { [weak self] indexPath in
+                let item = self?.dataSource.itemIdentifier(for: indexPath)
+                switch item {
+                case .tourItem(let teamName):
+                    print(teamName)
+                case nil:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
 extension HomeViewController {
