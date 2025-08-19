@@ -5,14 +5,21 @@
 //  Created by 7aeHoon on 7/22/25.
 //
 
-import UIKit
 import CoreData
+import UIKit
+
+import KakaoMapsSDK
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // 카카오 지도에서 사용할 키를 가져옵니다.
+        guard let kakaoAppKey = Bundle.main.infoDictionary?["KakaoAppKey"] as? String
+        else {
+            fatalError("KakaoAppKey not found in Info.plist")
+        }
+        SDKInitializer.InitSDK(appKey: kakaoAppKey)
         return true
     }
 
