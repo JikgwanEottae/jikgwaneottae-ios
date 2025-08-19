@@ -71,4 +71,29 @@ enum KBOTeam: String, CaseIterable, Hashable {
             return #colorLiteral(red: 0.000, green: 0.000, blue: 0.000, alpha: 1)
         }
     }
+    
+    var coordinate: (latitude: Double, longitude: Double) {
+        switch self {
+        case .doosan:
+            return (37.5119858, 127.0718388)
+        case .kiwoom:
+            return (37.4982105, 126.8672613)
+        case .samsung:
+            return (35.8410706, 128.6817523)
+        case .lotte:
+            return (35.1931684, 129.0615852)
+        case .kia:
+            return (35.1682116, 126.8891068)
+        case .hanwha:
+            return (36.3163197, 127.4313789)
+        case .ssg:
+            return (37.4368605, 126.6932818)
+        case .nc:
+            return (35.2224951, 128.5825537)
+        case .lg:
+            return (37.5119858, 127.0718388)
+        case .kt:
+            return (37.3000960, 127.0096588)
+        }
+    }
 }

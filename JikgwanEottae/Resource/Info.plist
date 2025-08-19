@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>KakaoAppKey</key>
-	<string>$(KAKAO_APP_KEY)</string>
+	<string>$(KAKAO_API_KEY)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>GmarketSansLight.otf</string>

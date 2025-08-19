@@ -36,6 +36,7 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideBackBarButtonItem()
         configureNaviBarButtonItem()
         setupDatasource()
         applySnapshot()
@@ -66,7 +67,9 @@ final class HomeViewController: UIViewController {
                 let item = self?.dataSource.itemIdentifier(for: indexPath)
                 switch item {
                 case .tourItem(let teamName):
-                    print(teamName)
+                    let tourViewController = TourMapViewController(team: KBOTeam(rawValue: teamName)!)
+                    tourViewController.hidesBottomBarWhenPushed = true
+                    self?.navigationController?.pushViewController(tourViewController, animated: true)
                 case nil:
                     break
                 }

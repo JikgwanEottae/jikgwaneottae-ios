@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "고척스카이돔 3.png",
+      "filename" : "free-icon-font-marker-3916882_24pt_1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "고척스카이돔 4.png",
+      "filename" : "free-icon-font-marker-3916882_24pt_2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "고척스카이돔.png",
+      "filename" : "free-icon-font-marker-3916882_24pt_3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
@@ -19,5 +19,8 @@
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "template-rendering-intent" : "template"
   }
 }
