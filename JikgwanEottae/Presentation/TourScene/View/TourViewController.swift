@@ -7,16 +7,19 @@
 
 import UIKit
 
+import FloatingPanel
 import KakaoMapsSDK
 
 final class TourViewController: UIViewController {
-    private var mapController: KMController?
-    private var _observerAdded = false
-    private let poiLayerID = "PoiLayer"
-    private let poiStyleID = "PoiStyle"
     private let tourView = TourView()
     private let team: KBOTeam
-    
+    // Kakao Map
+    private var mapController: KMController?
+    private let poiLayerID = "PoiLayer"
+    private let poiStyleID = "PoiStyle"
+    // Floating Panel
+    private var floatingPanelController: FloatingPanelController!
+
     init(team: KBOTeam) {
         self.team = team
         super.init(nibName: nil, bundle: nil)
@@ -34,11 +37,11 @@ final class TourViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = team.ballpark
-        //KMController 생성.
         mapController = KMController(viewContainer: tourView.mapContainer)
         mapController!.delegate = self
-        //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행된다.
+        //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행됩니다.
         mapController?.prepareEngine()
+        setupFloatingPanel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,18 +59,23 @@ final class TourViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        mapController?.pauseEngine()  //렌더링 중지.
+        //렌더링 중지.
+        mapController?.pauseEngine()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        mapController?.resetEngine()     //엔진 정지. 추가되었던 ViewBase들이 삭제된다.
+        //엔진 정지. 추가되었던 ViewBase들이 삭제된다.
+        mapController?.resetEngine()
     }
     
     deinit {
         mapController?.pauseEngine()
         mapController?.resetEngine()
+        floatingPanelController.removePanelFromParent(animated: false)
     }
 }
+
+// MARK: - Kakao Map extension
 
 extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
     func addViews() {
@@ -84,7 +92,7 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
         mapController?.addView(mapviewInfo)
     }
     
-    //addView 성공 이벤트 delegate. 추가적으로 수행할 작업을 진행한다.
+    /// addView 성공 이벤트 delegate. 추가적으로 수행할 작업을 진행합니다.
     func addViewSucceeded(_ viewName: String, viewInfoName: String) {
         let mapView = mapController?.getView("mapview") as! KakaoMap
         mapView.viewRect = tourView.mapContainer.bounds
@@ -108,14 +116,18 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
                 y: 10.0
             )
         )
+        // 틸트 기능을 제거합니다.
+        mapView.setGestureEnable(type: .tilt, enable: false)
+        // 회전 기능을 제거합니다.
+        mapView.setGestureEnable(type: .rotate, enable: false)
         mapView.eventDelegate = self
     }
     
-    //addView 실패 이벤트 delegate. 실패에 대한 오류 처리를 진행한다.
+    /// addView 실패 이벤트 delegate. 실패에 대한 오류 처리를 진행합니다.
     func addViewFailed(_ viewName: String, viewInfoName: String) {
     }
     
-    //Container 뷰가 리사이즈 되었을때 호출된다. 변경된 크기에 맞게 ViewBase들의 크기를 조절할 필요가 있는 경우 여기에서 수행한다.
+    /// Container 뷰가 리사이즈 되었을때 호출된다. 변경된 크기에 맞게 ViewBase들의 크기를 조절할 필요가 있는 경우 여기에서 수행합니다.
     func containerDidResized(_ size: CGSize) {
         let mapView: KakaoMap? = mapController?.getView("mapview") as? KakaoMap
         mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)   //지도뷰의 크기를 리사이즈된 크기로 지정한다.
@@ -196,7 +208,37 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
     /// 카메라의 이동이 멈췄을 때 호출되는 델리게이트입니다.
     func cameraDidStopped(kakaoMap: KakaoMap, by: MoveBy) {
         // 지도의 중심 좌표입니다.
-        let center = kakaoMap.getPosition(CGPoint(x: kakaoMap.viewRect.width * 0.5, y: kakaoMap.viewRect.size.height * 0.5))
+        let center = kakaoMap.getPosition(
+            CGPoint(
+                x: kakaoMap.viewRect.width * 0.5,
+                y: kakaoMap.viewRect.size.height * 0.5
+            )
+        )
         print("위도: \(center.wgsCoord.latitude), 경도: \(center.wgsCoord.longitude)" )
+    }
+}
+
+
+extension TourViewController {
+    /// 플로팅 패널의 초기 상태를 설정합니다.
+    private func setupFloatingPanel() {
+        self.floatingPanelController = FloatingPanelController()
+        self.floatingPanelController.layout = CustomFloatingPanelLayout()
+        // 패널에 적용할 appearance를 설정합니다.
+        let appearance = SurfaceAppearance()
+        appearance.cornerRadius = 17
+        appearance.backgroundColor = .white
+        // 패널 둘레에 적용할 그림자를 설정합니다.
+        let shadow = SurfaceAppearance.Shadow()
+        shadow.color = UIColor.gray
+        shadow.radius = 5
+        shadow.spread = 5
+        appearance.shadows = [shadow]
+        self.floatingPanelController.surfaceView.appearance = appearance
+        self.floatingPanelController.backdropView.dismissalTapGestureRecognizer.isEnabled = false
+        // 아래로 스와이프 닫기를 비활성화합니다.
+        self.floatingPanelController.isRemovalInteractionEnabled = false
+        self.floatingPanelController.set(contentViewController: ContentViewController())
+        self.floatingPanelController.addPanel(toParent: self)
     }
 }
