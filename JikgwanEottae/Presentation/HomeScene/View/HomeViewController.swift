@@ -67,7 +67,7 @@ final class HomeViewController: UIViewController {
                 let item = self?.dataSource.itemIdentifier(for: indexPath)
                 switch item {
                 case .tourItem(let teamName):
-                    let tourViewController = TourMapViewController(team: KBOTeam(rawValue: teamName)!)
+                    let tourViewController = TourViewController(team: KBOTeam(rawValue: teamName)!)
                     tourViewController.hidesBottomBarWhenPushed = true
                     self?.navigationController?.pushViewController(tourViewController, animated: true)
                 case nil:

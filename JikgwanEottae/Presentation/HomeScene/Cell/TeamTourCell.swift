@@ -34,19 +34,8 @@ final class TeamTourCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        contentView.addSubview(teamSymbolButton)
-        contentView.addSubview(teamNameLabel)
-        
-        teamSymbolButton.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(teamSymbolButton.snp.width)
-        }
-        
-        teamNameLabel.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.top.equalTo(teamSymbolButton.snp.bottom).offset(10)
-        }
+        setupUI()
+        setupLayout()
     }
     
     @available(*, unavailable)
@@ -59,6 +48,23 @@ final class TeamTourCell: UICollectionViewCell {
         teamNameLabel.text = nil
         teamSymbolButton.setTitle(nil, for: .normal)
         teamSymbolButton.backgroundColor = nil
+    }
+    
+    private func setupUI() {
+        contentView.addSubview(teamSymbolButton)
+        contentView.addSubview(teamNameLabel)
+    }
+    
+    private func setupLayout() {
+        teamSymbolButton.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(teamSymbolButton.snp.width)
+        }
+        
+        teamNameLabel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(teamSymbolButton.snp.bottom).offset(10)
+        }
     }
     
     /// 구단의 이름과 대표 색상으로 셀을 초기화합니다.
