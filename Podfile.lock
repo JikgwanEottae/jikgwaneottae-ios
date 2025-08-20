@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (5.10.2)
+  - FloatingPanel (3.0.1)
   - FSCalendar (2.8.4)
   - KakaoMapsSDK (2.12.9)
   - KeychainAccess (4.2.2)
@@ -22,6 +23,7 @@ PODS:
   - Then (3.0.0)
 
 DEPENDENCIES:
+  - FloatingPanel
   - FSCalendar
   - KakaoMapsSDK
   - KeychainAccess
@@ -36,6 +38,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
+    - FloatingPanel
     - FSCalendar
     - KakaoMapsSDK
     - KeychainAccess
@@ -51,6 +54,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  FloatingPanel: c20200f6ae6d17e057c87e9fdd8f224ad25ef40a
   FSCalendar: 2d1d0d9398f12d439f55c1fe0f01525b151b8260
   KakaoMapsSDK: d45fb0428c45d3f90acd724893fd30846527f514
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
@@ -64,6 +68,6 @@ SPEC CHECKSUMS:
   Tabman: 49f9181a2bfe5c29d002864dac2de8e0b7ea9180
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
 
-PODFILE CHECKSUM: 009a9c78c14d346de7021b636ec268a7729e8fcc
+PODFILE CHECKSUM: 3fcf2101382663ca378e24bf133ebbbda69a124c
 
 COCOAPODS: 1.16.2
