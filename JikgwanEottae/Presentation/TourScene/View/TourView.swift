@@ -18,6 +18,19 @@ final class TourView: UIView {
     
     public var mapContainer = KMViewContainer()
     
+    // 지도의 초기 위치로 돌아가는 버튼입니다.
+    public let recenterButton = UIButton(type: .custom).then {
+        let image = UIImage(named: "crosshairs")?.withRenderingMode(.alwaysTemplate)
+        $0.setImage(image, for: .normal)
+        $0.backgroundColor = .white
+        $0.tintColor = .mainCharcoalColor
+        $0.layer.shadowColor = UIColor.black.cgColor
+        $0.layer.shadowOpacity = 0.3
+        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
+        $0.layer.shadowRadius = 6
+        $0.adjustsImageWhenHighlighted = false
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -29,10 +42,16 @@ final class TourView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        recenterButton.layer.cornerRadius = recenterButton.bounds.width / 2.0
+    }
+    
     private func setupUI() {
         self.backgroundColor = .white
         self.addSubview(categoryChipBar)
         self.addSubview(mapContainer)
+        mapContainer.addSubview(recenterButton)
     }
     
     private func setupLayout() {
@@ -51,7 +70,18 @@ final class TourView: UIView {
             make.leading.trailing
                 .equalToSuperview()
             make.bottom
-                .equalTo(safeAreaLayoutGuide)
+                .equalToSuperview()
+        }
+        
+        recenterButton.snp.makeConstraints { make in
+            make.leading
+                .equalToSuperview()
+                .inset(30)
+            make.bottom
+                .equalToSuperview()
+                .inset(50)
+            make.size
+                .equalTo(50)
         }
     }
 }

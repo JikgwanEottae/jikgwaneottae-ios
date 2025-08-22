@@ -20,19 +20,14 @@ final class CustomFloatingPanelLayout: FloatingPanelLayout {
     var anchors: [FloatingPanelState: FloatingPanelLayoutAnchoring] {
         return [
             .full: FloatingPanelLayoutAnchor(
-                absoluteInset: 100.0,
+                absoluteInset: 150.0,
                 edge: .top,
                 referenceGuide: .safeArea
             ),
-            .half: FloatingPanelLayoutAnchor(
-                fractionalInset: 0.4,
-                edge: .bottom,
-                referenceGuide: .safeArea
-            ),
             .tip: FloatingPanelLayoutAnchor(
-                absoluteInset: 120.0,
+                absoluteInset: 250.0,
                 edge: .bottom,
-                referenceGuide: .safeArea
+                referenceGuide: .superview
             )
         ]
     }
