@@ -9,6 +9,8 @@ import UIKit
 
 import FloatingPanel
 import KakaoMapsSDK
+import RxSwift
+import RxCocoa
 
 final class TourViewController: UIViewController {
     private let tourView = TourView()
@@ -18,8 +20,9 @@ final class TourViewController: UIViewController {
     private let poiLayerID = "PoiLayer"
     private let poiStyleID = "PoiStyle"
     // Floating Panel
-    private var floatingPanelController: FloatingPanelController!
-
+//    private var floatingPanelController: FloatingPanelController!
+    private let disposeBag = DisposeBag()
+        
     init(team: KBOTeam) {
         self.team = team
         super.init(nibName: nil, bundle: nil)
@@ -41,7 +44,8 @@ final class TourViewController: UIViewController {
         mapController!.delegate = self
         //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행됩니다.
         mapController?.prepareEngine()
-        setupFloatingPanel()
+//        setupFloatingPanel()
+        recenterButtonTapped()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,10 +56,6 @@ final class TourViewController: UIViewController {
         if mapController?.isEngineActive == false {
             mapController?.activateEngine()
         }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -71,13 +71,23 @@ final class TourViewController: UIViewController {
     deinit {
         mapController?.pauseEngine()
         mapController?.resetEngine()
-        floatingPanelController.removePanelFromParent(animated: false)
+//        floatingPanelController.removePanelFromParent(animated: false)
+    }
+    
+    /// recenter 버튼이 클릭됬을 때 이벤트입니다.
+    private func recenterButtonTapped() {
+        self.tourView.recenterButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                owner.resetToInitialLocation()
+            })
+            .disposed(by: disposeBag)
     }
 }
 
 // MARK: - Kakao Map extension
 
-extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
+extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, FloatingPanelControllerDelegate {
     func addViews() {
         let defaultPosition = MapPoint(
             longitude: team.coordinate.longitude,
@@ -108,12 +118,12 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
         // 지도의 카카오 로고 위치를 변경합니다.
         mapView.setLogoPosition(
             origin: GuiAlignment(
-                vAlign: .top,
-                hAlign: .right
+                vAlign: .bottom,
+                hAlign: .left
             ),
             position: CGPoint(
-                x: 10.0,
-                y: 10.0
+                x: 38.0,
+                y: 30.0
             )
         )
         // 틸트 기능을 제거합니다.
@@ -130,7 +140,8 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
     /// Container 뷰가 리사이즈 되었을때 호출된다. 변경된 크기에 맞게 ViewBase들의 크기를 조절할 필요가 있는 경우 여기에서 수행합니다.
     func containerDidResized(_ size: CGSize) {
         let mapView: KakaoMap? = mapController?.getView("mapview") as? KakaoMap
-        mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)   //지도뷰의 크기를 리사이즈된 크기로 지정한다.
+        //지도뷰의 크기를 리사이즈된 크기로 지정한다.
+        mapView?.viewRect = CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: size)
     }
     
     func viewWillDestroyed(_ view: ViewBase) {
@@ -216,29 +227,65 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
         )
         print("위도: \(center.wgsCoord.latitude), 경도: \(center.wgsCoord.longitude)" )
     }
+    
+    
+    
 }
 
 
 extension TourViewController {
-    /// 플로팅 패널의 초기 상태를 설정합니다.
-    private func setupFloatingPanel() {
-        self.floatingPanelController = FloatingPanelController()
-        self.floatingPanelController.layout = CustomFloatingPanelLayout()
-        // 패널에 적용할 appearance를 설정합니다.
-        let appearance = SurfaceAppearance()
-        appearance.cornerRadius = 17
-        appearance.backgroundColor = .white
-        // 패널 둘레에 적용할 그림자를 설정합니다.
-        let shadow = SurfaceAppearance.Shadow()
-        shadow.color = UIColor.gray
-        shadow.radius = 5
-        shadow.spread = 5
-        appearance.shadows = [shadow]
-        self.floatingPanelController.surfaceView.appearance = appearance
-        self.floatingPanelController.backdropView.dismissalTapGestureRecognizer.isEnabled = false
-        // 아래로 스와이프 닫기를 비활성화합니다.
-        self.floatingPanelController.isRemovalInteractionEnabled = false
-        self.floatingPanelController.set(contentViewController: ContentViewController())
-        self.floatingPanelController.addPanel(toParent: self)
+//    /// 플로팅 패널의 초기 상태를 설정합니다.
+//    private func setupFloatingPanel() {
+//        self.floatingPanelController = FloatingPanelController()
+//        self.floatingPanelController.layout = CustomFloatingPanelLayout()
+//        self.floatingPanelController.surfaceView.appearance = createFloatingPanelApperance()
+//        self.floatingPanelController.backdropView.dismissalTapGestureRecognizer.isEnabled = false
+//        // 아래로 스와이프 닫기를 비활성화합니다.
+//        self.floatingPanelController.isRemovalInteractionEnabled = false
+//        // floating panel에 들어갈 뷰 컨트롤러입니다.
+//        let contentViewController = ContentViewController()
+//        let navigationController = UINavigationController(rootViewController: contentViewController)
+//        navigationController.configureBarAppearnace()
+//        self.floatingPanelController.set(contentViewController: navigationController)
+//        self.floatingPanelController.track(scrollView: contentViewController.tourPlaceTableView)
+//        self.floatingPanelController.addPanel(toParent: self)
+//        self.floatingPanelController.invalidateLayout()
+//    }
+//    
+//    /// 플로팅 패널의 Appearance를 생성합니다.
+//    private func createFloatingPanelApperance() -> SurfaceAppearance {
+//        // 패널에 적용할 appearance를 설정합니다.
+//        let appearance = SurfaceAppearance()
+//        appearance.cornerRadius = 17
+//        appearance.backgroundColor = .white
+//        // 패널 둘레에 적용할 그림자를 설정합니다.
+//        let shadow = SurfaceAppearance.Shadow()
+//        shadow.color = UIColor.gray
+//        shadow.radius = 5
+//        shadow.spread = 5
+//        appearance.shadows = [shadow]
+//        return appearance
+//    }
+}
+
+extension TourViewController {
+    /// 초기 위치로 지도를 이동시킵니다.
+    private func resetToInitialLocation() {
+        let mapView = mapController?.getView("mapview") as! KakaoMap
+        let cameraUpdate = CameraUpdate.make(
+            target: MapPoint(
+                longitude: team.coordinate.longitude,
+                latitude: team.coordinate.latitude
+            ),
+            mapView: mapView
+        )
+        mapView.animateCamera(
+            cameraUpdate: cameraUpdate,
+            options: CameraAnimationOptions(
+                autoElevation: false,
+                consecutive: false,
+                durationInMillis: 100
+            )
+        )
     }
 }
