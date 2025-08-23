@@ -14,6 +14,7 @@ import RxSwift
 protocol TourUseCaseProtocol {
     /// 관광 타입과 위치를 기반으로 주변 관광지 정보를 조회합니다.
     func fetchTourPlacesByLocation(
+        pageNo: Int,
         longitude: Double,
         latitude: Double,
         radius: Int,
@@ -32,12 +33,14 @@ final class TourUseCase: TourUseCaseProtocol {
     }
     
     public func fetchTourPlacesByLocation(
+        pageNo: Int,
         longitude: Double,
         latitude: Double,
         radius: Int = 3000,
         tourType: TourType
     ) -> Single<TourPlacePage> {
         return self.repository.fetchTourPlacesByLocation(
+            pageNo: pageNo,
             longitude: longitude,
             latitude: latitude,
             radius: radius,

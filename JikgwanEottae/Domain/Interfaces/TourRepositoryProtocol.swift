@@ -14,6 +14,7 @@ import RxSwift
 protocol TourRepositoryProtocol {
     /// 위치기반 관광정보를 조회합니다.
     func fetchTourPlacesByLocation(
+        pageNo: Int,
         longitude: Double,
         latitude: Double,
         radius: Int,

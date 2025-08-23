@@ -8,9 +8,8 @@
 import Foundation
 
 import RxSwift
-import RxCocoa
 
-// MARK: - KBO 경기 정보 리포지토리
+// MARK: - KBO 경기 정보 리포지토리입니다.
 
 final class KBOGameRepository: KBOGameRepositoryProtocol {
     private let networkManager: KBOGameNetworkManager
