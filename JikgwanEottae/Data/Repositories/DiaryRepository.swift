@@ -8,9 +8,8 @@
 import Foundation
 
 import RxSwift
-import RxCocoa
 
-// MARK: - 직관 일기 리포지토리 구현체
+// MARK: - 직관 일기 리포지토리입니다.
 
 final class DiaryRepository: DiaryRepositoryProtocol {
     private let networkManger: DiaryNetworkManager
