@@ -13,16 +13,16 @@ import RxCocoa
 // MARK: - 직관 일기 프로토콜(인터페이스)입니다.
 
 protocol DiaryRepositoryProtocol {
-    /// 전체 직관 일기 조회 인터페이스입니다.
+    /// 전체 직관 일기를 조회합니다.
     func fetchAllDiaries() -> Single<[Diary]>
     
-    /// 해당 연도-월 직관 일기 조회 인터페이스입니다.
+    /// 해당 연도-월 직관 일기를 조회합니다.
     func fetchDiaries(
         year: String,
         month: String
     ) -> Single<[Diary]>
     
-    /// 직관 일기 생성 인터페이스입니다.
+    /// 직관 일기를 생성합니다.
     func createDiary(
         gameId: Int,
         favoriteTeam: String,
@@ -31,7 +31,7 @@ protocol DiaryRepositoryProtocol {
         imageData: Data?
     ) -> Completable
     
-    /// 직관 일기 수정 인터페이스입니다.
+    /// 직관 일기를 수정합니다.
     func updateDiary(
         diaryId: Int,
         favoriteTeam: String,
@@ -41,6 +41,6 @@ protocol DiaryRepositoryProtocol {
         isImageRemoved: Bool
     ) -> Completable
     
-    /// 직관 일기 삭제 인터페이스입니다.
+    /// 직관 일기를 삭제합니다.
     func deleteDiary(diaryId: Int) -> Completable
 }
