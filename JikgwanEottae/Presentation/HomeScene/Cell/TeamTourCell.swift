@@ -68,9 +68,9 @@ final class TeamTourCell: UICollectionViewCell {
     }
     
     /// 구단의 이름과 대표 색상으로 셀을 초기화합니다.
-    public func configure(teamName: String) {
-        teamNameLabel.text = teamName
-        teamSymbolButton.setTitle(teamName, for: .normal)
-        teamSymbolButton.setTitleColor(KBOTeam(rawValue: teamName)?.color, for: .normal)
+    public func configure(team: KBOTeam) {
+        teamNameLabel.text = team.rawValue
+        teamSymbolButton.setTitle(team.rawValue, for: .normal)
+        teamSymbolButton.setTitleColor(team.color, for: .normal)
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - 위치기반 관광정보 조회 Response DTO입니다.
 
-struct LocationBasedReponseDTO: Decodable {
+struct LocationBasedResponseDTO: Decodable {
     let response: ResponseDTO
     
     struct ResponseDTO: Decodable {
@@ -54,13 +54,13 @@ struct LocationBasedReponseDTO: Decodable {
     }
 }
 
-extension LocationBasedReponseDTO {
+extension LocationBasedResponseDTO {
     func toDomain() -> TourPlacePage {
         return response.body.toDomain()
     }
 }
 
-extension LocationBasedReponseDTO.ResponseDTO.BodyDTO {
+extension LocationBasedResponseDTO.ResponseDTO.BodyDTO {
     func toDomain() -> TourPlacePage {
         return TourPlacePage(
             pageNo: pageNo,
@@ -71,7 +71,7 @@ extension LocationBasedReponseDTO.ResponseDTO.BodyDTO {
     }
 }
 
-extension LocationBasedReponseDTO.ResponseDTO.BodyDTO.ItemsDTO.TourPlaceDTO {
+extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO.TourPlaceDTO {
     func toDomain() -> TourPlace {
         return TourPlace(
             id: Int(id)!,

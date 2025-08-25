@@ -18,7 +18,7 @@ enum TourAPIService {
 
 extension TourAPIService: TargetType {
     var baseURL: URL {
-        URL(string: "https://apis.data.go.kr/B551011/KorService2")!
+        URL(string: "http://apis.data.go.kr/B551011/KorService2")!
     }
     
     var path: String {
@@ -46,6 +46,11 @@ extension TourAPIService: TargetType {
     }
     
     var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+        switch self {
+        case .fetchTourPlacesByLocation:
+            return nil
+        default:
+            return ["Content-Type": "application/json"]
+        }
     }
 }

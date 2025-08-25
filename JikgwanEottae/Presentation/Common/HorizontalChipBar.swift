@@ -19,6 +19,8 @@ final class horizontalChipBar: UIView {
     private var buttonTitles: [String] = []
     // 버튼을 관리합니다.
     private var buttons: [UIButton] = []
+    // 이벤트 전달 클로저입니다.
+    public var onChipSelected: ((Int) -> Void)?
     
     // 현재 선택된 버튼의 인덱스입니다.
     private var selectedIndex = 0
@@ -150,6 +152,6 @@ final class horizontalChipBar: UIView {
         selectedIndex = newIndex
         scrollToButton(at: newIndex)
         selectionFeedback.selectionChanged()
-        print("선택된 카테고리: \(buttonTitles[newIndex])")
+        onChipSelected?(newIndex)
     }
 }
