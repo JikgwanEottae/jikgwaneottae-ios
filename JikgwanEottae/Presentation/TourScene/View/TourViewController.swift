@@ -143,8 +143,8 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
                 hAlign: .left
             ),
             position: CGPoint(
-                x: 38.0,
-                y: 30.0
+                x: 35.0,
+                y: 20.0
             )
         )
         // 틸트 기능을 제거합니다.
