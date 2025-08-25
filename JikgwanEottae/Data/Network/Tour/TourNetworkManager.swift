@@ -18,7 +18,7 @@ final class TourNetworkManager {
     
     public func fetchTourPlacesByLocation(params: LocationBasedRequestDTO) -> Single<TourPlacePage> {
         return provider.rx.request(.fetchTourPlacesByLocation(params: params))
-            .map(LocationBasedReponseDTO.self)
+            .map(LocationBasedResponseDTO.self)
             .map { $0.toDomain() }
     }
 }

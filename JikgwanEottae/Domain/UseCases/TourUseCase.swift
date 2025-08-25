@@ -18,7 +18,7 @@ protocol TourUseCaseProtocol {
         longitude: Double,
         latitude: Double,
         radius: Int,
-        tourType: TourType
+        contentTypeId: Int
     ) -> Single<TourPlacePage>
 }
 
@@ -36,15 +36,15 @@ final class TourUseCase: TourUseCaseProtocol {
         pageNo: Int,
         longitude: Double,
         latitude: Double,
-        radius: Int = 3000,
-        tourType: TourType
+        radius: Int,
+        contentTypeId: Int
     ) -> Single<TourPlacePage> {
         return self.repository.fetchTourPlacesByLocation(
             pageNo: pageNo,
             longitude: longitude,
             latitude: latitude,
             radius: radius,
-            tourType: tourType
+            contentTypeId: contentTypeId
         )
     }
     

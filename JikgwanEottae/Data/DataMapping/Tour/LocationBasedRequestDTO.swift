@@ -15,13 +15,13 @@ struct LocationBasedRequestDTO: Encodable {
     let mapX: Double
     let mapY: Double
     let radius: Int
-    let contentTypeId: String
+    let contentTypeId: Int
 }
 
 extension LocationBasedRequestDTO {
     func toDictionary() -> [String: Any] {
         return [
-            "numOfRows": "30",
+            "numOfRows": 30,
             "pageNo": pageNo,
             "MobileOS": "IOS",
             "MobileApp": "AppTest",

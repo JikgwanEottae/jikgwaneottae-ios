@@ -22,7 +22,7 @@ enum HomeSection: Int, CaseIterable, Hashable {
 }
 
 enum HomeItem: Hashable {
-    case tourItem(teamName: String)
+    case tourItem(team: KBOTeam)
 }
 
 final class HomeViewController: UIViewController {
@@ -54,7 +54,7 @@ final class HomeViewController: UIViewController {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
         // 구단별 관광지 조회 섹션입니다.
         snapshot.appendSections([.tour])
-        let tourItems = KBOTeam.allCases.map { HomeItem.tourItem(teamName: $0.rawValue) }
+        let tourItems = KBOTeam.allCases.map { HomeItem.tourItem(team: $0) }
         // 구단별 관광지 조회 섹션에 아이템을 추가합니다.
         snapshot.appendItems(tourItems, toSection: .tour)
         
@@ -64,13 +64,17 @@ final class HomeViewController: UIViewController {
     private func bindCollectionView() {
         homeView.collectionView.rx.itemSelected
             .bind(onNext: { [weak self] indexPath in
-                let item = self?.dataSource.itemIdentifier(for: indexPath)
+                guard let self = self else { return }
+                let item = self.dataSource.itemIdentifier(for: indexPath)
                 switch item {
-                case .tourItem(let teamName):
-                    let tourViewController = TourViewController(team: KBOTeam(rawValue: teamName)!)
+                case .tourItem(let selectedTeam):
+                    let tourRepository = TourRepository(manager: TourNetworkManager.shared)
+                    let tourUseCase = TourUseCase(repository: tourRepository)
+                    let tourViewModel = TourViewModel(useCase: tourUseCase)
+                    let tourViewController = TourViewController(viewModel: tourViewModel, selectedTeam: selectedTeam)
                     tourViewController.hidesBottomBarWhenPushed = true
-                    self?.navigationController?.pushViewController(tourViewController, animated: true)
-                case nil:
+                    self.navigationController?.pushViewController(tourViewController, animated: true)
+                default:
                     break
                 }
             })
@@ -85,13 +89,13 @@ extension HomeViewController {
             collectionView: homeView.collectionView,
             cellProvider: { collectionView, indexPath, itemIdentifier in
                 switch itemIdentifier {
-                case .tourItem(let teamName):
+                case .tourItem(let team):
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: TeamTourCell.ID,
                         for: indexPath) as? TeamTourCell else {
                         return UICollectionViewCell()
                     }
-                    cell.configure(teamName: teamName)
+                    cell.configure(team: team)
                     return cell
                 }
             }

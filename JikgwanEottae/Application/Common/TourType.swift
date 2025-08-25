@@ -9,18 +9,22 @@ import Foundation
 
 // MARK: - 관광 타입 ID입니다.
 
-enum TourType: String, Decodable, CaseIterable {
-    case touristSpot = "12" // 관광지
-    case culturalFacility = "14" // 문화시설
-    case festival = "15" // 축제 공연 행사
-    case travelCourse = "25" // 여행
-    case sports = "28" // 레저
-    case accommodation = "32" // 숙박
-    case shopping = "38" // 쇼핑
-    case restaurant = "39" // 식당
+enum TourType: Decodable, CaseIterable {
+    case restaurant // 식당
+    case shopping // 쇼핑
+    case touristSpot // 관광지
+    case culturalFacility // 문화시설
+    case festival // 축제 공연 행사
+    case travelCourse // 여행
+    case sports // 레저
+    case accommodation // 숙박
     
     var description: String {
         switch self {
+        case .restaurant:
+            return "식당"
+        case .shopping:
+            return "쇼핑"
         case .touristSpot:
             return "관광지"
         case .culturalFacility:
@@ -33,10 +37,27 @@ enum TourType: String, Decodable, CaseIterable {
             return "레저"
         case .accommodation:
             return "숙박"
-        case .shopping:
-            return "쇼핑"
+        }
+    }
+    
+    var contentTypeId: Int {
+        switch self {
         case .restaurant:
-            return "식당"
+            return 39
+        case .shopping:
+            return 38
+        case .touristSpot:
+            return 12
+        case .culturalFacility:
+            return 14
+        case .festival:
+            return 15
+        case .travelCourse:
+            return 25
+        case .sports:
+            return 28
+        case .accommodation:
+            return 32
         }
     }
 }

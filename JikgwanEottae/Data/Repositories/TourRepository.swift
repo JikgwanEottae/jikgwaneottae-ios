@@ -23,16 +23,16 @@ final class TourRepository: TourRepositoryProtocol {
         longitude: Double,
         latitude: Double,
         radius: Int,
-        tourType: TourType
+        contentTypeId: Int
     ) -> Single<TourPlacePage> {
-        let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "tourApiKey") as! String
+        let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TourApiKey") as! String
         let locationBasedRequestDTO = LocationBasedRequestDTO(
             pageNo: pageNo,
             serviceKey: tourApiKey,
             mapX: longitude,
             mapY: latitude,
             radius: radius,
-            contentTypeId: tourType.description
+            contentTypeId: contentTypeId
         )
         return self.manager.fetchTourPlacesByLocation(params: locationBasedRequestDTO)
     }

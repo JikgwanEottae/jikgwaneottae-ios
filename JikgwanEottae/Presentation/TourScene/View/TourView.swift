@@ -12,10 +12,12 @@ import SnapKit
 import Then
 
 final class TourView: UIView {
+    // 모든 관광타입 버튼을 표시하는 칩 바입니다.
     public let categoryChipBar = horizontalChipBar(
-        titles: ["음식", "쇼핑", "관광", "문화시설", "행사", "여행", "레저", "숙박"]
+        titles: TourType.allCases.map { $0.description }
     )
     
+    // 카카오 맵 컨테이너입니다.
     public var mapContainer = KMViewContainer()
     
     // 지도의 초기 위치로 돌아가는 버튼입니다.

@@ -72,28 +72,28 @@ enum KBOTeam: String, CaseIterable, Hashable {
         }
     }
     
-    var coordinate: (latitude: Double, longitude: Double) {
+    var coordinate: Coordinate {
         switch self {
         case .doosan:
-            return (37.5119858, 127.0718388)
+            return Coordinate(latitude: 37.5119858, longitude: 127.0718388)
         case .kiwoom:
-            return (37.4982105, 126.8672613)
+            return Coordinate(latitude: 37.4982105, longitude: 126.8672613)
         case .samsung:
-            return (35.8410706, 128.6817523)
+            return Coordinate(latitude: 35.8410706, longitude: 128.6817523)
         case .lotte:
-            return (35.1931684, 129.0615852)
+            return Coordinate(latitude: 35.1931684, longitude: 129.0615852)
         case .kia:
-            return (35.1682116, 126.8891068)
+            return Coordinate(latitude: 35.1682116, longitude: 126.8891068)
         case .hanwha:
-            return (36.3163197, 127.4313789)
+            return Coordinate(latitude: 36.3163197, longitude: 127.4313789)
         case .ssg:
-            return (37.4368605, 126.6932818)
+            return Coordinate(latitude: 37.4368605, longitude: 126.6932818)
         case .nc:
-            return (35.2224951, 128.5825537)
+            return Coordinate(latitude: 35.2224951, longitude: 128.5825537)
         case .lg:
-            return (37.5119858, 127.0718388)
+            return Coordinate(latitude: 37.5119858, longitude: 127.0718388)
         case .kt:
-            return (37.3000960, 127.0096588)
+            return Coordinate(latitude: 37.3000960, longitude: 127.0096588)
         }
     }
 }

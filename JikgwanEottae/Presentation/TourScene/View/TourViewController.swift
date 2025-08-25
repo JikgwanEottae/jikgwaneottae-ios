@@ -13,18 +13,21 @@ import RxSwift
 import RxCocoa
 
 final class TourViewController: UIViewController {
+    private let viewModel: TourViewModel
     private let tourView = TourView()
-    private let team: KBOTeam
-    // Kakao Map
     private var mapController: KMController?
     private let poiLayerID = "PoiLayer"
     private let poiStyleID = "PoiStyle"
-    // Floating Panel
-//    private var floatingPanelController: FloatingPanelController!
+    private let selectedTeam: KBOTeam
+    private let tourTypeRelay: BehaviorRelay<TourType>
+    private let mapCenterCoordinateRelay: BehaviorRelay<Coordinate>
     private let disposeBag = DisposeBag()
         
-    init(team: KBOTeam) {
-        self.team = team
+    init(viewModel: TourViewModel, selectedTeam: KBOTeam) {
+        self.viewModel = viewModel
+        self.selectedTeam = selectedTeam
+        self.tourTypeRelay = BehaviorRelay<TourType>(value: .restaurant)
+        self.mapCenterCoordinateRelay = BehaviorRelay<Coordinate>(value: selectedTeam.coordinate)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,13 +42,14 @@ final class TourViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = team.ballpark
+        bindChipBar()
+        bindViewModel()
+        recenterButtonTapped()
+        self.title = selectedTeam.ballpark
         mapController = KMController(viewContainer: tourView.mapContainer)
         mapController!.delegate = self
         //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행됩니다.
         mapController?.prepareEngine()
-//        setupFloatingPanel()
-        recenterButtonTapped()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -74,6 +78,23 @@ final class TourViewController: UIViewController {
 //        floatingPanelController.removePanelFromParent(animated: false)
     }
     
+    /// 뷰 모델과 바인딩합니다.
+    private func bindViewModel() {
+        let input = TourViewModel.Input(
+            tourTypeSelected: tourTypeRelay,
+            mapCenterChanged: mapCenterCoordinateRelay
+        )
+        let output = viewModel.transform(input: input)
+    }
+    
+    /// 칩 바와 바인딩하고, 관광 타입 선택 이벤트를 전달합니다.
+    private func bindChipBar() {
+        self.tourView.categoryChipBar.onChipSelected = { [weak self] selectedIndex in
+            let tourType = TourType.allCases[selectedIndex]
+            self?.tourTypeRelay.accept(tourType)
+        }
+    }
+    
     /// recenter 버튼이 클릭됬을 때 이벤트입니다.
     private func recenterButtonTapped() {
         self.tourView.recenterButton.rx.tap
@@ -90,8 +111,8 @@ final class TourViewController: UIViewController {
 extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, FloatingPanelControllerDelegate {
     func addViews() {
         let defaultPosition = MapPoint(
-            longitude: team.coordinate.longitude,
-            latitude: team.coordinate.latitude
+            longitude: selectedTeam.coordinate.longitude,
+            latitude: selectedTeam.coordinate.latitude
         )
         let mapviewInfo = MapviewInfo(
             viewName: "mapview",
@@ -112,8 +133,8 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
         createPoiStyle(on: mapView)
         createPoi(
             on: mapView,
-            longitude: team.coordinate.longitude,
-            latitude: team.coordinate.latitude
+            longitude: selectedTeam.coordinate.longitude,
+            latitude: selectedTeam.coordinate.latitude
         )
         // 지도의 카카오 로고 위치를 변경합니다.
         mapView.setLogoPosition(
@@ -225,47 +246,11 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
                 y: kakaoMap.viewRect.size.height * 0.5
             )
         )
-        print("위도: \(center.wgsCoord.latitude), 경도: \(center.wgsCoord.longitude)" )
+        let latitude = center.wgsCoord.latitude
+        let longitude = center.wgsCoord.longitude
+        let coordinate = Coordinate(latitude: latitude, longitude: longitude)
+        self.mapCenterCoordinateRelay.accept(coordinate)
     }
-    
-    
-    
-}
-
-
-extension TourViewController {
-//    /// 플로팅 패널의 초기 상태를 설정합니다.
-//    private func setupFloatingPanel() {
-//        self.floatingPanelController = FloatingPanelController()
-//        self.floatingPanelController.layout = CustomFloatingPanelLayout()
-//        self.floatingPanelController.surfaceView.appearance = createFloatingPanelApperance()
-//        self.floatingPanelController.backdropView.dismissalTapGestureRecognizer.isEnabled = false
-//        // 아래로 스와이프 닫기를 비활성화합니다.
-//        self.floatingPanelController.isRemovalInteractionEnabled = false
-//        // floating panel에 들어갈 뷰 컨트롤러입니다.
-//        let contentViewController = ContentViewController()
-//        let navigationController = UINavigationController(rootViewController: contentViewController)
-//        navigationController.configureBarAppearnace()
-//        self.floatingPanelController.set(contentViewController: navigationController)
-//        self.floatingPanelController.track(scrollView: contentViewController.tourPlaceTableView)
-//        self.floatingPanelController.addPanel(toParent: self)
-//        self.floatingPanelController.invalidateLayout()
-//    }
-//    
-//    /// 플로팅 패널의 Appearance를 생성합니다.
-//    private func createFloatingPanelApperance() -> SurfaceAppearance {
-//        // 패널에 적용할 appearance를 설정합니다.
-//        let appearance = SurfaceAppearance()
-//        appearance.cornerRadius = 17
-//        appearance.backgroundColor = .white
-//        // 패널 둘레에 적용할 그림자를 설정합니다.
-//        let shadow = SurfaceAppearance.Shadow()
-//        shadow.color = UIColor.gray
-//        shadow.radius = 5
-//        shadow.spread = 5
-//        appearance.shadows = [shadow]
-//        return appearance
-//    }
 }
 
 extension TourViewController {
@@ -274,8 +259,8 @@ extension TourViewController {
         let mapView = mapController?.getView("mapview") as! KakaoMap
         let cameraUpdate = CameraUpdate.make(
             target: MapPoint(
-                longitude: team.coordinate.longitude,
-                latitude: team.coordinate.latitude
+                longitude: selectedTeam.coordinate.longitude,
+                latitude: selectedTeam.coordinate.latitude
             ),
             mapView: mapView
         )
