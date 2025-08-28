@@ -34,7 +34,7 @@ final class TourPlaceTableViewCell: UITableViewCell {
     // 주소를 표시하기 위한 레이블입니다.
     private let addressLabel = UILabel().then {
         $0.font = .gMarketSans(size: 13, family: .medium)
-        $0.numberOfLines = 1
+        $0.numberOfLines = 2
         $0.textColor = .secondaryTextColor
     }
     
@@ -58,6 +58,7 @@ final class TourPlaceTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        thumbnailImageView.kf.cancelDownloadTask()
         thumbnailImageView.image = nil
         titleLabel.text = nil
         addressLabel.text = nil
@@ -69,9 +70,9 @@ final class TourPlaceTableViewCell: UITableViewCell {
         contentView.frame = contentView.frame.inset(
             by: UIEdgeInsets(
                 top: 0,
-                left: 0,
+                left: 12,
                 bottom: 15,
-                right: 0
+                right: 12
             )
         )
     }
@@ -81,7 +82,7 @@ final class TourPlaceTableViewCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         contentView.addSubview(addressLabel)
         contentView.addSubview(distanceLabel)
-        self.selectionStyle = .none
+        selectionStyle = .none
     }
     
     private func setupLayout() {
@@ -104,20 +105,20 @@ final class TourPlaceTableViewCell: UITableViewCell {
         }
         
         addressLabel.snp.makeConstraints { make in
-            make.top
-                .equalTo(titleLabel.snp.bottom)
-                .offset(11)
+            make.centerY.trailing
+                .equalToSuperview()
             make.leading
                 .equalTo(thumbnailImageView.snp.trailing)
                 .offset(15)
-            make.trailing
-                .equalToSuperview()
+            make.top
+                .greaterThanOrEqualTo(titleLabel.snp.bottom)
+                .offset(5)
+            make.bottom
+                .lessThanOrEqualTo(distanceLabel.snp.top)
+                .offset(-5)
         }
         
         distanceLabel.snp.makeConstraints { make in
-            make.top
-                .equalTo(addressLabel.snp.bottom)
-                .offset(11)
             make.leading
                 .equalTo(thumbnailImageView.snp.trailing)
                 .offset(15)
@@ -130,12 +131,19 @@ final class TourPlaceTableViewCell: UITableViewCell {
         
     }
     
-    public func configure(thumbnail: String, title: String, address: String, distance: Double) {
-        if let url = URL(string: thumbnail) {
-            thumbnailImageView.kf.setImage(with: url)
+    public func configure(with tourPlace: TourPlace) {
+        titleLabel.text = tourPlace.title
+        addressLabel.text = tourPlace.address
+        addressLabel.setLineSpacing(spacing: 5)
+        distanceLabel.text = "\(Int(tourPlace.distance))m"
+        guard let urlString = tourPlace.imageURL,
+                !urlString.isEmpty,
+              let url = URL(string: urlString)
+        else {
+            thumbnailImageView.image = UIImage(named: "imagePlaceholder")
+            return
         }
-        titleLabel.text = title
-        addressLabel.text = address
-        distanceLabel.text = "\(Int(distance))m"
+        thumbnailImageView.kf.indicatorType = .activity
+        thumbnailImageView.kf.setImage(with: url)
     }
 }
