@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - 좌표(위도, 경도) 엔티티
 
-struct Coordinate: Equatable {
+struct Coordinate: Hashable {
     let latitude: Double
     let longitude: Double
     

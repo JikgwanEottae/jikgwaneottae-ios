@@ -7,7 +7,6 @@
 
 import UIKit
 
-import FloatingPanel
 import KakaoMapsSDK
 import RxSwift
 import RxCocoa
@@ -18,16 +17,13 @@ final class TourViewController: UIViewController {
     private var mapController: KMController?
     private let poiLayerID = "PoiLayer"
     private let poiStyleID = "PoiStyle"
-    private let selectedTeam: KBOTeam
-    private let tourTypeRelay: BehaviorRelay<TourType>
-    private let mapCenterCoordinateRelay: BehaviorRelay<Coordinate>
+    private var coordinate: Coordinate?
+    private let tourTypeRelay = PublishSubject<TourType>()
+    private let mapCenterCoordinateRelay = PublishRelay<Coordinate>()
     private let disposeBag = DisposeBag()
         
-    init(viewModel: TourViewModel, selectedTeam: KBOTeam) {
+    init(viewModel: TourViewModel) {
         self.viewModel = viewModel
-        self.selectedTeam = selectedTeam
-        self.tourTypeRelay = BehaviorRelay<TourType>(value: .restaurant)
-        self.mapCenterCoordinateRelay = BehaviorRelay<Coordinate>(value: selectedTeam.coordinate)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -44,12 +40,8 @@ final class TourViewController: UIViewController {
         super.viewDidLoad()
         bindChipBar()
         bindViewModel()
-        recenterButtonTapped()
-        self.title = selectedTeam.ballpark
-        mapController = KMController(viewContainer: tourView.mapContainer)
-        mapController!.delegate = self
-        //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행됩니다.
-        mapController?.prepareEngine()
+        showListButtonTapped()
+        setupKakaoMap()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,32 +67,99 @@ final class TourViewController: UIViewController {
     deinit {
         mapController?.pauseEngine()
         mapController?.resetEngine()
-//        floatingPanelController.removePanelFromParent(animated: false)
+    }
+    
+    /// 카카오 맵 초기 설정입니다.
+    private func setupKakaoMap() {
+        mapController = KMController(viewContainer: tourView.mapContainer)
+        mapController!.delegate = self
+        //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행됩니다.
+        mapController?.prepareEngine()
     }
     
     /// 뷰 모델과 바인딩합니다.
     private func bindViewModel() {
         let input = TourViewModel.Input(
             tourTypeSelected: tourTypeRelay,
-            mapCenterChanged: mapCenterCoordinateRelay
+            mapCenterChanged: mapCenterCoordinateRelay,
+            centerButtonTapped: tourView.centerActionButton.rx.tap.asObservable(),
+            resetCoordinateButtonTapped: tourView.resetCoordinateButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(input: input)
+        
+        output.naviTitle
+            .drive(onNext: { [weak self] title in
+                self?.title = title
+            })
+            .disposed(by: disposeBag)
+        
+        output.initialCoordinate
+            .drive(onNext: { [weak self] initialCoordinate in
+                self?.coordinate = initialCoordinate
+            })
+            .disposed(by: disposeBag)
+
+        output.resetCoordinate
+            .withUnretained(self)
+            .subscribe(onNext: { owner, coordinate in
+                owner.resetToInitialLocation(coordinate: coordinate)
+            })
+            .disposed(by: disposeBag)
+        
+        output.centerButtonState
+            .drive(onNext: { [weak self] isShowMode in
+                self?.tourView.updateCenterButtonState(isSearchMode: isShowMode)
+            })
+            .disposed(by: disposeBag)
+            
+        output.tourPlaces
+            .withUnretained(self)
+            .subscribe(onNext: { owner, tourPlaces in
+                let mapView = owner.mapController?.getView("mapview") as! KakaoMap
+                owner.createPois(on: mapView, tourPlaces: tourPlaces)
+            })
+            .disposed(by: disposeBag)
+        
+        output.hasMoreData
+            .withUnretained(self)
+            .subscribe(onNext: { owner, hasMoreData in
+                if !hasMoreData {
+                    owner.tourView.showToast(message: "장소를 모두 가져왔어요")
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                if isLoading {
+//                    self?.tourView.showToast(message: "장소를 가져오고 있어요")
+                }
+            })
+            .disposed(by: disposeBag)
+        
     }
     
     /// 칩 바와 바인딩하고, 관광 타입 선택 이벤트를 전달합니다.
     private func bindChipBar() {
         self.tourView.categoryChipBar.onChipSelected = { [weak self] selectedIndex in
             let tourType = TourType.allCases[selectedIndex]
-            self?.tourTypeRelay.accept(tourType)
+            
+            self?.tourTypeRelay.onNext(tourType)
         }
     }
     
-    /// recenter 버튼이 클릭됬을 때 이벤트입니다.
-    private func recenterButtonTapped() {
-        self.tourView.recenterButton.rx.tap
+    /// 목록보기 버튼이 클릭됬을 때 이벤트입니다.
+    private func showListButtonTapped() {
+        self.tourView.showListButton.rx.tap
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
-                owner.resetToInitialLocation()
+                let listViewController = ListViewController()
+                
+                if let sheet = listViewController.sheetPresentationController {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.prefersGrabberVisible = true
+                }
+                owner.present(listViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -108,11 +167,12 @@ final class TourViewController: UIViewController {
 
 // MARK: - Kakao Map extension
 
-extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, FloatingPanelControllerDelegate {
+extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
     func addViews() {
+        guard let coordinate = coordinate else { return }
         let defaultPosition = MapPoint(
-            longitude: selectedTeam.coordinate.longitude,
-            latitude: selectedTeam.coordinate.latitude
+            longitude: coordinate.longitude,
+            latitude: coordinate.latitude
         )
         let mapviewInfo = MapviewInfo(
             viewName: "mapview",
@@ -125,16 +185,17 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
     
     /// addView 성공 이벤트 delegate. 추가적으로 수행할 작업을 진행합니다.
     func addViewSucceeded(_ viewName: String, viewInfoName: String) {
+        guard let coordinate = coordinate else { return }
         let mapView = mapController?.getView("mapview") as! KakaoMap
         mapView.viewRect = tourView.mapContainer.bounds
         // 카메라의 최소 줌 레벨입니다.
         mapView.cameraMinLevel = 13
         createLabelLayer(on: mapView)
-        createPoiStyle(on: mapView)
+        createAllPoiStyles(on: mapView)
         createPoi(
             on: mapView,
-            longitude: selectedTeam.coordinate.longitude,
-            latitude: selectedTeam.coordinate.latitude
+            longitude: coordinate.longitude,
+            latitude: coordinate.latitude
         )
         // 지도의 카카오 로고 위치를 변경합니다.
         mapView.setLogoPosition(
@@ -178,31 +239,49 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
         //뷰가 active 상태가 되면 렌더링 시작. 엔진은 미리 시작된 상태여야 함.
         mapController?.activateEngine()
     }
+}
+
+extension TourViewController {
     /// LabelManager를 통해 Layer를 생성합니다.
     private func createLabelLayer(on mapView: KakaoMap) {
         // LabelManager를 가져옵니다.
         // LabelLayer는 LabelManger를 통해 추가할 수 있습니다.
         let labelManager = mapView.getLabelManager()
-        //
-        let layerOption = LabelLayerOptions(
+        // 초기 좌표 전용 레이어 옵션입니다.
+        let defaultLayerOption = LabelLayerOptions(
             layerID: poiLayerID,
             competitionType: .none,
             competitionUnit: .symbolFirst,
             orderType: .rank,
             zOrder: 10001
         )
-        let _ = labelManager.addLabelLayer(option: layerOption)
+        let _ = labelManager.addLabelLayer(option: defaultLayerOption)
+        // 관광지 좌표 전용 레이어 옵션입니다.
+        let tourPlaceLayerOption = LabelLayerOptions(
+            layerID: "tourPoiLayerID",
+            competitionType: .upperSame,
+            competitionUnit: .symbolFirst,
+            orderType: .rank,
+            zOrder: 10001
+        )
+        let _ = labelManager.addLabelLayer(option: tourPlaceLayerOption)
     }
     
-    /// Poi 스타일을 생성합니다.
-    /// Poi를 생성하기 위해서는 먼저 LabelLayer를 생성해야 합니다.
-    private func createPoiStyle(on mapView: KakaoMap) {
+    /// 모든 Poi 스타일을 한번에 모아서 생성합니다. 주의! 동적 Poi 스타일 생성을 지양합니다.
+    private func createAllPoiStyles(on mapView: KakaoMap) {
         let labelManager = mapView.getLabelManager()
-        
-        let symbolImage = UIImage(systemName: "pin.fill")?
-            .withTintColor(.tossRedColor, renderingMode: .alwaysOriginal)
-
-        // 심볼을 지정합니다.
+        createMarkerPoiStyle(labelManager: labelManager)
+        createSinglePoiStyle(labelManager: labelManager)
+        for count in 2...99 {
+            createNumberPoiStyle(labelManager: labelManager, count: count)
+        }
+        createLimitPoiStyle(labelManager: labelManager)
+    }
+    
+    /// 초기 위치에 찍을 마커의 Poi 스타일을 생성합니다.
+    private func createMarkerPoiStyle(labelManager: LabelManager) {
+        let symbolImage = UIImage(named: "marker")
+        // 아이콘 스타일을 설정합니다.
         let iconStyle = PoiIconStyle(
             symbol: symbolImage,
             anchorPoint: CGPoint(x: 0.5, y: 1.0)
@@ -221,7 +300,7 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
         labelManager.addPoiStyle(poiStyle)
     }
     
-    /// 위도 및 경도의 좌표를 입력받고, Poi를 생성합니다.
+    /// 초기 위치에 찍을 마커의 Poi를 생성합니다.
     private func createPoi(on mapView: KakaoMap, longitude: Double, latitude: Double) {
         let labelManager = mapView.getLabelManager()
         guard let layer = labelManager.getLabelLayer(layerID: poiLayerID) else { return }
@@ -231,12 +310,147 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
             latitude: latitude
         )
         let poi = layer.addPoi(
-            option:poiOption,
+            option: poiOption,
             at: poiCoordiate
         )
         poi?.show()
     }
     
+    /// 번호 아이콘을 가지는 단일 Poi 스타일을 생성합니다.
+    private func createSinglePoiStyle(labelManager: LabelManager) {
+        let symbolImage = UIImage.circularNumberImage(number: nil)
+        // 아이콘 스타일을 설정합니다.
+        let iconStyle = PoiIconStyle(
+            symbol: symbolImage,
+            anchorPoint: CGPoint(x: 0.5, y: 1.0)
+        )
+        // 폰트 스타일을 설정합니다.
+        let textStyle = TextStyle(
+            fontSize: 21,
+            fontColor: .primaryTextColor,
+            font: "GmarketSansMedium",
+            charSpace: 2
+        )
+        // 폰트 스타일을 적용하여 PoiTextStyle을 설정합니다.
+        let poiTextStyle = PoiTextStyle(textLineStyles: [
+            PoiTextLineStyle(textStyle: textStyle)
+        ])
+        // 특정 레벨에 적용될 라벨스타일을 지정합니다.
+        let perLevelStyle = PerLevelPoiStyle(
+            iconStyle: iconStyle,
+            textStyle: poiTextStyle,
+            level: 0
+        )
+        // PoiStyle을 지정합니다.
+        let poiStyle = PoiStyle(
+            styleID: "singlePoiStyle",
+            styles: [perLevelStyle]
+        )
+        // LabelManager에 Style을 등록합니다.
+        labelManager.addPoiStyle(poiStyle)
+    }
+    
+    /// 같은 위치의 아이템에서 사용할 Poi 스타일을 생성합니다.
+    private func createNumberPoiStyle(labelManager: LabelManager, count: Int) {
+        let symbolImage = UIImage.circularNumberImage(number: String(count))
+        // 아이콘 스타일을 설정합니다.
+        let iconStyle = PoiIconStyle(
+            symbol: symbolImage,
+            anchorPoint: CGPoint(x: 0.5, y: 1.0)
+        )
+        // 특정 레벨에 적용될 라벨스타일을 지정합니다.
+        let perLevelStyle = PerLevelPoiStyle(
+            iconStyle: iconStyle,
+            level: 0
+        )
+        // PoiStyle을 지정합니다.
+        let poiStyle = PoiStyle(
+            styleID: "numberPoiStyle_\(count)",
+            styles: [perLevelStyle]
+        )
+        // LabelManager에 Style을 등록합니다.
+        labelManager.addPoiStyle(poiStyle)
+    }
+    
+    /// 같은 위치의 아이템이 99개 이상일 때 사용할 Poi 스타일을 생성합니다.
+    private func createLimitPoiStyle(labelManager: LabelManager) {
+        let symbolImage = UIImage.circularNumberImage(number: "99+")
+        // 아이콘 스타일을 설정합니다.
+        let iconStyle = PoiIconStyle(
+            symbol: symbolImage,
+            anchorPoint: CGPoint(x: 0.5, y: 1.0)
+        )
+        // 특정 레벨에 적용될 라벨스타일을 지정합니다.
+        let perLevelStyle = PerLevelPoiStyle(
+            iconStyle: iconStyle,
+            level: 0
+        )
+        // PoiStyle을 지정합니다.
+        let poiStyle = PoiStyle(
+            styleID: "limitPoiStyle",
+            styles: [perLevelStyle]
+        )
+        // LabelManager에 Style을 등록합니다.
+        labelManager.addPoiStyle(poiStyle)
+    }
+    
+    /// 다수의 Poi를 생성합니다.
+    private func createPois(on mapView: KakaoMap, tourPlaces: [TourPlace]) {
+        let labelManager = mapView.getLabelManager()
+        guard let layer = labelManager.getLabelLayer(layerID: "tourPoiLayerID") else { return }
+        layer.clearAllItems()
+        let groupedPlaces = Dictionary(grouping: tourPlaces) { place in
+            Coordinate(latitude: place.latitude, longitude: place.longitude)
+        }
+        
+        var poiOptions: [PoiOptions] = []
+        var poiMapPoints: [MapPoint] = []
+        var groupedPlacesArray: [[TourPlace]] = []
+        for (coordinate, places) in groupedPlaces {
+            let count = places.count
+            
+            let poiStyleID: String = {
+                switch count {
+                case 1:
+                    return "singlePoiStyle"
+                case 2...99:
+                    return "numberPoiStyle_\(count)"
+                default:
+                    return "limitPoiStyle"
+                }
+            }()
+            let poiOption = PoiOptions(styleID: poiStyleID)
+            poiOption.clickable = true
+            if count == 1 {
+                poiOption.addText(
+                    PoiText(
+                        text: places[0].title,
+                        styleIndex: 0
+                    )
+                )
+            }
+            let poiCoordinate = MapPoint(
+                longitude: coordinate.longitude,
+                latitude: coordinate.latitude
+            )
+            poiOptions.append(poiOption)
+            poiMapPoints.append(poiCoordinate)
+            groupedPlacesArray.append(places)
+        }
+        let pois = layer.addPois(
+            options: poiOptions,
+            at: poiMapPoints
+        )
+        guard let pois = pois else { return }
+        for (index, poi) in pois.enumerated() {
+            let _ = poi.addPoiTappedEventHandler(target: self, handler: TourViewController.poiDidTappedHandler)
+            poi.userObject = groupedPlacesArray[index] as AnyObject
+            poi.show()
+        }
+    }
+}
+
+extension TourViewController {
     /// 카메라의 이동이 멈췄을 때 호출되는 델리게이트입니다.
     func cameraDidStopped(kakaoMap: KakaoMap, by: MoveBy) {
         // 지도의 중심 좌표입니다.
@@ -251,16 +465,14 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate, Floa
         let coordinate = Coordinate(latitude: latitude, longitude: longitude)
         self.mapCenterCoordinateRelay.accept(coordinate)
     }
-}
-
-extension TourViewController {
+    
     /// 초기 위치로 지도를 이동시킵니다.
-    private func resetToInitialLocation() {
+    private func resetToInitialLocation(coordinate: Coordinate) {
         let mapView = mapController?.getView("mapview") as! KakaoMap
         let cameraUpdate = CameraUpdate.make(
             target: MapPoint(
-                longitude: selectedTeam.coordinate.longitude,
-                latitude: selectedTeam.coordinate.latitude
+                longitude: coordinate.longitude,
+                latitude: coordinate.latitude
             ),
             mapView: mapView
         )
@@ -272,5 +484,17 @@ extension TourViewController {
                 durationInMillis: 100
             )
         )
+    }
+    
+    /// Poi가 클릭됬을 때 핸들러입니다.
+    private func poiDidTappedHandler(_ param: PoiInteractionEventParam) {
+        // Poi에 저장된 아이템 객체를 가져오기
+        guard let tourPlaces = param.poiItem.userObject as? [TourPlace] else { return }
+        let listViewController = ListViewController()
+        if let sheet = listViewController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        self.present(listViewController, animated: true)
     }
 }

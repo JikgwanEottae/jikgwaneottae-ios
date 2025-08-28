@@ -12,16 +12,14 @@ import SnapKit
 import Then
 
 final class TourView: UIView {
-    // 모든 관광타입 버튼을 표시하는 칩 바입니다.
+    // 관광 카테고리 선택을 위한 칩 바입니다.
     public let categoryChipBar = horizontalChipBar(
         titles: TourType.allCases.map { $0.description }
     )
-    
-    // 카카오 맵 컨테이너입니다.
+    // 카카오 맵을 담는 컨테이너 뷰입니다.
     public var mapContainer = KMViewContainer()
-    
-    // 지도의 초기 위치로 돌아가는 버튼입니다.
-    public let recenterButton = UIButton(type: .custom).then {
+    // 지도를 초기 위치로 재설정하는 버튼입니다.
+    public let resetCoordinateButton = UIButton(type: .custom).then {
         var config = UIButton.Configuration.filled()
         // 이미지 설정
         config.image = UIImage(
@@ -42,35 +40,22 @@ final class TourView: UIView {
         $0.layer.shadowRadius = 6
         $0.configuration = config
     }
-    
-    //  해당 지역의 관광 데이터를 검색하기 위한 버튼입니다.
-    public let searchNearbyButton = UIButton().then {
-        var attributedTitle = AttributedString("이 지역 검색하기")
-        attributedTitle.font = UIFont.gMarketSans(size: 14, family: .medium)
-        attributedTitle.foregroundColor = UIColor.mainCharcoalColor
+
+    // 상태에 따라 기능이 변경되는 중앙 액션 버튼입니다.
+    public let centerActionButton = UIButton().then {
         var config = UIButton.Configuration.filled()
-        config.attributedTitle = attributedTitle
-        let image = UIImage(
-            systemName: "arrow.clockwise",
-            withConfiguration: UIImage.SymbolConfiguration(
-                pointSize: 12,
-                weight: .semibold
-            )
-        )
-        config.image = image
-        config.imagePadding = 5
-        config.imagePlacement = .leading
         config.baseBackgroundColor = .white
         config.baseForegroundColor = .mainCharcoalColor
         config.background.cornerRadius = 20
+        config.imagePadding = 5
+        config.imagePlacement = .leading
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.shadowOpacity = 0.3
         $0.layer.shadowOffset = CGSize(width: 0, height: 3)
         $0.layer.shadowRadius = 6
         $0.configuration = config
     }
-    
-    // 지도의 Poi가 아닌 리스트로 관광 데이터를 보여주기 위한 버튼입니다.
+    // 리스트로 보여주기 위한 버튼입니다.
     public let showListButton = UIButton().then {
         var config = UIButton.Configuration.filled()
         // 이미지 설정
@@ -82,10 +67,8 @@ final class TourView: UIView {
             )
         )
         config.cornerStyle = .capsule
-        // 배경색과 전경색
         config.baseBackgroundColor = .white
         config.baseForegroundColor = .mainCharcoalColor
-        // 그림자 설정
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.shadowOpacity = 0.3
         $0.layer.shadowOffset = CGSize(width: 0, height: 3)
@@ -97,6 +80,7 @@ final class TourView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
+        updateCenterButtonState(isSearchMode: false)
     }
     
     @available(*, unavailable)
@@ -106,7 +90,7 @@ final class TourView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        recenterButton.layer.cornerRadius = recenterButton.bounds.width / 2.0
+        resetCoordinateButton.layer.cornerRadius = resetCoordinateButton.bounds.width / 2.0
         showListButton.layer.cornerRadius = showListButton.bounds.width / 2.0
     }
     
@@ -114,8 +98,8 @@ final class TourView: UIView {
         self.backgroundColor = .white
         self.addSubview(categoryChipBar)
         self.addSubview(mapContainer)
-        mapContainer.addSubview(recenterButton)
-        mapContainer.addSubview(searchNearbyButton)
+        mapContainer.addSubview(resetCoordinateButton)
+        mapContainer.addSubview(centerActionButton)
         mapContainer.addSubview(showListButton)
     }
     
@@ -138,19 +122,19 @@ final class TourView: UIView {
                 .equalToSuperview()
         }
         
-        recenterButton.snp.makeConstraints { make in
+        resetCoordinateButton.snp.makeConstraints { make in
             make.leading
                 .equalToSuperview()
                 .inset(30)
             make.centerY
-                .equalTo(searchNearbyButton)
+                .equalTo(centerActionButton)
             make.size
                 .equalTo(40)
         }
         
-        searchNearbyButton.snp.makeConstraints { make in
+        centerActionButton.snp.makeConstraints { make in
             make.leading
-                .greaterThanOrEqualTo(recenterButton.snp.trailing)
+                .greaterThanOrEqualTo(resetCoordinateButton.snp.trailing)
                 .offset(15)
                 .priority(.required)
             make.trailing
@@ -171,9 +155,62 @@ final class TourView: UIView {
                 .equalToSuperview()
                 .inset(30)
             make.centerY
-                .equalTo(searchNearbyButton)
+                .equalTo(centerActionButton)
             make.size
                 .equalTo(40)
         }
+    }
+    /// 센터 버튼의 상태를 변경합니다.
+    public func updateCenterButtonState(isSearchMode: Bool) {
+        var config = centerActionButton.configuration ?? UIButton.Configuration.filled()
+        var attributedTitle: AttributedString
+        let imageName: String
+        if isSearchMode == true {
+            attributedTitle = AttributedString("장소 더보기")
+            imageName = "plus"
+        } else {
+            attributedTitle = AttributedString("이 지역 검색하기")
+            imageName = "arrow.clockwise"
+        }
+        attributedTitle.font = UIFont.gMarketSans(size: 14, family: .medium)
+        attributedTitle.foregroundColor = UIColor.mainCharcoalColor
+        config.attributedTitle = attributedTitle
+        config.image = UIImage(
+            systemName: imageName,
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        )
+        centerActionButton.configuration = config
+    }
+    
+    /// 토스트를 표시합니다.
+    public func showToast(message: String, duration: TimeInterval = 2.0) {
+        let toastLabel = UILabel(
+            frame: CGRect(
+                x: self.frame.size.width/2 - 120,
+                y: self.frame.size.height - 150,
+                width: 240,
+                height: 40
+            )
+        )
+        toastLabel.font = .gMarketSans(size: 14, family: .medium)
+        toastLabel.backgroundColor = .mainCharcoalColor
+        toastLabel.textColor = .white
+        toastLabel.textAlignment = .center
+        toastLabel.text = message
+        toastLabel.alpha = 1.0
+        toastLabel.layer.cornerRadius = 14
+        toastLabel.clipsToBounds  =  true
+        self.addSubview(toastLabel)
+        UIView.animate(
+            withDuration: 0.4,
+            delay: duration - 0.4,
+            options: UIView.AnimationOptions.curveEaseOut,
+            animations: {
+                toastLabel.alpha = 0.0
+            },
+            completion: { (finished) in
+                toastLabel.removeFromSuperview()
+            }
+        )
     }
 }

@@ -15,7 +15,7 @@ struct LocationBasedRequestDTO: Encodable {
     let mapX: Double
     let mapY: Double
     let radius: Int
-    let contentTypeId: Int
+    let contentTypeId: String
 }
 
 extension LocationBasedRequestDTO {

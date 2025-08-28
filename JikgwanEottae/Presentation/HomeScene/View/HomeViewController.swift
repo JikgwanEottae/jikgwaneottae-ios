@@ -70,8 +70,8 @@ final class HomeViewController: UIViewController {
                 case .tourItem(let selectedTeam):
                     let tourRepository = TourRepository(manager: TourNetworkManager.shared)
                     let tourUseCase = TourUseCase(repository: tourRepository)
-                    let tourViewModel = TourViewModel(useCase: tourUseCase)
-                    let tourViewController = TourViewController(viewModel: tourViewModel, selectedTeam: selectedTeam)
+                    let tourViewModel = TourViewModel(useCase: tourUseCase, selectedTeam: selectedTeam)
+                    let tourViewController = TourViewController(viewModel: tourViewModel)
                     tourViewController.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(tourViewController, animated: true)
                 default:
