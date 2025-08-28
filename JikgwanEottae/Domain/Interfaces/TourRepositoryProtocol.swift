@@ -18,6 +18,6 @@ protocol TourRepositoryProtocol {
         longitude: Double,
         latitude: Double,
         radius: Int,
-        contentTypeId: Int
+        contentTypeId: String
     ) -> Single<TourPlacePage>
 }

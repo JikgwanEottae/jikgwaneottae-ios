@@ -23,7 +23,7 @@ final class TourRepository: TourRepositoryProtocol {
         longitude: Double,
         latitude: Double,
         radius: Int,
-        contentTypeId: Int
+        contentTypeId: String
     ) -> Single<TourPlacePage> {
         let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TourApiKey") as! String
         let locationBasedRequestDTO = LocationBasedRequestDTO(

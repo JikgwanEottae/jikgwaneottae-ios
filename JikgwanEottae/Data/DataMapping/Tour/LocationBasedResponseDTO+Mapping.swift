@@ -11,45 +11,70 @@ import Foundation
 
 struct LocationBasedResponseDTO: Decodable {
     let response: ResponseDTO
-    
+}
+
+extension LocationBasedResponseDTO {
     struct ResponseDTO: Decodable {
         let header: HeaderDTO
         let body: BodyDTO
+    }
+}
+
+extension LocationBasedResponseDTO.ResponseDTO {
+    struct HeaderDTO: Decodable {
+        let resultCode: String // 결과 코드
+        let resultMsg: String // 결과 메시지
+    }
+    
+    struct BodyDTO: Decodable {
+        let items: ItemsDTO
+        let numOfRows: Int // 한 페이지 결과 수
+        let pageNo: Int // 페이지 번호
+        let totalCount: Int // 전체 결과 수
+    }
+}
+
+extension LocationBasedResponseDTO.ResponseDTO.BodyDTO {
+    struct ItemsDTO: Decodable {
+        let item: [TourPlaceDTO]?
         
-        struct HeaderDTO: Decodable {
-            let resultCode: String // 결과 코드
-            let resultMsg: String // 결과 메시지
+        private enum CodingKeys: String, CodingKey {
+            case item
         }
         
-        struct BodyDTO: Decodable {
-            let items: ItemsDTO
-            let numOfRows: Int // 한 페이지 결과 수
-            let pageNo: Int // 페이지 번호
-            let totalCount: Int // 전체 결과 수
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
             
-            struct ItemsDTO: Decodable {
-                let item: [TourPlaceDTO]
-                
-                struct TourPlaceDTO: Decodable {
-                    let id: String // 콘텐츠 아이디
-                    let categoryID: String // 관광 타입 아이디
-                    let title: String // 제목
-                    let address: String // 주소
-                    let latitude: String // 위도
-                    let longitude: String // 경도
-                    let imageURL: String? // 썸네일 이미지 주소
-                    
-                    private enum CodingKeys: String, CodingKey {
-                        case id = "contentid"
-                        case categoryID = "contenttypeid"
-                        case title
-                        case address = "addr1"
-                        case latitude = "mapy"
-                        case longitude = "mapx"
-                        case imageURL = "firstimage"
-                    }
-                }
+            if(try? container.decode(String.self)) != nil {
+                self.item = nil
+                return
             }
+            let keyedContainer = try decoder.container(keyedBy: CodingKeys.self)
+            self.item = try? keyedContainer.decode([TourPlaceDTO].self, forKey: .item)
+        }
+    }
+}
+
+extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO {
+    struct TourPlaceDTO: Decodable {
+        let id: String // 콘텐츠 아이디
+        let categoryID: String // 관광 타입 아이디
+        let title: String // 제목
+        let address: String // 주소
+        let latitude: String // 위도
+        let longitude: String // 경도
+        let distance: String // 떨어진 거리
+        let imageURL: String? // 썸네일 이미지 주소
+        
+        private enum CodingKeys: String, CodingKey {
+            case id = "contentid"
+            case categoryID = "contenttypeid"
+            case title
+            case address = "addr1"
+            case latitude = "mapy"
+            case longitude = "mapx"
+            case distance = "dist"
+            case imageURL = "firstimage"
         }
     }
 }
@@ -63,10 +88,10 @@ extension LocationBasedResponseDTO {
 extension LocationBasedResponseDTO.ResponseDTO.BodyDTO {
     func toDomain() -> TourPlacePage {
         return TourPlacePage(
-            pageNo: pageNo,
+            pageNo: pageNo,		
             totalCount: totalCount,
             numOfRows: numOfRows,
-            TourPlaces: items.item.map{ $0.toDomain() }
+            tourPlaces: items.item?.map{ $0.toDomain() } ?? []
         )
     }
 }
@@ -74,12 +99,14 @@ extension LocationBasedResponseDTO.ResponseDTO.BodyDTO {
 extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO.TourPlaceDTO {
     func toDomain() -> TourPlace {
         return TourPlace(
-            id: Int(id)!,
-            categoryID: Int(categoryID)!,
+            id: id,
+            categoryID: categoryID,
             title: title,
             address: address,
-            latitude: Double(latitude)!,
-            longitude: Double(longitude)!,
-            imageURL: imageURL)
+            latitude: Double(latitude) ?? 0.0,
+            longitude: Double(longitude) ?? 0.0,
+            distance: Double(distance) ?? 0.0,
+            imageURL: imageURL
+        )
     }
 }
