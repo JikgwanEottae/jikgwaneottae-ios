@@ -55,26 +55,26 @@ final class TourView: UIView {
         $0.layer.shadowRadius = 6
         $0.configuration = config
     }
-    // 리스트로 보여주기 위한 버튼입니다.
-    public let showListButton = UIButton().then {
-        var config = UIButton.Configuration.filled()
-        // 이미지 설정
-        config.image = UIImage(
-            systemName: "list.bullet",
-            withConfiguration: UIImage.SymbolConfiguration(
-                pointSize: 15,
-                weight: .bold
-            )
-        )
-        config.cornerStyle = .capsule
-        config.baseBackgroundColor = .white
-        config.baseForegroundColor = .mainCharcoalColor
-        $0.layer.shadowColor = UIColor.black.cgColor
-        $0.layer.shadowOpacity = 0.3
-        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
-        $0.layer.shadowRadius = 6
-        $0.configuration = config
-    }
+//    // 리스트로 보여주기 위한 버튼입니다.
+//    public let showListButton = UIButton().then {
+//        var config = UIButton.Configuration.filled()
+//        // 이미지 설정
+//        config.image = UIImage(
+//            systemName: "list.bullet",
+//            withConfiguration: UIImage.SymbolConfiguration(
+//                pointSize: 15,
+//                weight: .bold
+//            )
+//        )
+//        config.cornerStyle = .capsule
+//        config.baseBackgroundColor = .white
+//        config.baseForegroundColor = .mainCharcoalColor
+//        $0.layer.shadowColor = UIColor.black.cgColor
+//        $0.layer.shadowOpacity = 0.3
+//        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
+//        $0.layer.shadowRadius = 6
+//        $0.configuration = config
+//    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -91,7 +91,7 @@ final class TourView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         resetCoordinateButton.layer.cornerRadius = resetCoordinateButton.bounds.width / 2.0
-        showListButton.layer.cornerRadius = showListButton.bounds.width / 2.0
+//        showListButton.layer.cornerRadius = showListButton.bounds.width / 2.0
     }
     
     private func setupUI() {
@@ -100,7 +100,7 @@ final class TourView: UIView {
         self.addSubview(mapContainer)
         mapContainer.addSubview(resetCoordinateButton)
         mapContainer.addSubview(centerActionButton)
-        mapContainer.addSubview(showListButton)
+//        mapContainer.addSubview(showListButton)
     }
     
     private func setupLayout() {
@@ -137,10 +137,6 @@ final class TourView: UIView {
                 .greaterThanOrEqualTo(resetCoordinateButton.snp.trailing)
                 .offset(15)
                 .priority(.required)
-            make.trailing
-                .lessThanOrEqualTo(showListButton.snp.leading)
-                .offset(-15)
-                .priority(.required)
             make.centerX
                 .equalToSuperview()
             make.bottom
@@ -150,15 +146,15 @@ final class TourView: UIView {
                 .equalTo(35)
         }
         
-        showListButton.snp.makeConstraints { make in
-            make.trailing
-                .equalToSuperview()
-                .inset(30)
-            make.centerY
-                .equalTo(centerActionButton)
-            make.size
-                .equalTo(40)
-        }
+//        showListButton.snp.makeConstraints { make in
+//            make.trailing
+//                .equalToSuperview()
+//                .inset(30)
+//            make.centerY
+//                .equalTo(centerActionButton)
+//            make.size
+//                .equalTo(40)
+//        }
     }
     /// 센터 버튼의 상태를 변경합니다.
     public func updateCenterButtonState(isSearchMode: Bool) {
@@ -180,37 +176,5 @@ final class TourView: UIView {
             withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
         )
         centerActionButton.configuration = config
-    }
-    
-    /// 토스트를 표시합니다.
-    public func showToast(message: String, duration: TimeInterval = 2.0) {
-        let toastLabel = UILabel(
-            frame: CGRect(
-                x: self.frame.size.width/2 - 120,
-                y: self.frame.size.height - 150,
-                width: 240,
-                height: 40
-            )
-        )
-        toastLabel.font = .gMarketSans(size: 14, family: .medium)
-        toastLabel.backgroundColor = .mainCharcoalColor
-        toastLabel.textColor = .white
-        toastLabel.textAlignment = .center
-        toastLabel.text = message
-        toastLabel.alpha = 1.0
-        toastLabel.layer.cornerRadius = 14
-        toastLabel.clipsToBounds  =  true
-        self.addSubview(toastLabel)
-        UIView.animate(
-            withDuration: 0.4,
-            delay: duration - 0.4,
-            options: UIView.AnimationOptions.curveEaseOut,
-            animations: {
-                toastLabel.alpha = 0.0
-            },
-            completion: { (finished) in
-                toastLabel.removeFromSuperview()
-            }
-        )
     }
 }

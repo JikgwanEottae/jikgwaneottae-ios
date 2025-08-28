@@ -40,7 +40,6 @@ final class TourViewController: UIViewController {
         super.viewDidLoad()
         bindChipBar()
         bindViewModel()
-        showListButtonTapped()
         setupKakaoMap()
     }
     
@@ -143,25 +142,8 @@ final class TourViewController: UIViewController {
     private func bindChipBar() {
         self.tourView.categoryChipBar.onChipSelected = { [weak self] selectedIndex in
             let tourType = TourType.allCases[selectedIndex]
-            
             self?.tourTypeRelay.onNext(tourType)
         }
-    }
-    
-    /// 목록보기 버튼이 클릭됬을 때 이벤트입니다.
-    private func showListButtonTapped() {
-        self.tourView.showListButton.rx.tap
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                let listViewController = ListViewController()
-                
-                if let sheet = listViewController.sheetPresentationController {
-                    sheet.detents = [.medium(), .large()]
-                    sheet.prefersGrabberVisible = true
-                }
-                owner.present(listViewController, animated: true)
-            })
-            .disposed(by: disposeBag)
     }
 }
 
@@ -490,11 +472,14 @@ extension TourViewController {
     private func poiDidTappedHandler(_ param: PoiInteractionEventParam) {
         // Poi에 저장된 아이템 객체를 가져오기
         guard let tourPlaces = param.poiItem.userObject as? [TourPlace] else { return }
-        let listViewController = ListViewController()
-        if let sheet = listViewController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
+        let tourListViewController = TourListViewController(tourPlaces: tourPlaces)
+        if let sheet = tourListViewController.sheetPresentationController {
+            sheet.selectedDetentIdentifier = .medium
+            sheet.detents = [.medium()]
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 20
         }
-        self.present(listViewController, animated: true)
+        self.present(tourListViewController, animated: true)
     }
 }
