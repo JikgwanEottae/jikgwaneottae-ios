@@ -39,6 +39,7 @@ final class TourListViewController: UIViewController {
     
     /// 관광 데이터를 테이블 뷰에 바인드합니다.
     private func bindTableView() {
+        // 관광 데이터를 테이블 뷰에 전달합니다.
         Observable.just(tourPlaces)
             .bind(to: tourListView.tableView.rx.items(
                 cellIdentifier: TourPlaceTableViewCell.ID,
@@ -46,6 +47,18 @@ final class TourListViewController: UIViewController {
             ) { row, tourPlace, cell in
                 cell.configure(with: tourPlace)
             }
+            .disposed(by: disposeBag)
+        
+        // 관광 데이터가 클릭됬을 때 이벤트입니다.
+        tourListView.tableView.rx.modelSelected(TourPlace.self)
+            .withUnretained(self)
+            .subscribe(onNext: { owner, tourPlace in
+                print(tourPlace)
+                let tourPlaceDetailViewController = TourPlaceDetailViewController()
+                tourPlaceDetailViewController.modalPresentationStyle = .overFullScreen
+                tourPlaceDetailViewController.modalTransitionStyle = .crossDissolve
+                owner.present(tourPlaceDetailViewController, animated: true)
+            })
             .disposed(by: disposeBag)
     }
 }
