@@ -12,11 +12,11 @@ import SnapKit
 // MARK: - 메인 탭 바 컨트롤러
 
 final class MainTabBarController: UITabBarController {
-    
     // MARK: - Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.delegate = self
         setupViewControllers()
         configureTabBarApperance()
         addTopLine(
@@ -48,32 +48,11 @@ final class MainTabBarController: UITabBarController {
     }
     
     private func setupViewControllers() {
-        // 홈
-        let homeVC = HomeViewController()
-        let homeNVC = UINavigationController(rootViewController: homeVC)
-        homeNVC.configureBarAppearnace()
-        homeNVC.tabBarItem = UITabBarItem(
-            title: "홈",
-            image: .home,
-            tag: 0
-        )
-        
-        // 직관 기록
-        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
-        let diartUseCase = DiaryUseCase(repository: diaryRepository)
-        let diaryViewModel = DiaryViewModel(usecase: diartUseCase)
-        let diaryViewController = DiaryViewController(viewModel: diaryViewModel)
-        let diaryNavigationController = UINavigationController(rootViewController: diaryViewController)
-        diaryNavigationController.configureBarAppearnace()
-        diaryNavigationController.tabBarItem = UITabBarItem(
-            title: "기록",
-            image: .ticket,
-            tag: 1
-        )
-        self.viewControllers = [
-            homeNVC,
-            diaryNavigationController
-        ]
+        let home = createHome()
+        let tour = createTour()
+        let diary = createDiary()
+        let my = createMy()
+        self.viewControllers = [home, tour, diary, my]
     }
     
     private func addTopLine(color: UIColor, height: CGFloat) {
@@ -86,5 +65,68 @@ final class MainTabBarController: UITabBarController {
             make.height
                 .equalTo(height)
         }
+    }
+}
+
+extension MainTabBarController {
+    /// 홈 화면을 생성합니다.
+    private func createHome() -> UINavigationController {
+        let homeViewController = HomeViewController()
+        let homeNavigationController = UINavigationController(rootViewController: homeViewController)
+        homeNavigationController.configureBarAppearnace()
+        homeNavigationController.tabBarItem = UITabBarItem(
+            title: "홈",
+            image: .home,
+            tag: 0
+        )
+        return homeNavigationController
+    }
+    
+    /// 관광 화면을 생성합니다.
+    private func createTour() -> UINavigationController {
+        let tourViewController = UIViewController()
+        let tourNavigationController = UINavigationController(rootViewController: tourViewController)
+        tourNavigationController.configureBarAppearnace()
+        tourNavigationController.tabBarItem = UITabBarItem(
+            title: "지도",
+            image: .markerIcon,
+            tag: 1
+        )
+        return tourNavigationController
+    }
+    
+    /// 직관일기 화면을 생성합니다.
+    private func createDiary() -> UINavigationController {
+        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+        let diartUseCase = DiaryUseCase(repository: diaryRepository)
+        let diaryViewModel = DiaryViewModel(usecase: diartUseCase)
+        let diaryViewController = DiaryViewController(viewModel: diaryViewModel)
+        let diaryNavigationController = UINavigationController(rootViewController: diaryViewController)
+        diaryNavigationController.configureBarAppearnace()
+        diaryNavigationController.tabBarItem = UITabBarItem(
+            title: "기록",
+            image: .ticket,
+            tag: 2
+        )
+        return diaryNavigationController
+    }
+    
+    /// 마이 페이지 화면을 생성합니다.
+    private func createMy() -> UINavigationController {
+        let myViewController = UIViewController()
+        let myNavigationController = UINavigationController(rootViewController: myViewController)
+        myNavigationController.configureBarAppearnace()
+        myNavigationController.tabBarItem = UITabBarItem(
+            title: "마이",
+            image: .userIcon,
+            tag: 1
+        )
+        return myNavigationController
+    }
+}
+
+extension MainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        HapticFeedbackManager.shared.light()
     }
 }
