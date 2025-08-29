@@ -1,5 +1,5 @@
 //
-//  TourViewModel.swift
+//  TourMapViewModel.swift
 //  JikgwanEottae
 //
 //  Created by 7aeHoon on 8/24/25.
@@ -12,7 +12,7 @@ import RxCocoa
 
 // MARK: - 구단별 관광지 찾기를 담당하는 뷰 모델입니다.
 
-final class TourViewModel: ViewModelType {
+final class TourMapViewModel: ViewModelType {
     private let useCase: TourUseCaseProtocol
     private let disposeBag = DisposeBag()
     private let selectedTeam: KBOTeam
@@ -96,7 +96,7 @@ final class TourViewModel: ViewModelType {
     }
 }
 
-extension TourViewModel {
+extension TourMapViewModel {
     /// 페이징 상태를 초기화합니다.
     private func resetPagingState() {
         currentPage = 1

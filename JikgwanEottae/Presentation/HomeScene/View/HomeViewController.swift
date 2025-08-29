@@ -38,9 +38,9 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         hideBackBarButtonItem()
         configureNaviBarButtonItem()
-        setupDatasource()
-        applySnapshot()
-        bindCollectionView()
+//        setupDatasource()
+//        applySnapshot()
+//        bindCollectionView()
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
@@ -70,8 +70,8 @@ final class HomeViewController: UIViewController {
                 case .tourItem(let selectedTeam):
                     let tourRepository = TourRepository(manager: TourNetworkManager.shared)
                     let tourUseCase = TourUseCase(repository: tourRepository)
-                    let tourViewModel = TourViewModel(useCase: tourUseCase, selectedTeam: selectedTeam)
-                    let tourViewController = TourViewController(viewModel: tourViewModel)
+                    let tourViewModel = TourMapViewModel(useCase: tourUseCase, selectedTeam: selectedTeam)
+                    let tourViewController = TourMapViewController(viewModel: tourViewModel)
                     tourViewController.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(tourViewController, animated: true)
                 default:
@@ -91,8 +91,8 @@ extension HomeViewController {
                 switch itemIdentifier {
                 case .tourItem(let team):
                     guard let cell = collectionView.dequeueReusableCell(
-                        withReuseIdentifier: TeamTourCell.ID,
-                        for: indexPath) as? TeamTourCell else {
+                        withReuseIdentifier: TeamSelectionCell.ID,
+                        for: indexPath) as? TeamSelectionCell else {
                         return UICollectionViewCell()
                     }
                     cell.configure(team: team)

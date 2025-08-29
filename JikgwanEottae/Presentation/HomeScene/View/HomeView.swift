@@ -16,7 +16,7 @@ final class HomeView: UIView {
     public let titleLabel = UILabel().then {
         $0.text = "직관어때?"
         $0.numberOfLines = 1
-        $0.font = UIFont.kbo(size: 25, family: .bold)
+        $0.font = UIFont.gMarketSans(size: 24, family: .bold)
         $0.textColor = .black
     }
     
@@ -24,7 +24,7 @@ final class HomeView: UIView {
         frame: .zero,
         collectionViewLayout: makeLayout()
     ).then {
-        $0.register(TeamTourCell.self, forCellWithReuseIdentifier: TeamTourCell.ID)
+        $0.register(TeamSelectionCell.self, forCellWithReuseIdentifier: TeamSelectionCell.ID)
         $0.backgroundColor = .clear
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = true
@@ -33,9 +33,9 @@ final class HomeView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addSubviews()
-        setupUI()
-        setupLayout()
+//        addSubviews()
+//        setupUI()
+//        setupLayout()
     }
     
     @available(*, unavailable)

@@ -84,8 +84,8 @@ extension MainTabBarController {
     
     /// 관광 화면을 생성합니다.
     private func createTour() -> UINavigationController {
-        let tourViewController = UIViewController()
-        let tourNavigationController = UINavigationController(rootViewController: tourViewController)
+        let tourHomeViewController = TourHomeViewController()
+        let tourNavigationController = UINavigationController(rootViewController: tourHomeViewController)
         tourNavigationController.configureBarAppearnace()
         tourNavigationController.tabBarItem = UITabBarItem(
             title: "지도",

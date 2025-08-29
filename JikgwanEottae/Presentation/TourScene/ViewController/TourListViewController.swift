@@ -48,7 +48,4 @@ final class TourListViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-    
-
-
 }

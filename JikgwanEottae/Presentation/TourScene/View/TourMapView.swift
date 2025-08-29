@@ -1,5 +1,5 @@
 //
-//  TourView.swift
+//  TourMapView.swift
 //  JikgwanEottae
 //
 //  Created by 7aeHoon on 8/19/25.
@@ -11,7 +11,7 @@ import KakaoMapsSDK
 import SnapKit
 import Then
 
-final class TourView: UIView {
+final class TourMapView: UIView {
     // 관광 카테고리 선택을 위한 칩 바입니다.
     public let categoryChipBar = horizontalChipBar(
         titles: TourType.allCases.map { $0.description }

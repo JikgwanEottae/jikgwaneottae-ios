@@ -12,21 +12,20 @@ import SnapKit
 import Then
 
 final class DiaryView: UIView {
-
-    // MARK: - Property
-    
     // 네비게이션 타이틀 레이블
     public let titleLabel = UILabel().then {
         $0.text = "기록"
         $0.numberOfLines = 1
-        $0.font = UIFont.kbo(size: 25, family: .bold)
+        $0.font = UIFont.gMarketSans(size: 24, family: .bold)
         $0.textColor = .black
     }
+    
     // 스크롤 뷰
     private let scrollView = UIScrollView().then {
         $0.clipsToBounds = true
         $0.alwaysBounceVertical = true
     }
+    
     // 스택 뷰
     private lazy var stackView = UIStackView(
         arrangedSubviews: [
@@ -41,6 +40,7 @@ final class DiaryView: UIView {
         $0.spacing = 15
         $0.clipsToBounds = true
     }
+    
     // 캘린더 뷰
     public let fscalendarView = FSCalendar().then {
         // 커스텀 셀 등록

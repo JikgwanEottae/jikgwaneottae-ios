@@ -29,7 +29,8 @@ extension UIViewController {
         tap.delegate = self
         view.addGestureRecognizer(tap)
     }
-    // 편집 종료. 키보드 내리기
+    
+    /// 편집 종료. 키보드 내리기
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
