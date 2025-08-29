@@ -163,13 +163,6 @@ extension TourMapViewModel {
         }
         // 패치한 관광지 데이터를 방출
         tourPlaceRelay.accept(currentTourPlaces)
-        print("페이지 번호: \(tourPlacePage.pageNo)")
-        print("받아온 데이터 수: \(tourPlacePage.numOfRows)")
-        print("서버에 있는 전체 데이터 수: \(tourPlacePage.totalCount)")
-        print("---------------------------------------")
-        print("저장되어 있는 데이터: \(currentTourPlaces.count)")
-        print("---------------------------------------")
-        dump(tourPlacePage.tourPlaces)
     }
     
     /// 위치기반 관광지 데이터 에러 처리입니다.
@@ -194,8 +187,6 @@ extension TourMapViewModel {
             radius: 3000,
             contentTypeId: tourType.contentTypeId
         )
-        .observe(on: MainScheduler.instance)
-        .subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .background))
         .subscribe(onSuccess: { [weak self] tourPlacePage in
             self?.handleTourPlaceResponse(tourPlacePage, isAppendMode: isAppendMode)
         }, onFailure: { [weak self] error in
