@@ -51,7 +51,7 @@ final class DiaryGameDateSelectionView: UIView {
     private let titleLabel = UILabel().then {
         $0.text = "직관한 날짜를 선택해주세요"
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 22, family: .medium)
+        $0.font = .gMarketSans(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
     }
     
@@ -59,7 +59,7 @@ final class DiaryGameDateSelectionView: UIView {
     private let subtitleLabel = UILabel().then {
         $0.text = "날짜에 맞춰 경기 일정을 가져올게요"
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 15, family: .medium)
+        $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
     
@@ -111,16 +111,16 @@ final class DiaryGameDateSelectionView: UIView {
     
     private func setupLayout() {
         scrollView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom
+            make.edges
                 .equalToSuperview()
         }
-        stackView.setCustomSpacing(10, after: titleLabel)
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
+        stackView.setCustomSpacing(12, after: titleLabel)
         datePicker.snp.makeConstraints { make in
             make.height
                 .equalTo(250)

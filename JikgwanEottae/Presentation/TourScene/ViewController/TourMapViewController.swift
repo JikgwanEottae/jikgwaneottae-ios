@@ -1,5 +1,5 @@
 //
-//  TourViewController.swift
+//  TourMapViewController.swift
 //  JikgwanEottae
 //
 //  Created by 7aeHoon on 8/18/25.
@@ -11,9 +11,9 @@ import KakaoMapsSDK
 import RxSwift
 import RxCocoa
 
-final class TourViewController: UIViewController {
-    private let viewModel: TourViewModel
-    private let tourView = TourView()
+final class TourMapViewController: UIViewController {
+    private let viewModel: TourMapViewModel
+    private let tourView = TourMapView()
     private var mapController: KMController?
     private let poiLayerID = "PoiLayer"
     private let poiStyleID = "PoiStyle"
@@ -22,7 +22,7 @@ final class TourViewController: UIViewController {
     private let mapCenterCoordinateRelay = PublishRelay<Coordinate>()
     private let disposeBag = DisposeBag()
         
-    init(viewModel: TourViewModel) {
+    init(viewModel: TourMapViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -78,7 +78,7 @@ final class TourViewController: UIViewController {
     
     /// 뷰 모델과 바인딩합니다.
     private func bindViewModel() {
-        let input = TourViewModel.Input(
+        let input = TourMapViewModel.Input(
             tourTypeSelected: tourTypeRelay,
             mapCenterChanged: mapCenterCoordinateRelay,
             centerButtonTapped: tourView.centerActionButton.rx.tap.asObservable(),
@@ -149,7 +149,7 @@ final class TourViewController: UIViewController {
 
 // MARK: - Kakao Map extension
 
-extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
+extension TourMapViewController: MapControllerDelegate, KakaoMapEventDelegate {
     func addViews() {
         guard let coordinate = coordinate else { return }
         let defaultPosition = MapPoint(
@@ -190,10 +190,8 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
                 y: 20.0
             )
         )
-        // 틸트 기능을 제거합니다.
-        mapView.setGestureEnable(type: .tilt, enable: false)
-        // 회전 기능을 제거합니다.
-        mapView.setGestureEnable(type: .rotate, enable: false)
+        mapView.setGestureEnable(type: .tilt, enable: false) // 틸트 기능을 제거합니다.
+        mapView.setGestureEnable(type: .rotate, enable: false) // 회전 기능을 제거합니다.
         mapView.eventDelegate = self
     }
     
@@ -223,7 +221,7 @@ extension TourViewController: MapControllerDelegate, KakaoMapEventDelegate {
     }
 }
 
-extension TourViewController {
+extension TourMapViewController {
     /// LabelManager를 통해 Layer를 생성합니다.
     private func createLabelLayer(on mapView: KakaoMap) {
         // LabelManager를 가져옵니다.
@@ -235,7 +233,7 @@ extension TourViewController {
             competitionType: .none,
             competitionUnit: .symbolFirst,
             orderType: .rank,
-            zOrder: 10001
+            zOrder: 10005
         )
         let _ = labelManager.addLabelLayer(option: defaultLayerOption)
         // 관광지 좌표 전용 레이어 옵션입니다.
@@ -425,14 +423,14 @@ extension TourViewController {
         )
         guard let pois = pois else { return }
         for (index, poi) in pois.enumerated() {
-            let _ = poi.addPoiTappedEventHandler(target: self, handler: TourViewController.poiDidTappedHandler)
+            let _ = poi.addPoiTappedEventHandler(target: self, handler: TourMapViewController.poiDidTappedHandler)
             poi.userObject = groupedPlacesArray[index] as AnyObject
             poi.show()
         }
     }
 }
 
-extension TourViewController {
+extension TourMapViewController {
     /// 카메라의 이동이 멈췄을 때 호출되는 델리게이트입니다.
     func cameraDidStopped(kakaoMap: KakaoMap, by: MoveBy) {
         // 지도의 중심 좌표입니다.
