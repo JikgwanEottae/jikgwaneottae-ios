@@ -20,10 +20,12 @@ struct TourPlace: Equatable {
     let id: String // 콘텐츠 아이디
     let categoryID: String // 관광 타입 아이디
     let title: String // 제목
-    let address: String // 주소
-    let latitude: Double // 위도
-    let longitude: Double // 경도
-    let distance: Double // 떨어진 거리
-    let imageURL: String? // 썸네일 이미지 주소
+    let baseAddress: String // 기본 주소
+    let subAddress: String // 상세 주소
+    let zipCode: String // 우편번호
+    let latitude: Double? // 위도
+    let longitude: Double? // 경도
+    let distance: Double? // 떨어진 거리
+    let imageURL: String // 썸네일 이미지 주소
     let overview: String? // 설명
 }
