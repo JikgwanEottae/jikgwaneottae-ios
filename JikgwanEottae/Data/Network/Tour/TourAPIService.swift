@@ -14,6 +14,8 @@ import Moya
 enum TourAPIService {
     // 위치기반 관광정보를 조회합니다.
     case fetchTourPlacesByLocation(params: LocationBasedRequestDTO)
+    // 공통 관광정보를 조회합니다.
+    case fetchTourPlaceCommonDetail(params: CommonDetailRequestDTO)
 }
 
 extension TourAPIService: TargetType {
@@ -25,12 +27,14 @@ extension TourAPIService: TargetType {
         switch self {
         case .fetchTourPlacesByLocation:
             return "/locationBasedList2"
+        case .fetchTourPlaceCommonDetail:
+            return "/detailCommon2"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .fetchTourPlacesByLocation:
+        case .fetchTourPlacesByLocation, .fetchTourPlaceCommonDetail:
             return .get
         }
     }
@@ -42,15 +46,18 @@ extension TourAPIService: TargetType {
                 parameters: params.toDictionary(),
                 encoding: URLEncoding.queryString
             )
+        case .fetchTourPlaceCommonDetail(let params):
+            return .requestParameters(
+                parameters: params.toDictionary(),
+                encoding: URLEncoding.queryString
+            )
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .fetchTourPlacesByLocation:
+        case .fetchTourPlacesByLocation, .fetchTourPlaceCommonDetail:
             return nil
-        default:
-            return ["Content-Type": "application/json"]
         }
     }
 }

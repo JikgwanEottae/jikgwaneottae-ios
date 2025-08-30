@@ -36,7 +36,7 @@ extension CommonDetailResponseDTO.ResponseDTO {
 
 extension CommonDetailResponseDTO.ResponseDTO.BodyDTO {
     struct ItemDTO: Decodable {
-        let item: [TourPlaceDTO]?
+        let item: [TourPlaceDTO]
     }
 }
 
@@ -50,6 +50,23 @@ extension CommonDetailResponseDTO.ResponseDTO.BodyDTO.ItemDTO {
         let zipCode: String
         let imageURL: String
         let overview: String
+    }
+}
+
+extension CommonDetailResponseDTO {
+    func toDomain() -> TourPlacePage {
+        return response.body.toDomain()
+    }
+}
+
+extension CommonDetailResponseDTO.ResponseDTO.BodyDTO {
+    func toDomain() -> TourPlacePage {
+        return TourPlacePage(
+            pageNo: pageNo,
+            totalCount: totalCount,
+            numOfRows: numOfRows,
+            tourPlaces: items.item.map{ $0.toDomain() }
+        )
     }
 }
 
