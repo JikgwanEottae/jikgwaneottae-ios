@@ -380,9 +380,8 @@ extension TourMapViewController {
         guard let layer = labelManager.getLabelLayer(layerID: "tourPoiLayerID") else { return }
         layer.clearAllItems()
         let groupedPlaces = Dictionary(grouping: tourPlaces) { place in
-            Coordinate(latitude: place.latitude, longitude: place.longitude)
+            return Coordinate(latitude: place.latitude!, longitude: place.longitude!)
         }
-        
         var poiOptions: [PoiOptions] = []
         var poiMapPoints: [MapPoint] = []
         var groupedPlacesArray: [[TourPlace]] = []

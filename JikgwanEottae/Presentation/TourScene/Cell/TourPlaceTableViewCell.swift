@@ -19,6 +19,7 @@ final class TourPlaceTableViewCell: UITableViewCell {
     
     // 썸네일을 보여주기 위한 이미지 뷰입니다.
     private let thumbnailImageView = UIImageView().then {
+        $0.image = UIImage(named: "imagePlaceholder")
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 17
@@ -59,7 +60,7 @@ final class TourPlaceTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.kf.cancelDownloadTask()
-        thumbnailImageView.image = nil
+        thumbnailImageView.image = UIImage(named: "imagePlaceholder")
         titleLabel.text = nil
         addressLabel.text = nil
         distanceLabel.text = nil
@@ -132,18 +133,14 @@ final class TourPlaceTableViewCell: UITableViewCell {
     }
     
     public func configure(with tourPlace: TourPlace) {
-        titleLabel.text = tourPlace.title
-        addressLabel.text = tourPlace.address
-        addressLabel.setLineSpacing(spacing: 5)
-        distanceLabel.text = "\(Int(tourPlace.distance))m"
-        guard let urlString = tourPlace.imageURL,
-                !urlString.isEmpty,
-              let url = URL(string: urlString)
-        else {
-            thumbnailImageView.image = UIImage(named: "imagePlaceholder")
-            return
+        if !tourPlace.imageURL.isEmpty, let url = URL(string: tourPlace.imageURL) {
+            thumbnailImageView.kf.indicatorType = .activity
+            thumbnailImageView.kf.setImage(with: url)
         }
-        thumbnailImageView.kf.indicatorType = .activity
-        thumbnailImageView.kf.setImage(with: url)
+        titleLabel.text = tourPlace.title
+        addressLabel.text = tourPlace.baseAddress
+        addressLabel.setLineSpacing(spacing: 5)
+        guard let distance = tourPlace.distance else { return }
+        distanceLabel.text = "\(Int(distance))m"
     }
 }

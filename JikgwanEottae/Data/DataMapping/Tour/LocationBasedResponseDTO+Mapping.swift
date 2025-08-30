@@ -22,15 +22,15 @@ extension LocationBasedResponseDTO {
 
 extension LocationBasedResponseDTO.ResponseDTO {
     struct HeaderDTO: Decodable {
-        let resultCode: String // 결과 코드
-        let resultMsg: String // 결과 메시지
+        let resultCode: String
+        let resultMsg: String
     }
     
     struct BodyDTO: Decodable {
+        let numOfRows: Int
+        let pageNo: Int
+        let totalCount: Int
         let items: ItemsDTO
-        let numOfRows: Int // 한 페이지 결과 수
-        let pageNo: Int // 페이지 번호
-        let totalCount: Int // 전체 결과 수
     }
 }
 
@@ -60,23 +60,25 @@ extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO {
         let id: String
         let categoryID: String
         let title: String
-        let address: String
+        let baseAddress: String
+        let subAddress: String
+        let zipCode: String
         let latitude: String
         let longitude: String
         let distance: String
-        let imageURL: String?
-        let overview: String?
+        let imageURL: String
         
         private enum CodingKeys: String, CodingKey {
             case id = "contentid"
             case categoryID = "contenttypeid"
             case title
-            case address = "addr1"
+            case baseAddress = "addr1"
+            case subAddress = "addr2"
+            case zipCode = "zipcode"
             case latitude = "mapy"
             case longitude = "mapx"
             case distance = "dist"
             case imageURL = "firstimage"
-            case overview
         }
     }
 }
@@ -104,12 +106,14 @@ extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO.TourPlaceDTO {
             id: id,
             categoryID: categoryID,
             title: title,
-            address: address,
-            latitude: Double(latitude) ?? 0.0,
-            longitude: Double(longitude) ?? 0.0,
-            distance: Double(distance) ?? 0.0,
+            baseAddress: baseAddress,
+            subAddress: subAddress,
+            zipCode: zipCode,
+            latitude: Double(latitude),
+            longitude: Double(longitude),
+            distance: Double(distance),
             imageURL: imageURL,
-            overview: overview
+            overview: nil
         )
     }
 }
