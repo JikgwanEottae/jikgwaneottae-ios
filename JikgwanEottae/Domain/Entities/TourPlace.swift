@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - 관광 장소 정보 엔티티입니다.
 
-struct TourPlacePage {
+struct TourPlacePage: Equatable {
     let pageNo: Int // 페이지 번호
     let totalCount: Int // 전체 데이터 수
     let numOfRows: Int // 받은 데이터 수
@@ -25,4 +25,5 @@ struct TourPlace: Equatable {
     let longitude: Double // 경도
     let distance: Double // 떨어진 거리
     let imageURL: String? // 썸네일 이미지 주소
+    let overview: String? // 설명
 }
