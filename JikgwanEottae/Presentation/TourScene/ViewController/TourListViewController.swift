@@ -53,12 +53,20 @@ final class TourListViewController: UIViewController {
         tourListView.tableView.rx.modelSelected(TourPlace.self)
             .withUnretained(self)
             .subscribe(onNext: { owner, tourPlace in
-                print(tourPlace)
-                let tourPlaceDetailViewController = TourPlaceDetailViewController()
-                tourPlaceDetailViewController.modalPresentationStyle = .overFullScreen
-                tourPlaceDetailViewController.modalTransitionStyle = .crossDissolve
-                owner.present(tourPlaceDetailViewController, animated: true)
+                owner.presentTourPlaceDetail(contentID: tourPlace.id)
             })
             .disposed(by: disposeBag)
     }
+    
+    /// 관광 장소 상세보기 화면으로 전환합니다.
+    private func presentTourPlaceDetail(contentID: String) {
+        let tourRepository = TourRepository(manager: TourNetworkManager.shared)
+        let tourUseCase = TourUseCase(repository: tourRepository)
+        let tourPlaceDetailViewModel = TourPlaceDetailViewModel(useCase: tourUseCase, contentID: contentID)
+        let tourPlaceDetailViewController = TourPlaceDetailViewController(viewModel: tourPlaceDetailViewModel)
+        tourPlaceDetailViewController.modalPresentationStyle = .overFullScreen
+        tourPlaceDetailViewController.modalTransitionStyle = .crossDissolve
+        self.present(tourPlaceDetailViewController, animated: true)
+    }
 }
+

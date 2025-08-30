@@ -12,12 +12,21 @@ import SnapKit
 import Then
 
 final class TourMapView: UIView {
+    // 액티비티 인티케이터
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    
     // 관광 카테고리 선택을 위한 칩 바입니다.
     public let categoryChipBar = horizontalChipBar(
         titles: TourType.allCases.map { $0.rawValue }
     )
+    
     // 카카오 맵을 담는 컨테이너 뷰입니다.
     public var mapContainer = KMViewContainer()
+    
     // 지도를 초기 위치로 재설정하는 버튼입니다.
     public let resetCoordinateButton = UIButton(type: .custom).then {
         var config = UIButton.Configuration.filled()
@@ -100,6 +109,7 @@ final class TourMapView: UIView {
         self.addSubview(mapContainer)
         mapContainer.addSubview(resetCoordinateButton)
         mapContainer.addSubview(centerActionButton)
+        mapContainer.addSubview(activityIndicator)
 //        mapContainer.addSubview(showListButton)
     }
     
@@ -144,6 +154,11 @@ final class TourMapView: UIView {
                 .inset(40)
             make.height
                 .equalTo(35)
+        }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
         }
         
 //        showListButton.snp.makeConstraints { make in

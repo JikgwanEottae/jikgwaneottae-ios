@@ -50,6 +50,18 @@ extension CommonDetailResponseDTO.ResponseDTO.BodyDTO.ItemDTO {
         let zipCode: String
         let imageURL: String
         let overview: String
+        
+        private enum CodingKeys: String, CodingKey {
+            case id = "contentid"
+            case categoryID = "contenttypeid"
+            case title
+            case baseAddress = "addr1"
+            case subAddress = "addr2"
+            case zipCode = "zipcode"
+            case imageURL = "firstimage"
+            case overview
+        }
+        
     }
 }
 

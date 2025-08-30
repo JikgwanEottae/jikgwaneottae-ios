@@ -13,7 +13,7 @@ import RxCocoa
 
 final class TourMapViewController: UIViewController {
     private let viewModel: TourMapViewModel
-    private let tourView = TourMapView()
+    private let tourMapView = TourMapView()
     private var mapController: KMController?
     private let poiLayerID = "PoiLayer"
     private let poiStyleID = "PoiStyle"
@@ -28,7 +28,7 @@ final class TourMapViewController: UIViewController {
     }
     
     override func loadView() {
-        self.view = tourView
+        self.view = tourMapView
     }
     
     @available(*, unavailable)
@@ -70,7 +70,7 @@ final class TourMapViewController: UIViewController {
     
     /// 카카오 맵 초기 설정입니다.
     private func setupKakaoMap() {
-        mapController = KMController(viewContainer: tourView.mapContainer)
+        mapController = KMController(viewContainer: tourMapView.mapContainer)
         mapController!.delegate = self
         //엔진 초기화, 엔진 내부 객체 생성 및 초기화가 진행됩니다.
         mapController?.prepareEngine()
@@ -81,8 +81,8 @@ final class TourMapViewController: UIViewController {
         let input = TourMapViewModel.Input(
             tourTypeSelected: tourTypeRelay,
             mapCenterChanged: mapCenterCoordinateRelay,
-            centerButtonTapped: tourView.centerActionButton.rx.tap.asObservable(),
-            resetCoordinateButtonTapped: tourView.resetCoordinateButton.rx.tap.asObservable()
+            centerButtonTapped: tourMapView.centerActionButton.rx.tap.asObservable(),
+            resetCoordinateButtonTapped: tourMapView.resetCoordinateButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(input: input)
         
@@ -107,7 +107,7 @@ final class TourMapViewController: UIViewController {
         
         output.centerButtonState
             .drive(onNext: { [weak self] isShowMode in
-                self?.tourView.updateCenterButtonState(isSearchMode: isShowMode)
+                self?.tourMapView.updateCenterButtonState(isSearchMode: isShowMode)
             })
             .disposed(by: disposeBag)
             
@@ -123,7 +123,7 @@ final class TourMapViewController: UIViewController {
             .withUnretained(self)
             .subscribe(onNext: { owner, hasMoreData in
                 if !hasMoreData {
-                    owner.tourView.showToast(message: "장소를 모두 가져왔어요")
+                    owner.tourMapView.showToast(message: "장소를 모두 가져왔어요")
                 }
             })
             .disposed(by: disposeBag)
@@ -131,7 +131,9 @@ final class TourMapViewController: UIViewController {
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
                 if isLoading {
-//                    self?.tourView.showToast(message: "장소를 가져오고 있어요")
+                    self?.tourMapView.activityIndicator.startAnimating()
+                } else {
+                    self?.tourMapView.activityIndicator.stopAnimating()
                 }
             })
             .disposed(by: disposeBag)
@@ -140,7 +142,7 @@ final class TourMapViewController: UIViewController {
     
     /// 칩 바와 바인딩하고, 관광 타입 선택 이벤트를 전달합니다.
     private func bindChipBar() {
-        self.tourView.categoryChipBar.onChipSelected = { [weak self] selectedIndex in
+        self.tourMapView.categoryChipBar.onChipSelected = { [weak self] selectedIndex in
             let tourType = TourType.allCases[selectedIndex]
             self?.tourTypeRelay.onNext(tourType)
         }
@@ -169,7 +171,7 @@ extension TourMapViewController: MapControllerDelegate, KakaoMapEventDelegate {
     func addViewSucceeded(_ viewName: String, viewInfoName: String) {
         guard let coordinate = coordinate else { return }
         let mapView = mapController?.getView("mapview") as! KakaoMap
-        mapView.viewRect = tourView.mapContainer.bounds
+        mapView.viewRect = tourMapView.mapContainer.bounds
         // 카메라의 최소 줌 레벨입니다.
         mapView.cameraMinLevel = 13
         createLabelLayer(on: mapView)
