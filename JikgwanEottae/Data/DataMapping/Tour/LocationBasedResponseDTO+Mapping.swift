@@ -57,14 +57,15 @@ extension LocationBasedResponseDTO.ResponseDTO.BodyDTO {
 
 extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO {
     struct TourPlaceDTO: Decodable {
-        let id: String // 콘텐츠 아이디
-        let categoryID: String // 관광 타입 아이디
-        let title: String // 제목
-        let address: String // 주소
-        let latitude: String // 위도
-        let longitude: String // 경도
-        let distance: String // 떨어진 거리
-        let imageURL: String? // 썸네일 이미지 주소
+        let id: String
+        let categoryID: String
+        let title: String
+        let address: String
+        let latitude: String
+        let longitude: String
+        let distance: String
+        let imageURL: String?
+        let overview: String?
         
         private enum CodingKeys: String, CodingKey {
             case id = "contentid"
@@ -75,6 +76,7 @@ extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO {
             case longitude = "mapx"
             case distance = "dist"
             case imageURL = "firstimage"
+            case overview
         }
     }
 }
@@ -106,7 +108,8 @@ extension LocationBasedResponseDTO.ResponseDTO.BodyDTO.ItemsDTO.TourPlaceDTO {
             latitude: Double(latitude) ?? 0.0,
             longitude: Double(longitude) ?? 0.0,
             distance: Double(distance) ?? 0.0,
-            imageURL: imageURL
+            imageURL: imageURL,
+            overview: overview
         )
     }
 }

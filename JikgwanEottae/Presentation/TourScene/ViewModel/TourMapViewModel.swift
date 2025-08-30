@@ -182,10 +182,8 @@ extension TourMapViewModel {
         isLoadingRelay.accept(true)
         useCase.fetchTourPlacesByLocation(
             pageNo: currentPage,
-            longitude: coordinate.longitude,
-            latitude: coordinate.latitude,
-            radius: 3000,
-            contentTypeId: tourType.contentTypeId
+            coordinate: coordinate,
+            tourType: tourType
         )
         .subscribe(onSuccess: { [weak self] tourPlacePage in
             self?.handleTourPlaceResponse(tourPlacePage, isAppendMode: isAppendMode)

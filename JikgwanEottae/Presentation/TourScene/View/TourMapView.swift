@@ -14,7 +14,7 @@ import Then
 final class TourMapView: UIView {
     // 관광 카테고리 선택을 위한 칩 바입니다.
     public let categoryChipBar = horizontalChipBar(
-        titles: TourType.allCases.map { $0.description }
+        titles: TourType.allCases.map { $0.rawValue }
     )
     // 카카오 맵을 담는 컨테이너 뷰입니다.
     public var mapContainer = KMViewContainer()

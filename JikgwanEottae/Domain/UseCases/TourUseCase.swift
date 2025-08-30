@@ -15,10 +15,8 @@ protocol TourUseCaseProtocol {
     /// 관광 타입과 위치를 기반으로 주변 관광지 정보를 조회합니다.
     func fetchTourPlacesByLocation(
         pageNo: Int,
-        longitude: Double,
-        latitude: Double,
-        radius: Int,
-        contentTypeId: String
+        coordinate: Coordinate,
+        tourType: TourType
     ) -> Single<TourPlacePage>
 }
 
@@ -34,17 +32,15 @@ final class TourUseCase: TourUseCaseProtocol {
     
     public func fetchTourPlacesByLocation(
         pageNo: Int,
-        longitude: Double,
-        latitude: Double,
-        radius: Int,
-        contentTypeId: String
+        coordinate: Coordinate,
+        tourType: TourType
     ) -> Single<TourPlacePage> {
+        let radius: Int = 3000
         return self.repository.fetchTourPlacesByLocation(
             pageNo: pageNo,
-            longitude: longitude,
-            latitude: latitude,
+            coordinate: coordinate,
             radius: radius,
-            contentTypeId: contentTypeId
+            tourType: tourType
         )
     }
     
