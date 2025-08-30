@@ -19,4 +19,7 @@ protocol TourRepositoryProtocol {
         radius: Int,
         tourType: TourType
     ) -> Single<TourPlacePage>
+    
+    /// 공통 관광정보를 조회합니다.
+    func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage>
 }
