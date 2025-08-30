@@ -18,6 +18,9 @@ protocol TourUseCaseProtocol {
         coordinate: Coordinate,
         tourType: TourType
     ) -> Single<TourPlacePage>
+    
+    /// 컨텐츠 아이디를 기반으로 공통 관광 정보를 조회합니다.
+    func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage>
 }
 
 
@@ -42,6 +45,10 @@ final class TourUseCase: TourUseCaseProtocol {
             radius: radius,
             tourType: tourType
         )
+    }
+    
+    public func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage> {
+        return self.repository.fetchTourPlaceCommonDetail(contentID: contentID)
     }
     
 }

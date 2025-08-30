@@ -35,6 +35,15 @@ final class TourRepository: TourRepositoryProtocol {
         )
         return self.manager.fetchTourPlacesByLocation(params: locationBasedRequestDTO)
     }
+    
+    public func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage> {
+        let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TourApiKey") as! String
+        let commonDetailRequestDTO = CommonDetailRequestDTO(
+            serviceKey: tourApiKey,
+            contentID: contentID
+        )
+        return self.manager.fetchTourPlaceCommonDetail(params: commonDetailRequestDTO)
+    }
 }
 
 extension TourRepository {
