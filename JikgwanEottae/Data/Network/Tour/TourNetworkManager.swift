@@ -21,4 +21,10 @@ final class TourNetworkManager {
             .map(LocationBasedResponseDTO.self)
             .map { $0.toDomain() }
     }
+    
+    public func fetchTourPlaceCommonDetail(params: CommonDetailRequestDTO) -> Single<TourPlacePage> {
+        return provider.rx.request(.fetchTourPlaceCommonDetail(params: params))
+            .map(CommonDetailResponseDTO.self)
+            .map { $0.toDomain() }
+    }
 }
