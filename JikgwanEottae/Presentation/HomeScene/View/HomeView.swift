@@ -24,7 +24,7 @@ final class HomeView: UIView {
         frame: .zero,
         collectionViewLayout: makeLayout()
     ).then {
-        $0.register(TeamSelectionCell.self, forCellWithReuseIdentifier: TeamSelectionCell.ID)
+        $0.register(TodayFortuneCell.self, forCellWithReuseIdentifier: TodayFortuneCell.ID)
         $0.backgroundColor = .clear
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = true
@@ -33,33 +33,26 @@ final class HomeView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-//        addSubviews()
-//        setupUI()
-//        setupLayout()
+        setupUI()
+        setupLayout()
     }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func addSubviews() {
-        addSubview(collectionView)
-    }
 
     private func setupUI() {
+        self.addSubview(collectionView)
         self.backgroundColor = .white
     }
     
     private func setupLayout() {
-        
         collectionView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
         }
     }
-
-
 }
 
 extension HomeView {
@@ -68,8 +61,8 @@ extension HomeView {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment in
             let section = HomeSection.allCases[sectionIndex]
             switch section {
-            case .tour:
-                return self?.createTourSection()
+            case .todayFortune:
+                return self?.createTodayFortuneSection()
             }
         }
         
@@ -77,6 +70,30 @@ extension HomeView {
         layout.register(SectionBackgroundDecorationView.self, forDecorationViewOfKind: SectionBackgroundDecorationView.kind)
         
         return layout
+    }
+    
+    /// 오늘의 직관 운세보기 섹션의 레이아웃을 생성합니다.
+    private func createTodayFortuneSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(100)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: 20,
+            bottom: 0,
+            trailing: 20
+        )
+        return section
     }
     
     /// 관광 섹션에서 사용할 레이아웃을 생성합니다.

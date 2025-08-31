@@ -18,7 +18,7 @@ final class TourListView: UIView {
         frame: .zero,
         style: .plain
     ).then {
-        $0.register(TourPlaceTableViewCell.self, forCellReuseIdentifier: TourPlaceTableViewCell.ID)
+        $0.register(TourPlaceCell.self, forCellReuseIdentifier: TourPlaceCell.ID)
         $0.backgroundColor = .white
         $0.rowHeight = 120
         $0.alwaysBounceVertical = false

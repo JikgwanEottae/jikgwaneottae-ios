@@ -42,8 +42,8 @@ final class TourListViewController: UIViewController {
         // 관광 데이터를 테이블 뷰에 전달합니다.
         Observable.just(tourPlaces)
             .bind(to: tourListView.tableView.rx.items(
-                cellIdentifier: TourPlaceTableViewCell.ID,
-                cellType: TourPlaceTableViewCell.self)
+                cellIdentifier: TourPlaceCell.ID,
+                cellType: TourPlaceCell.self)
             ) { row, tourPlace, cell in
                 cell.configure(with: tourPlace)
             }
