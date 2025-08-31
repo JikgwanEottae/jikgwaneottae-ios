@@ -1,5 +1,5 @@
 //
-//  TourPlaceTableViewCell.swift
+//  TourPlaceCell.swift
 //  JikgwanEottae
 //
 //  Created by 7aeHoon on 8/21/25.
@@ -13,9 +13,9 @@ import Then
 
 // MARK: - 관광 정보를 보여주기 위한 커스텀 테이블 뷰 셀입니다.
 
-final class TourPlaceTableViewCell: UITableViewCell {
+final class TourPlaceCell: UITableViewCell {
     // 재사용 식별 아이디입니다.
-    static let ID = "TourPlaceTableViewCell"
+    static let ID = "TourPlaceCell"
     
     // 썸네일을 보여주기 위한 이미지 뷰입니다.
     private let thumbnailImageView = UIImageView().then {
