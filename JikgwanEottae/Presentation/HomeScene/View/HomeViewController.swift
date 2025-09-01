@@ -11,10 +11,12 @@ import RxSwift
 import RxCocoa
 
 enum HomeSection: Int, CaseIterable, Hashable {
+    case stats
     case todayFortune
 }
 
 enum HomeItem: Hashable {
+    case stats
     case todayFortune
 }
 
@@ -45,7 +47,8 @@ final class HomeViewController: UIViewController {
     /// 섹션별 스냅샷을 적용합니다.
     private func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
-        snapshot.appendSections([.todayFortune])
+        snapshot.appendSections([.stats, .todayFortune])
+        snapshot.appendItems([.stats], toSection: .stats)
         snapshot.appendItems([.todayFortune], toSection: .todayFortune)
 //        // 구단별 관광지 조회 섹션입니다.
 //        snapshot.appendSections([.tour])
@@ -84,6 +87,11 @@ extension HomeViewController {
             collectionView: homeView.collectionView,
             cellProvider: { collectionView, indexPath, itemIdentifier in
                 switch itemIdentifier {
+                case .stats:
+                    guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: StatsCell.ID, for: indexPath
+                    ) as? StatsCell else { return UICollectionViewCell() }
+                    return cell
                 case .todayFortune:
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: TodayFortuneCell.ID,

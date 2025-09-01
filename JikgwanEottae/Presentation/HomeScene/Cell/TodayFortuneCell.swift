@@ -10,6 +10,8 @@ import UIKit
 import Then
 import SnapKit
 
+// MARK: - 오늘의 직관 운세를 보여주기 위한 커스텀 컬렉션 뷰 셀입니다.
+
 final class TodayFortuneCell: UICollectionViewCell {
     
     static let ID = "TodayFortuneCell"
@@ -33,13 +35,13 @@ final class TodayFortuneCell: UICollectionViewCell {
     private let titleLabel = UILabel().then {
         $0.text = "혹시 내가 오늘의 승리 요정?"
         $0.font = UIFont.gMarketSans(size: 16, family: .medium)
-        $0.textColor = .secondaryTextColor
+        $0.textColor = .primaryTextColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
     }
     
     private let subtitleLabel = UILabel().then {
-        $0.text = "확인하기"
+        $0.text = "운세보기"
         $0.font = UIFont.gMarketSans(size: 17, family: .bold)
         $0.textColor = .shamrockGreen
         $0.textAlignment = .left
@@ -60,8 +62,8 @@ final class TodayFortuneCell: UICollectionViewCell {
     private func setupUI() {
         self.contentView.backgroundColor = .secondaryBackgroundColor
         self.contentView.layer.cornerRadius = Constants.cornerRadius
-        self.addSubview(imageView)
-        self.addSubview(stackView)
+        self.contentView.addSubview(imageView)
+        self.contentView.addSubview(stackView)
     }
     
     private func setupLayout() {

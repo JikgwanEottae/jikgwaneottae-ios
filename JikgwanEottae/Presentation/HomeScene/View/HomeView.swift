@@ -24,11 +24,12 @@ final class HomeView: UIView {
         frame: .zero,
         collectionViewLayout: makeLayout()
     ).then {
+        $0.register(StatsCell.self, forCellWithReuseIdentifier: StatsCell.ID)
         $0.register(TodayFortuneCell.self, forCellWithReuseIdentifier: TodayFortuneCell.ID)
         $0.backgroundColor = .clear
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = true
-        $0.contentInset = .init(top: 30, left: 0, bottom: 0, right: 0)
+        $0.contentInset = .init(top: 20, left: 0, bottom: 0, right: 0)
     }
     
     override init(frame: CGRect) {
@@ -61,15 +62,41 @@ extension HomeView {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment in
             let section = HomeSection.allCases[sectionIndex]
             switch section {
+            case .stats:
+                return self?.createStatsSection()
             case .todayFortune:
                 return self?.createTodayFortuneSection()
             }
         }
-        
+        let config = UICollectionViewCompositionalLayoutConfiguration()
+        config.interSectionSpacing = 20
+        layout.configuration = config
         // 섹션의 배경을 등록합니다.
         layout.register(SectionBackgroundDecorationView.self, forDecorationViewOfKind: SectionBackgroundDecorationView.kind)
-        
         return layout
+    }
+    /// 직관 승률을 보여주기 위한 통계 섹션의 레이아웃을 생성합니다.
+    private func createStatsSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(200)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: 20,
+            bottom: 0,
+            trailing: 20
+        )
+        return section
     }
     
     /// 오늘의 직관 운세보기 섹션의 레이아웃을 생성합니다.
