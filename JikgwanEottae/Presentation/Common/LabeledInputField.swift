@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-public final class LabeledInputFieldView: UIView {
+public final class LabeledInputField: UIView {
     
     private let titleLabel = UILabel().then {
         $0.font = .gMarketSans(size: 14, family: .medium)
@@ -33,10 +33,14 @@ public final class LabeledInputFieldView: UIView {
         $0.contentVerticalAlignment = .center
     }
     
-    public init(title: String, placeholder: String) {
-        super.init(frame: .zero)
+    public init(title: String, placeholder: String, inputView: UIView? = nil) {
         titleLabel.text = title
         textField.placeholder = placeholder
+        if let inputView = inputView {
+            textField.inputView = inputView
+            textField.tintColor = .clear
+        }
+        super.init(frame: .zero)
         addSubviews()
         setupLayout()
     }
