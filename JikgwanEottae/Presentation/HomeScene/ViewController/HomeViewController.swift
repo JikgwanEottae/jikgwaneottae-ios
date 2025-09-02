@@ -35,7 +35,7 @@ final class HomeViewController: UIViewController {
         configureNaviBarButtonItem()
         setupDatasource()
         applySnapshot()
-//        bindCollectionView()
+        bindCollectionView()
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
@@ -60,11 +60,17 @@ final class HomeViewController: UIViewController {
     }
     
     private func bindCollectionView() {
-//        homeView.collectionView.rx.itemSelected
-//            .bind(onNext: { [weak self] indexPath in
-//                guard let self = self else { return }
-//                let item = self.dataSource.itemIdentifier(for: indexPath)
-//                switch item {
+        homeView.collectionView.rx.itemSelected
+            .bind(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                let item = self.dataSource.itemIdentifier(for: indexPath)
+                switch item {
+                case .todayFortune:
+                    let todayFortuneViewController = TodayFortuneViewController()
+                    todayFortuneViewController.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(todayFortuneViewController, animated: true)
+                default:
+                    break
 //                case .tourItem(let selectedTeam):
 //                    let tourRepository = TourRepository(manager: TourNetworkManager.shared)
 //                    let tourUseCase = TourUseCase(repository: tourRepository)
@@ -74,9 +80,9 @@ final class HomeViewController: UIViewController {
 //                    self.navigationController?.pushViewController(tourViewController, animated: true)
 //                default:
 //                    break
-//                }
-//            })
-//            .disposed(by: disposeBag)
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
 

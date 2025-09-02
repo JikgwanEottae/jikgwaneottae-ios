@@ -107,7 +107,7 @@ final class DiaryEditView: UIView {
 
     public let teamSegmentControl = TeamSegmentedControl()
     
-    public let seatInputFieldView = LabeledInputFieldView(
+    public let seatInputFieldView = LabeledInputField(
         title: "좌석",
         placeholder: "1루 테이블석 3구역"
     )
