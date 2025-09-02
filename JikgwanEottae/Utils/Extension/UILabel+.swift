@@ -14,6 +14,7 @@ extension UILabel {
         let attributeString = NSMutableAttributedString(string: text)
         let style = NSMutableParagraphStyle()
         style.lineSpacing = spacing
+        style.lineBreakStrategy = .hangulWordPriority
         attributeString.addAttribute(.paragraphStyle,
                                      value: style,
                                      range: NSRange(location: 0, length: attributeString.length))

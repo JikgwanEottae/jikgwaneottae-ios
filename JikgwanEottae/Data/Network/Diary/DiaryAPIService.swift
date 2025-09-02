@@ -37,7 +37,7 @@ enum DiaryAPIService {
 extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
     // 기본 URL을 설정합니다.
     var baseURL: URL {
-        URL(string: "https://contributors-gentleman-david-packs.trycloudflare.com")!
+        URL(string: "https://api.jikgwaneottae.xyz")!
     }
     
     // 엔드 포인트를 설정합니다.

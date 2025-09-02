@@ -84,7 +84,7 @@ final class DiaryEditView: UIView {
     // 업로드할 사진을 제거하기 위한 버튼입니다.
     public let removeImageButton = UIButton(type: .custom).then {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .light)
-        let image = UIImage(named: "xMark")?
+        let image = UIImage(named: "xMarkIcon")?
             .withConfiguration(symbolConfig)
             .withTintColor(.white, renderingMode: .alwaysOriginal)
         $0.setImage(image, for: .normal)

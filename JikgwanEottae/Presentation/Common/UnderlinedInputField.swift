@@ -38,7 +38,7 @@ final class UnderlinedInputField: UIView {
         $0.contentVerticalAlignment = .center
     }
     private let underlineView = UIView().then {
-        $0.backgroundColor = .systemGray5
+        $0.backgroundColor = .primaryBackgroundColor
     }
 
     init(title: String, placeholder: String, inputView: UIView? = nil) {
@@ -62,7 +62,6 @@ final class UnderlinedInputField: UIView {
     private func setupUI() {
         addSubview(stackView)
     }
-    
     private func setupLayout() {
         stackView.snp.makeConstraints { make in
             make.edges
@@ -72,5 +71,8 @@ final class UnderlinedInputField: UIView {
             make.height
                 .equalTo(2)
         }
+    }
+    public func setUnderlineColor(_ color: UIColor) {
+        underlineView.backgroundColor = color
     }
 }
