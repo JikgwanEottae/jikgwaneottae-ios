@@ -14,7 +14,7 @@ final class TodayFortuneViewController: UIViewController {
     private let todayFortuneView = TodayFortuneView()
     private let viewModel: TodayFortuneViewModel
     private let timePickerData = Observable.just(Array(0...23).map{ String($0) })
-    private let sexPickerData = Observable.just(["남성", "여성"])
+    private let genderPickerData = Observable.just(["남성", "여성"])
     private let kboTeamPickerData = Observable.just(KBOTeam.allCases.map{ $0.rawValue })
     private let disposeBag = DisposeBag()
     
@@ -39,7 +39,6 @@ final class TodayFortuneViewController: UIViewController {
         setupDatePicker()
         setupToolBar()
         bindUnderlineColorToEditingState()
-        buttonTapped()
         bindViewModel()
     }
     
@@ -56,8 +55,8 @@ final class TodayFortuneViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         // 성별 아이템을 비커 뷰와 바인드합니다.
-        sexPickerData
-            .bind(to: todayFortuneView.sexPickerView.rx.itemTitles) { _, item in
+        genderPickerData
+            .bind(to: todayFortuneView.genderPickerView.rx.itemTitles) { _, item in
                 return item
             }
             .disposed(by: disposeBag)
@@ -73,9 +72,9 @@ final class TodayFortuneViewController: UIViewController {
             .bind(to: todayFortuneView.timeInputField.textField.rx.text)
             .disposed(by: disposeBag)
         // 선택된 성별 아이템을 텍스트 필드와 바인드합니다.
-        todayFortuneView.sexPickerView.rx.modelSelected(String.self)
+        todayFortuneView.genderPickerView.rx.modelSelected(String.self)
             .compactMap { $0.first }
-            .bind(to: todayFortuneView.sexInputField.textField.rx.text)
+            .bind(to: todayFortuneView.genderInputField.textField.rx.text)
             .disposed(by: disposeBag)
         // 선택된 KBO구단 아이템을 텍스트 필드와 바인드합니다.
         todayFortuneView.kboTeamPickerView.rx.modelSelected(String.self)
@@ -100,13 +99,13 @@ final class TodayFortuneViewController: UIViewController {
         let textFields = [
             todayFortuneView.birthInputField.textField,
             todayFortuneView.timeInputField.textField,
-            todayFortuneView.sexInputField.textField,
+            todayFortuneView.genderInputField.textField,
             todayFortuneView.kboTeamInputField.textField
         ]
         let inputFields = [
             todayFortuneView.birthInputField,
             todayFortuneView.timeInputField,
-            todayFortuneView.sexInputField,
+            todayFortuneView.genderInputField,
             todayFortuneView.kboTeamInputField
         ]
         for (index, textField) in textFields.enumerated() {
@@ -127,25 +126,13 @@ final class TodayFortuneViewController: UIViewController {
                 .disposed(by: disposeBag)
         }
     }
-    private func buttonTapped() {
-//        todayFortuneView.completeButton.rx.tap
-//            .withUnretained(self)
-//            .subscribe(onNext: { owner, _ in
-//                let todayFortuneResulViewController = TodayFortuneResultViewController()
-//                todayFortuneResulViewController.modalPresentationStyle = .overFullScreen
-//                owner.present(todayFortuneResulViewController, animated: true) {
-//                    self.navigationController?.popToRootViewController(animated: false)
-//                }
-//            })
-//            .disposed(by: disposeBag)
-    }
     
     private func bindViewModel() {
         let input = TodayFortuneViewModel.Input(
             dateOfBirth: todayFortuneView.birthInputField.textField.rx.text.orEmpty.asObservable(),
             timeOfBirth: todayFortuneView.timeInputField.textField.rx.text.orEmpty.asObservable(),
-            sex: todayFortuneView.sexInputField.textField.rx.text.orEmpty.asObservable(),
-            kboTeam: todayFortuneView.kboTeamInputField.textField.rx.text.orEmpty.asObservable(),
+            gender: todayFortuneView.genderInputField.textField.rx.text.orEmpty.asObservable(),
+            favoriteKBOTeam: todayFortuneView.kboTeamInputField.textField.rx.text.orEmpty.asObservable(),
             completeButtonTapped: todayFortuneView.completeButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(input: input)

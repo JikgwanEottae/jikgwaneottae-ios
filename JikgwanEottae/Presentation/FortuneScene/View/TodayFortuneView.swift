@@ -21,7 +21,7 @@ final class TodayFortuneView: UIView {
         subtitleLabel,
         birthInputField,
         timeInputField,
-        sexInputField,
+        genderInputField,
         kboTeamInputField,
     ]).then {
         $0.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
@@ -58,7 +58,7 @@ final class TodayFortuneView: UIView {
         $0.backgroundColor = .white
     }
     // 성별을 선택하는 피커 뷰입니다.
-    public let sexPickerView = UIPickerView().then {
+    public let genderPickerView = UIPickerView().then {
         $0.backgroundColor = .white
     }
     // 구단을 선택하는 피커 뷰입니다.
@@ -78,10 +78,10 @@ final class TodayFortuneView: UIView {
         inputView: timePickerView
     )
     // 성별 텍스트 필드입니다.
-    public lazy var sexInputField = UnderlinedInputField(
+    public lazy var genderInputField = UnderlinedInputField(
         title: "성별",
         placeholder: "선택해주세요",
-        inputView: sexPickerView
+        inputView: genderPickerView
     )
     // 구단 텍스트 필드입니다.
     public lazy var kboTeamInputField = UnderlinedInputField(
@@ -176,7 +176,7 @@ extension TodayFortuneView {
         let toolbar = createToolBar(target: target, action: action)
         birthInputField.textField.inputAccessoryView = toolbar
         timeInputField.textField.inputAccessoryView = toolbar
-        sexInputField.textField.inputAccessoryView = toolbar
+        genderInputField.textField.inputAccessoryView = toolbar
         kboTeamInputField.textField.inputAccessoryView = toolbar
     }
 }

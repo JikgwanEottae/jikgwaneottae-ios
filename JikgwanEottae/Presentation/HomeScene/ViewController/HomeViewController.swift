@@ -66,7 +66,8 @@ final class HomeViewController: UIViewController {
                 let item = self.dataSource.itemIdentifier(for: indexPath)
                 switch item {
                 case .todayFortune:
-                    let todayFortuneViewModel = TodayFortuneViewModel()
+                    let todatFortuneUseCase = TodayFortuneUseCase()
+                    let todayFortuneViewModel = TodayFortuneViewModel(useCase: todatFortuneUseCase)
                     let todayFortuneViewController = TodayFortuneViewController(viewModel: todayFortuneViewModel)
                     todayFortuneViewController.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(todayFortuneViewController, animated: true)
