@@ -12,6 +12,7 @@ import RxCocoa
 
 final class TodayFortuneViewController: UIViewController {
     private let todayFortuneView = TodayFortuneView()
+    private let viewModel: TodayFortuneViewModel
     private let timePickerData = Observable.just(Array(0...23).map{ String($0) })
     private let sexPickerData = Observable.just(["남성", "여성"])
     private let kboTeamPickerData = Observable.just(KBOTeam.allCases.map{ $0.rawValue })
@@ -21,12 +22,25 @@ final class TodayFortuneViewController: UIViewController {
         self.view = todayFortuneView
     }
     
+    init(viewModel: TodayFortuneViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTappedAround()
         setupPickerView()
         setupDatePicker()
         setupToolBar()
+        bindUnderlineColorToEditingState()
+        buttonTapped()
+        bindViewModel()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -81,10 +95,88 @@ final class TodayFortuneViewController: UIViewController {
     private func setupToolBar() {
         todayFortuneView.setupToolBar(target: self, action: #selector(dismissPicker))
     }
+    /// 언더라인을 편집 상태와 바인드하여 색상을 업데이트합니다.
+    private func bindUnderlineColorToEditingState() {
+        let textFields = [
+            todayFortuneView.birthInputField.textField,
+            todayFortuneView.timeInputField.textField,
+            todayFortuneView.sexInputField.textField,
+            todayFortuneView.kboTeamInputField.textField
+        ]
+        let inputFields = [
+            todayFortuneView.birthInputField,
+            todayFortuneView.timeInputField,
+            todayFortuneView.sexInputField,
+            todayFortuneView.kboTeamInputField
+        ]
+        for (index, textField) in textFields.enumerated() {
+            let inputField = inputFields[index]
+            textField.rx.controlEvent(.editingDidBegin)
+                .subscribe(onNext: {
+                    UIView.animate(withDuration: 0.25) {
+                        inputField.setUnderlineColor(.mainCharcoalColor)
+                    }
+                })
+                .disposed(by: disposeBag)
+            textField.rx.controlEvent(.editingDidEnd)
+                .subscribe(onNext: {
+                    UIView.animate(withDuration: 0.25) {
+                        inputField.setUnderlineColor(.primaryBackgroundColor)
+                    }
+                })
+                .disposed(by: disposeBag)
+        }
+    }
+    private func buttonTapped() {
+//        todayFortuneView.completeButton.rx.tap
+//            .withUnretained(self)
+//            .subscribe(onNext: { owner, _ in
+//                let todayFortuneResulViewController = TodayFortuneResultViewController()
+//                todayFortuneResulViewController.modalPresentationStyle = .overFullScreen
+//                owner.present(todayFortuneResulViewController, animated: true) {
+//                    self.navigationController?.popToRootViewController(animated: false)
+//                }
+//            })
+//            .disposed(by: disposeBag)
+    }
     
+    private func bindViewModel() {
+        let input = TodayFortuneViewModel.Input(
+            dateOfBirth: todayFortuneView.birthInputField.textField.rx.text.orEmpty.asObservable(),
+            timeOfBirth: todayFortuneView.timeInputField.textField.rx.text.orEmpty.asObservable(),
+            sex: todayFortuneView.sexInputField.textField.rx.text.orEmpty.asObservable(),
+            kboTeam: todayFortuneView.kboTeamInputField.textField.rx.text.orEmpty.asObservable(),
+            completeButtonTapped: todayFortuneView.completeButton.rx.tap.asObservable()
+        )
+        let output = viewModel.transform(input: input)
+        // 필수 입력란 누락 에러입니다.
+        output.error
+            .withUnretained(self)
+            .bind(onNext: { owner, _ in
+                owner.showRequiredInputAlert()
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+
+extension TodayFortuneViewController {
     /// 툴바의 Done 버튼이 클릭됬을 때 툴바를 닫습니다.
     @objc private func dismissPicker() {
         view.endEditing(true)
     }
+}
 
+extension TodayFortuneViewController {
+    /// 필수 입력란이 누락됬을 경우 안내 팝업을 표시합니다.
+    private func showRequiredInputAlert() {
+        let popupViewController = PopupViewController(
+            title: "입력 안내",
+            subtitle: "필수 정보를 입력해주세요",
+            mainButtonStyle: .init(title: "확인", backgroundColor: .mainCharcoalColor),
+            blurEffect: .init(style: .systemUltraThinMaterialLight))
+        popupViewController.modalPresentationStyle = .overFullScreen
+        popupViewController.modalTransitionStyle = .crossDissolve
+        present(popupViewController, animated: true)
+    }
 }

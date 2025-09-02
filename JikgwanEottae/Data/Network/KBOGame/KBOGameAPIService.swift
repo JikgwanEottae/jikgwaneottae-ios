@@ -20,7 +20,7 @@ enum KBOGameAPIService {
 
 extension KBOGameAPIService: TargetType, AccessTokenAuthorizable {
     var baseURL: URL {
-        URL(string: "https://contributors-gentleman-david-packs.trycloudflare.com")!
+        URL(string: "https://api.jikgwaneottae.xyz")!
     }
     
     var path: String {

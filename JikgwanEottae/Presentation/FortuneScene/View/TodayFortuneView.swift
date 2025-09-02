@@ -73,7 +73,7 @@ final class TodayFortuneView: UIView {
     )
     // 시각 텍스트 필드입니다.
     public lazy var timeInputField = UnderlinedInputField(
-        title: "시간(선택)",
+        title: "태어난 시(선택사항)",
         placeholder: "15",
         inputView: timePickerView
     )
@@ -85,12 +85,12 @@ final class TodayFortuneView: UIView {
     )
     // 구단 텍스트 필드입니다.
     public lazy var kboTeamInputField = UnderlinedInputField(
-        title: "구단",
+        title: "응원 구단",
         placeholder: "선택해주세요",
         inputView: kboTeamPickerView
     )
     
-    public let completeButton = UIButton(type: .custom).then {
+    private(set) var completeButton = UIButton(type: .custom).then {
         $0.setTitle("결과보기", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
