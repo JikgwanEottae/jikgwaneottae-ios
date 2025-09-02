@@ -47,7 +47,7 @@ final class TodayFortuneResultView: UIView {
     
     private lazy var innerStackView = UIStackView(arrangedSubviews: [
         scoreLabel,
-        fortuneDescLabel
+        descLabel
     ]).then {
         $0.layoutMargins = UIEdgeInsets(top: 30, left: 20, bottom: 30, right: 20)
         $0.isLayoutMarginsRelativeArrangement = true
@@ -67,7 +67,7 @@ final class TodayFortuneResultView: UIView {
         $0.textAlignment = .center
     }
     
-    private let fortuneDescLabel = UILabel().then {
+    private let descLabel = UILabel().then {
         $0.text = "오늘의 오행은 安! 안정적인 경기 운영이 예상됩니다!\n\n십신 관계가 보통 수준으로 팀과의 관계를 개선할 여지가 있습니다.\n오늘은 응원의 힘이 더욱 필요한 날입니다. 끝까지 함께해주세요!"
         $0.setLineSpacing(spacing: 8)
         $0.numberOfLines = 0
