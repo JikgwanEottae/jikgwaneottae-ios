@@ -23,6 +23,11 @@ final class TodayFortuneViewModel: ViewModelType {
     }
     
     struct Output {
+        let timePickerItems: Driver<[String]>
+        let genderPickerItems: Driver<[String]>
+        let kboTeamPickerItems: Driver<[String]>
+        let fortune: Observable<Fortune>
+        let isLoading: Signal<Bool>
         let error: PublishRelay<Void>
     }
     
@@ -39,8 +44,9 @@ final class TodayFortuneViewModel: ViewModelType {
         )
         
         let errorSubject = PublishRelay<Void>()
+        let isLoadingRelay = PublishRelay<Bool>()
         
-        input.completeButtonTapped
+        let fortune = input.completeButtonTapped
             .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
             .withLatestFrom(allValues)
             .filter { date, time, gender, kboTeam in
@@ -50,13 +56,33 @@ final class TodayFortuneViewModel: ViewModelType {
                 }
                 return true
             }
-            .subscribe(onNext: { dateOfBirth, timeOfBirth, gender, favoriteKBOTeam in
-                self.useCase.fetchTodayFortune(dateOfBirth: dateOfBirth, timeOfBirth: timeOfBirth, gender: gender, favoriteKBOTeam: favoriteKBOTeam)
-            })
-            .disposed(by: disposeBag)
-        
+            .flatMapLatest { [weak self] (dateOfBirth, timeOfBirth, gender, favoriteKBOTeam) -> Observable<Fortune> in
+                guard let self = self else { return .never()  }
+                isLoadingRelay.accept(true)
+                return self.useCase.fetchTodayFortune(
+                    dateOfBirth: dateOfBirth,
+                    timeOfBirth: timeOfBirth,
+                    gender: gender,
+                    favoriteKBOTeam: favoriteKBOTeam
+                )
+                .asObservable()
+                .do(onNext: { _ in
+                    isLoadingRelay.accept(false)
+                }, onError: { _ in
+                    isLoadingRelay.accept(false)
+                })
+                .catch { error in
+                    print(error.localizedDescription)
+                    return .empty()
+                }
+            }
         
         return Output(
+            timePickerItems: Driver.just(Array(0...23).map{ String($0) }),
+            genderPickerItems: Driver.just(["남성", "여성"]),
+            kboTeamPickerItems: Driver.just(KBOTeam.allCases.map{ $0.rawValue }),
+            fortune: fortune,
+            isLoading: isLoadingRelay.asSignal(),
             error: errorSubject
         )
     }

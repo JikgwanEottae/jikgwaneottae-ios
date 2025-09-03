@@ -11,6 +11,12 @@ import SnapKit
 import Then
 
 final class TodayFortuneView: UIView {
+    // 로딩 인디케이터입니다.
+    private(set) var activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
     private let scrollView = UIScrollView().then {
         $0.showsVerticalScrollIndicator = false
         $0.showsHorizontalScrollIndicator = false
@@ -113,11 +119,16 @@ final class TodayFortuneView: UIView {
     private func setupUI() {
         self.backgroundColor = .white
         self.addSubview(scrollView)
+        self.addSubview(activityIndicator)
         self.scrollView.addSubview(stackView)
         self.addSubview(completeButton)
     }
     
     private func setupLayout() {
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.centerY
+                .equalToSuperview()
+        }
         scrollView.snp.makeConstraints { make in
             make.top.leading.trailing
                 .equalToSuperview()

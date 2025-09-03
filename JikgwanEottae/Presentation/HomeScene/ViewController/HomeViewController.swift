@@ -50,12 +50,6 @@ final class HomeViewController: UIViewController {
         snapshot.appendSections([.stats, .todayFortune])
         snapshot.appendItems([.stats], toSection: .stats)
         snapshot.appendItems([.todayFortune], toSection: .todayFortune)
-//        // 구단별 관광지 조회 섹션입니다.
-//        snapshot.appendSections([.tour])
-//        let tourItems = KBOTeam.allCases.map { HomeItem.tourItem(team: $0) }
-//        // 구단별 관광지 조회 섹션에 아이템을 추가합니다.
-//        snapshot.appendItems(tourItems, toSection: .tour)
-//        
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
@@ -66,22 +60,14 @@ final class HomeViewController: UIViewController {
                 let item = self.dataSource.itemIdentifier(for: indexPath)
                 switch item {
                 case .todayFortune:
-                    let todatFortuneUseCase = TodayFortuneUseCase()
+                    let todayFortuneRepository = TodayFortuneRepository(networkManager: TodayFortuneNetworkManager.shared)
+                    let todatFortuneUseCase = TodayFortuneUseCase(repository: todayFortuneRepository)
                     let todayFortuneViewModel = TodayFortuneViewModel(useCase: todatFortuneUseCase)
                     let todayFortuneViewController = TodayFortuneViewController(viewModel: todayFortuneViewModel)
                     todayFortuneViewController.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(todayFortuneViewController, animated: true)
                 default:
                     break
-//                case .tourItem(let selectedTeam):
-//                    let tourRepository = TourRepository(manager: TourNetworkManager.shared)
-//                    let tourUseCase = TourUseCase(repository: tourRepository)
-//                    let tourViewModel = TourMapViewModel(useCase: tourUseCase, selectedTeam: selectedTeam)
-//                    let tourViewController = TourMapViewController(viewModel: tourViewModel)
-//                    tourViewController.hidesBottomBarWhenPushed = true
-//                    self.navigationController?.pushViewController(tourViewController, animated: true)
-//                default:
-//                    break
                 }
             })
             .disposed(by: disposeBag)
