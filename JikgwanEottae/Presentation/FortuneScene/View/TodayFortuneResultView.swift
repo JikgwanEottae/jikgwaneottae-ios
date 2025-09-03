@@ -38,7 +38,7 @@ final class TodayFortuneResultView: UIView {
     }
     
     private let dateLabel = UILabel().then {
-        $0.text = "9월 3일 수요일"
+        $0.text = Date().toFormattedString("MM월 dd일 EEEE")
         $0.numberOfLines = 1
         $0.font = .gMarketSans(size: 17, family: .medium)
         $0.textColor = .primaryTextColor
@@ -60,7 +60,6 @@ final class TodayFortuneResultView: UIView {
     }
     
     private let scoreLabel = UILabel().then {
-        $0.text = "73점"
         $0.numberOfLines = 1
         $0.font = .gMarketSans(size: 25, family: .bold)
         $0.textColor = .secondaryTextColor
@@ -68,8 +67,6 @@ final class TodayFortuneResultView: UIView {
     }
     
     private let descLabel = UILabel().then {
-        $0.text = "오늘의 오행은 安! 안정적인 경기 운영이 예상됩니다!\n\n십신 관계가 보통 수준으로 팀과의 관계를 개선할 여지가 있습니다.\n오늘은 응원의 힘이 더욱 필요한 날입니다. 끝까지 함께해주세요!"
-        $0.setLineSpacing(spacing: 8)
         $0.numberOfLines = 0
         $0.font = .gMarketSans(size: 17, family: .medium)
         $0.textColor = .secondaryTextColor
@@ -77,8 +74,6 @@ final class TodayFortuneResultView: UIView {
     }
     
     private let recommendationLabel = UILabel().then {
-        $0.text = "오늘 경기에서 삼성 라이온즈의 승리를 기원하며 응원해주세요!"
-        $0.setLineSpacing(spacing: 8)
         $0.numberOfLines = 0
         $0.font = .gMarketSans(size: 15, family: .medium)
         $0.textColor = .secondaryTextColor
@@ -95,7 +90,7 @@ final class TodayFortuneResultView: UIView {
     }
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
+        super.init(frame: .zero)
         setupUI()
         setupLayout()
     }
@@ -137,6 +132,14 @@ final class TodayFortuneResultView: UIView {
             make.height
                 .equalTo(Constants.buttonHeight)
         }
+    }
+    
+    public func configure(with fortune: Fortune) {
+        self.scoreLabel.text = "\(fortune.score)점"
+        self.descLabel.text = fortune.description
+        self.descLabel.setLineSpacing(spacing: 8, alignment: .center)
+        self.recommendationLabel.text = fortune.recommendation
+        self.recommendationLabel.setLineSpacing(spacing: 8, alignment: .center)
     }
 
 }

@@ -13,9 +13,6 @@ import RxCocoa
 final class TodayFortuneViewController: UIViewController {
     private let todayFortuneView = TodayFortuneView()
     private let viewModel: TodayFortuneViewModel
-    private let timePickerData = Observable.just(Array(0...23).map{ String($0) })
-    private let genderPickerData = Observable.just(["남성", "여성"])
-    private let kboTeamPickerData = Observable.just(KBOTeam.allCases.map{ $0.rawValue })
     private let disposeBag = DisposeBag()
     
     override func loadView() {
@@ -42,30 +39,8 @@ final class TodayFortuneViewController: UIViewController {
         bindViewModel()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-    }
     /// 피커 뷰를 설정합니다.
     private func setupPickerView() {
-        // 시각 아이템을 피커 뷰와 바인드합니다.
-        timePickerData
-            .bind(to: todayFortuneView.timePickerView.rx.itemTitles) { _, item in
-                return "\(item)시"
-            }
-            .disposed(by: disposeBag)
-        // 성별 아이템을 비커 뷰와 바인드합니다.
-        genderPickerData
-            .bind(to: todayFortuneView.genderPickerView.rx.itemTitles) { _, item in
-                return item
-            }
-            .disposed(by: disposeBag)
-        // KBO구단 아이템을 피커 뷰와 바인드합니다.
-        kboTeamPickerData
-            .bind(to: todayFortuneView.kboTeamPickerView.rx.itemTitles) { _, item in
-                return item
-            }
-            .disposed(by: disposeBag)
         // 선택된 시간 아이템을 텍스트 필드와 바인드합니다.
         todayFortuneView.timePickerView.rx.modelSelected(String.self)
             .compactMap { $0.first }
@@ -136,12 +111,41 @@ final class TodayFortuneViewController: UIViewController {
             completeButtonTapped: todayFortuneView.completeButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(input: input)
-        // 필수 입력란 누락 에러입니다.
+        // 태어난 시각 피커에 아이템을 전달합니다.
+        output.timePickerItems
+            .drive(todayFortuneView.timePickerView.rx.itemTitles) { _, item in
+                return "\(item)시"
+            }
+            .disposed(by: disposeBag)
+        // 성별 피커에 아이템을 전달합니다.
+        output.genderPickerItems
+            .drive(todayFortuneView.genderPickerView.rx.itemTitles) { _, item in
+                return item
+            }
+            .disposed(by: disposeBag)
+        // 구단 피커에 아이템을 전달합니다.
+        output.kboTeamPickerItems
+            .drive(todayFortuneView.kboTeamPickerView.rx.itemTitles) { _, item in
+                return item
+            }
+            .disposed(by: disposeBag)
+        // 오늘의 직관 운세 데이터를 전달합니다.
+        output.fortune
+            .withUnretained(self)
+            .subscribe(onNext: { owner, fortune in
+                owner.showTodayFortuneResult(with: fortune)
+            })
+            .disposed(by: disposeBag)
+        // 필수 입력란 누락 에러를 전달합니다.
         output.error
             .withUnretained(self)
             .bind(onNext: { owner, _ in
                 owner.showRequiredInputAlert()
             })
+            .disposed(by: disposeBag)
+        // 로딩 상태를 전달합니다.
+        output.isLoading
+            .emit(to: todayFortuneView.activityIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
     }
 }
@@ -155,6 +159,14 @@ extension TodayFortuneViewController {
 }
 
 extension TodayFortuneViewController {
+    /// 오늘의 직관 운세 결과 화면으로 이동합니다.
+    private func showTodayFortuneResult(with fortune: Fortune) {
+        let todayFortuneResultViewController = TodayFortuneResultViewController(fortune: fortune)
+        todayFortuneResultViewController.modalPresentationStyle = .overFullScreen
+        self.present(todayFortuneResultViewController, animated: true) {
+            self.navigationController?.popToRootViewController(animated: false)
+        }
+    }
     /// 필수 입력란이 누락됬을 경우 안내 팝업을 표시합니다.
     private func showRequiredInputAlert() {
         let popupViewController = PopupViewController(
