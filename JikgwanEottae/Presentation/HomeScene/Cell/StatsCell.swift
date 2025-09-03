@@ -44,7 +44,7 @@ final class StatsCell: UICollectionViewCell {
     }
     
     private let percentLabel = UILabel().then {
-        $0.text = "40%"
+        $0.text = "0%"
         $0.font = UIFont.gMarketSans(size: 14, family: .bold)
         $0.textColor = .primaryTextColor
         $0.textAlignment = .right
@@ -143,8 +143,9 @@ final class StatsCell: UICollectionViewCell {
         }
     }
     
-    public func config(stats: Stats) {
-        progressView.setProgress(Float(stats.winningRate), animated: false)
+    public func configure(stats: DiaryStats) {
+        progressView.setProgress(stats.winRate / 100.0, animated: true)
+        percentLabel.text = "\(Int(stats.winRate))%"
         winStatsItem.configure(count: stats.wins)
         lossStatsItem.configure(count: stats.losses)
         drawStatsItem.configure(count: stats.draws)

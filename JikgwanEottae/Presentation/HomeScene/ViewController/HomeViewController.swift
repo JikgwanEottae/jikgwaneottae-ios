@@ -16,14 +16,26 @@ enum HomeSection: Int, CaseIterable, Hashable {
 }
 
 enum HomeItem: Hashable {
-    case stats
+    case stats(DiaryStats)
     case todayFortune
 }
 
 final class HomeViewController: UIViewController {
     private let homeView = HomeView()
+    private let viewModel: HomeViewModel
     private var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomeItem>!
+    private let viewDidAppearRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
+    
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         self.view = homeView
@@ -36,6 +48,12 @@ final class HomeViewController: UIViewController {
         setupDatasource()
         applySnapshot()
         bindCollectionView()
+        bindViewModel()
+        viewDidAppearRelay.accept(())
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
@@ -48,11 +66,22 @@ final class HomeViewController: UIViewController {
     private func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
         snapshot.appendSections([.stats, .todayFortune])
-        snapshot.appendItems([.stats], toSection: .stats)
+        let initDiaryStats = DiaryStats(wins: 0, losses: 0, draws: 0, winRate: 0)
+        snapshot.appendItems([.stats(initDiaryStats)], toSection: .stats)
         snapshot.appendItems([.todayFortune], toSection: .todayFortune)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
+    /// 스냅샷을 업데이트합니다.
+    private func updateSnapshot(with diaryStats: DiaryStats) {
+        var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
+        snapshot.appendSections([.stats, .todayFortune])
+        snapshot.appendItems([.stats(diaryStats)], toSection: .stats)
+        snapshot.appendItems([.todayFortune], toSection: .todayFortune)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    /// 컬렉션 뷰와 바인드합니다.
     private func bindCollectionView() {
         homeView.collectionView.rx.itemSelected
             .bind(onNext: { [weak self] indexPath in
@@ -72,6 +101,18 @@ final class HomeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
+    /// 뷰 모델과 바인드합니다.
+    private func bindViewModel() {
+        let input = HomeViewModel.Input(viewDidAppear: viewDidAppearRelay)
+        let output = viewModel.transform(input: input)
+        output.diaryStats
+            .withUnretained(self)
+            .subscribe(onNext: { owner, diaryStats in
+                print(diaryStats)
+                owner.updateSnapshot(with: diaryStats)
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
 extension HomeViewController {
@@ -81,10 +122,11 @@ extension HomeViewController {
             collectionView: homeView.collectionView,
             cellProvider: { collectionView, indexPath, itemIdentifier in
                 switch itemIdentifier {
-                case .stats:
+                case .stats(let diaryStats):
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: StatsCell.ID, for: indexPath
                     ) as? StatsCell else { return UICollectionViewCell() }
+                    cell.configure(stats: diaryStats)
                     return cell
                 case .todayFortune:
                     guard let cell = collectionView.dequeueReusableCell(
