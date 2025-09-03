@@ -71,7 +71,10 @@ final class MainTabBarController: UITabBarController {
 extension MainTabBarController {
     /// 홈 화면을 생성합니다.
     private func createHome() -> UINavigationController {
-        let homeViewController = HomeViewController()
+        let repository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+        let useCase = DiaryUseCase(repository: repository)
+        let viewModel = HomeViewModel(useCase: useCase)
+        let homeViewController = HomeViewController(viewModel: viewModel)
         let homeNavigationController = UINavigationController(rootViewController: homeViewController)
         homeNavigationController.configureBarAppearnace()
         homeNavigationController.tabBarItem = UITabBarItem(
@@ -99,7 +102,7 @@ extension MainTabBarController {
     private func createDiary() -> UINavigationController {
         let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
         let diartUseCase = DiaryUseCase(repository: diaryRepository)
-        let diaryViewModel = DiaryViewModel(usecase: diartUseCase)
+        let diaryViewModel = DiaryViewModel(useCase: diartUseCase)
         let diaryViewController = DiaryViewController(viewModel: diaryViewModel)
         let diaryNavigationController = UINavigationController(rootViewController: diaryViewController)
         diaryNavigationController.configureBarAppearnace()

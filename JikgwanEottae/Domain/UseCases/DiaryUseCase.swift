@@ -38,6 +38,8 @@ protocol DiaryUseCaseProtocol {
     ) -> Completable
     
     func deleteDiary(diaryId: Int) -> Completable
+    
+    func fetchDiaryStats() -> Single<DiaryStats>
 }
 
 // MARK: - 직관 일기 유스케이스
@@ -99,5 +101,9 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
     
     public func deleteDiary(diaryId: Int) -> Completable {
         return self.repository.deleteDiary(diaryId: diaryId)
+    }
+    
+    public func fetchDiaryStats() -> Single<DiaryStats> {
+        return self.repository.fetchDiaryStats()
     }
 }

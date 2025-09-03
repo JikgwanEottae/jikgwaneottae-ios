@@ -43,4 +43,7 @@ protocol DiaryRepositoryProtocol {
     
     /// 직관 일기를 삭제합니다.
     func deleteDiary(diaryId: Int) -> Completable
+    
+    /// 직관 일기 승률을 조회합니다.
+    func fetchDiaryStats() -> Single<DiaryStats>
 }

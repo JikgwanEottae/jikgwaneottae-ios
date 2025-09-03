@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 
 final class DiaryViewModel: ViewModelType {
-    private let usecase: DiaryUseCaseProtocol
+    private let useCase: DiaryUseCaseProtocol
     private let monthlyDiariesRelay = PublishRelay<[Diary]>()
     private let disposeBag = DisposeBag()
     
@@ -24,8 +24,8 @@ final class DiaryViewModel: ViewModelType {
         let monthlyDiaries: PublishRelay<[Diary]>
     }
     
-    public init(usecase: DiaryUseCaseProtocol) {
-        self.usecase = usecase
+    public init(useCase: DiaryUseCaseProtocol) {
+        self.useCase = useCase
     }
     
     public func transform(input: Input) -> Output {
@@ -49,7 +49,7 @@ final class DiaryViewModel: ViewModelType {
 
 extension DiaryViewModel {
     private func fetchDiaries(year: String, month: String) {
-        usecase.fetchDiaries(year: year, month: month)
+        useCase.fetchDiaries(year: year, month: month)
             .subscribe(onSuccess: { [weak self] diaries in
                 self?.monthlyDiariesRelay.accept(diaries)
             })

@@ -15,23 +15,15 @@ enum DiaryAPIService {
     // 전체 직관 일기를 조회합니다.
     case fetchAllDiaries
     // 해당 연·월 직관 일기를 조회합니다.
-    case fetchDiaries(
-        year: String,
-        month: String
-    )
+    case fetchDiaries(year: String, month: String)
     // 직관 일기를 생성합니다.
-    case createDiary(
-        dto: DiaryCreateRequestDTO,
-        imageData: Data?
-    )
+    case createDiary(dto: DiaryCreateRequestDTO, imageData: Data?)
     // 직관 일기를 수정합니다.
-    case updateDiary(
-        diaryId: Int,
-        dto: DiaryUpdateRequestDTO,
-        imageData: Data?
-    )
+    case updateDiary(diaryId: Int, dto: DiaryUpdateRequestDTO, imageData: Data?)
     // 직관 일기를 삭제합니다.
     case deleteDiary(DiaryId: Int)
+    // 직관 일기 통계를 조회합니다.
+    case fetchDiaryStats
 }
 
 extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
@@ -53,13 +45,15 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             return "/api/diaries/\(diaryId)"
         case .deleteDiary(let diaryId):
             return "/api/diaries/\(diaryId)"
+        case .fetchDiaryStats:
+            return "/api/diaries/stats"
         }
     }
     
     // HTTP 메소드를 설정합니다.
     var method: Moya.Method {
         switch self {
-        case .fetchAllDiaries, .fetchDiaries:
+        case .fetchAllDiaries, .fetchDiaries, .fetchDiaryStats:
             return .get
         case .createDiary:
             return .post
@@ -132,13 +126,15 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             return .uploadMultipart(multipartFormData)
         case .deleteDiary:
             return .requestPlain
+        case .fetchDiaryStats:
+            return .requestPlain
         }
     }
     
     // 헤더를 설정합니다.
     var headers: [String : String]? {
         switch self {
-        case .fetchAllDiaries, .fetchDiaries, .deleteDiary:
+        case .fetchAllDiaries, .fetchDiaries, .deleteDiary, .fetchDiaryStats:
             return ["Content-Type": "application/json"]
         case .createDiary, .updateDiary:
             return ["Content-Type": "multipart/form-data"]
@@ -148,7 +144,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
     // 토큰을 설정합니다.
     var authorizationType: Moya.AuthorizationType? {
         switch self {
-        case .fetchAllDiaries, .fetchDiaries, .createDiary, .updateDiary, .deleteDiary:
+        case .fetchAllDiaries, .fetchDiaries, .createDiary, .updateDiary, .deleteDiary, .fetchDiaryStats:
             return .bearer
         }
     }

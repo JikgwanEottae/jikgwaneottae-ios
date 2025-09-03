@@ -18,12 +18,10 @@ final class DiaryRepository: DiaryRepositoryProtocol {
         self.networkManger = networkManger
     }
     
-    /// 전체 직관 일기 조회 구현체입니다.
     public func fetchAllDiaries() -> Single<[Diary]> {
         return self.networkManger.fetchAllDiaries()
     }
     
-    /// 해당 연·월 직관 일기 조회 구현체입니다.
     public func fetchDiaries(
         year: String,
         month: String
@@ -31,7 +29,6 @@ final class DiaryRepository: DiaryRepositoryProtocol {
         return self.networkManger.fetchDiaries(year: year, month: month)
     }
     
-    /// 직관 일기 생성 구현체입니다.
     public func createDiary(
         gameId: Int,
         favoriteTeam: String,
@@ -51,7 +48,6 @@ final class DiaryRepository: DiaryRepositoryProtocol {
         )
     }
     
-    /// 직관 일기 수정 구현체입니다.
     public func updateDiary(
         diaryId: Int,
         favoriteTeam: String,
@@ -69,9 +65,12 @@ final class DiaryRepository: DiaryRepositoryProtocol {
         return self.networkManger.updateDiary(diaryId: diaryId, dto: dto, imageData: imageData)
     }
     
-    /// 직관 일기 삭제 구현체입니다.
     public func deleteDiary(diaryId: Int) -> Completable {
         return self.networkManger.deleteDiary(diaryId: diaryId)
+    }
+    
+    public func fetchDiaryStats() -> Single<DiaryStats> {
+        return self.networkManger.fetchDiaryStats()
     }
 }
 
