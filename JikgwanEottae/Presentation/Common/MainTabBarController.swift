@@ -71,9 +71,11 @@ final class MainTabBarController: UITabBarController {
 extension MainTabBarController {
     /// 홈 화면을 생성합니다.
     private func createHome() -> UINavigationController {
-        let repository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
-        let useCase = DiaryUseCase(repository: repository)
-        let viewModel = HomeViewModel(useCase: useCase)
+        let kboGameRepository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
+        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+        let kboGameUseCase = KBOGameUseCase(repository: kboGameRepository)
+        let diaryUseCase = DiaryUseCase(repository: diaryRepository)
+        let viewModel = HomeViewModel(diaryUseCase: diaryUseCase, kboGameUseCase: kboGameUseCase)
         let homeViewController = HomeViewController(viewModel: viewModel)
         let homeNavigationController = UINavigationController(rootViewController: homeViewController)
         homeNavigationController.configureBarAppearnace()
