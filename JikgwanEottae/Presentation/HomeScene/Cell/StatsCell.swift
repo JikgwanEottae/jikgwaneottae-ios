@@ -150,7 +150,6 @@ final class StatsCell: UICollectionViewCell {
         lossStatsItem.configure(count: stats.losses)
         drawStatsItem.configure(count: stats.draws)
     }
-    
 }
 
 extension StatsCell {

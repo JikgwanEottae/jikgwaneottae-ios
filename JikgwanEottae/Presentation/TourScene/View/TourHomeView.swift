@@ -32,7 +32,7 @@ final class TourHomeView: UIView {
             collectionView
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill

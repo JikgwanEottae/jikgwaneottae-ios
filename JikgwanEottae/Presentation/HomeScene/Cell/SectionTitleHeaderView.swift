@@ -18,15 +18,15 @@ final class SectionTitleHeaderView: UICollectionReusableView {
     
     // 섹션의 타이틀 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 16, family: .bold)
+        $0.font = .gMarketSans(size: 16, family: .medium)
+        $0.textAlignment = .left
+        $0.numberOfLines = 1
         $0.textColor = .primaryTextColor
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         addSubview(titleLabel)
-        
         titleLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }

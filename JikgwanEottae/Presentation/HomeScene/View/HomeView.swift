@@ -25,6 +25,7 @@ final class HomeView: UIView {
         collectionViewLayout: makeLayout()
     ).then {
         $0.register(StatsCell.self, forCellWithReuseIdentifier: StatsCell.ID)
+        $0.register(TodayGameCell.self, forCellWithReuseIdentifier: TodayGameCell.ID)
         $0.register(TodayFortuneCell.self, forCellWithReuseIdentifier: TodayFortuneCell.ID)
         $0.backgroundColor = .clear
         $0.showsHorizontalScrollIndicator = false
@@ -50,8 +51,11 @@ final class HomeView: UIView {
     
     private func setupLayout() {
         collectionView.snp.makeConstraints { make in
-            make.edges
+            make.top.bottom
                 .equalToSuperview()
+            make.leading.trailing
+                .equalToSuperview()
+                .inset(15)
         }
     }
 }
@@ -64,12 +68,14 @@ extension HomeView {
             switch section {
             case .stats:
                 return self?.createStatsSection()
+            case .todayGames:
+                return self?.createTodayGamesSection()
             case .todayFortune:
                 return self?.createTodayFortuneSection()
             }
         }
         let config = UICollectionViewCompositionalLayoutConfiguration()
-        config.interSectionSpacing = 20
+        config.interSectionSpacing = 15
         layout.configuration = config
         // 섹션의 배경을 등록합니다.
         layout.register(SectionBackgroundDecorationView.self, forDecorationViewOfKind: SectionBackgroundDecorationView.kind)
@@ -90,12 +96,27 @@ extension HomeView {
             layoutSize: groupSize,
             subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 20,
-            bottom: 0,
-            trailing: 20
+        return section
+    }
+    
+    /// 오늘의 야구 경기 일정보기 섹션의 레이아웃을 생성합니다.
+    private func createTodayGamesSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
         )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(0.6),
+            heightDimension: .absolute(150)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item]
+        )
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 15
+        section.orthogonalScrollingBehavior = .groupPaging
         return section
     }
     
@@ -114,68 +135,6 @@ extension HomeView {
             layoutSize: groupSize,
             subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 20,
-            bottom: 0,
-            trailing: 20
-        )
-        return section
-    }
-    
-    /// 관광 섹션에서 사용할 레이아웃을 생성합니다.
-    private func createTourSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0 / 5.0),
-            heightDimension: .fractionalHeight(1.0)
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(100)
-        )
-        let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: groupSize,
-            subitems: [item]
-        )
-        // 그룹 내 아이템 간격을 설정합니다.
-        group.interItemSpacing = .fixed(10)
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        // 섹션 내 그룹 간격을 설정합니다.
-        section.interGroupSpacing = 10
-        section.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 15, bottom: 15, trailing: 15)
-        
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(40)
-        )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: SectionTitleHeaderView.elementKind,
-            alignment: .top
-        )
-        
-        // 헤더에 inset을 부여합니다.
-        header.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
-        
-        let footerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(10)
-        )
-        let footer = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: footerSize,
-            elementKind: SectionSeparatorView.elementKind,
-            alignment: .bottom
-        )
-        
-        // SupplementaryView의 inset을 섹션과 맞추지 않기로 설정합니다.
-        section.supplementariesFollowContentInsets = false
-        
-        // 섹션에 SupplementaryView를 등록합니다.
-        section.boundarySupplementaryItems = [header, footer]
         return section
     }
 }

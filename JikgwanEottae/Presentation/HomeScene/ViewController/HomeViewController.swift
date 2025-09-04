@@ -10,13 +10,15 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-enum HomeSection: Int, CaseIterable, Hashable {
+enum HomeSection: String, CaseIterable, Hashable {
     case stats
+    case todayGames
     case todayFortune
 }
 
 enum HomeItem: Hashable {
     case stats(DiaryStats)
+    case todayGames(KBOGame)
     case todayFortune
 }
 
@@ -62,21 +64,19 @@ final class HomeViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = leftBarButtonItem
     }
     
-    /// 섹션별 스냅샷을 적용합니다.
+    /// 스냅샷을 적용합니다.
     private func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
-        snapshot.appendSections([.stats, .todayFortune])
-        let initDiaryStats = DiaryStats(wins: 0, losses: 0, draws: 0, winRate: 0)
-        snapshot.appendItems([.stats(initDiaryStats)], toSection: .stats)
-        snapshot.appendItems([.todayFortune], toSection: .todayFortune)
+        let snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     /// 스냅샷을 업데이트합니다.
-    private func updateSnapshot(with diaryStats: DiaryStats) {
+    private func updateSnapshot(diaryStats: DiaryStats, games: [KBOGame]) {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
-        snapshot.appendSections([.stats, .todayFortune])
+        snapshot.appendSections([.stats, .todayGames, .todayFortune])
         snapshot.appendItems([.stats(diaryStats)], toSection: .stats)
+        let gameItems = games.map { HomeItem.todayGames($0) }
+        snapshot.appendItems(gameItems, toSection: .todayGames)
         snapshot.appendItems([.todayFortune], toSection: .todayFortune)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -105,11 +105,12 @@ final class HomeViewController: UIViewController {
     private func bindViewModel() {
         let input = HomeViewModel.Input(viewDidAppear: viewDidAppearRelay)
         let output = viewModel.transform(input: input)
-        output.diaryStats
+        // 모든 데이터가 준비되면 한 번에 스냅샷 구성
+        Observable.combineLatest(output.diaryStats, output.todayGames)
             .withUnretained(self)
-            .subscribe(onNext: { owner, diaryStats in
-                print(diaryStats)
-                owner.updateSnapshot(with: diaryStats)
+            .subscribe(onNext: { owner, data in
+                let (diaryStats, games) = data
+                owner.updateSnapshot(diaryStats: diaryStats, games: games)
             })
             .disposed(by: disposeBag)
     }
@@ -124,9 +125,17 @@ extension HomeViewController {
                 switch itemIdentifier {
                 case .stats(let diaryStats):
                     guard let cell = collectionView.dequeueReusableCell(
-                        withReuseIdentifier: StatsCell.ID, for: indexPath
+                        withReuseIdentifier: StatsCell.ID,
+                        for: indexPath
                     ) as? StatsCell else { return UICollectionViewCell() }
                     cell.configure(stats: diaryStats)
+                    return cell
+                case .todayGames(let game):
+                    guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: TodayGameCell.ID,
+                        for: indexPath
+                    ) as? TodayGameCell else { return UICollectionViewCell() }
+                    cell.configure(game: game)
                     return cell
                 case .todayFortune:
                     guard let cell = collectionView.dequeueReusableCell(
@@ -137,23 +146,5 @@ extension HomeViewController {
                 }
             }
         )
-        
-//        let headerRegistration = UICollectionView.SupplementaryRegistration<SectionTitleHeaderView>(
-//            elementKind: SectionTitleHeaderView.elementKind) { [weak self] supplementaryView, elementKind, indexPath in
-//                guard let section = self?.dataSource.snapshot().sectionIdentifiers[indexPath.section] else { return }
-//                supplementaryView.configure(title: section.title)
-//            }
-//        
-//        let seperatorRegistration = UICollectionView.SupplementaryRegistration<SectionSeparatorView>(
-//            elementKind: SectionSeparatorView.elementKind
-//        ) { _, _, _ in }
-//        
-//        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
-//            if kind == UICollectionView.elementKindSectionHeader {
-//                return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
-//            } else {
-//                return collectionView.dequeueConfiguredReusableSupplementary(using: seperatorRegistration, for: indexPath)
-//            }
-//        }
     }
 }

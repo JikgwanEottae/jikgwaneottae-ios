@@ -35,7 +35,7 @@ final class TeamSelectionCell: UICollectionViewCell {
     // 구장 레이블입니다.
     private let ballparkLabel = UILabel().then {
         $0.font = .gMarketSans(size: 12, family: .medium)
-        $0.textColor = .secondaryTextColor
+        $0.textColor = .primaryTextColor
         $0.textAlignment = .left
     }
 

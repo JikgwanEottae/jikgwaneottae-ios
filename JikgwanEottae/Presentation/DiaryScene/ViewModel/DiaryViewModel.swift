@@ -15,11 +15,10 @@ final class DiaryViewModel: ViewModelType {
     private let monthlyDiariesRelay = PublishRelay<[Diary]>()
     private let disposeBag = DisposeBag()
     
-    // 뷰 컨트롤러부터 전달
     struct Input {
         let currentMonth: BehaviorRelay<Date>
     }
-    // 뷰 컨트롤러에 전달
+
     struct Output {
         let monthlyDiaries: PublishRelay<[Diary]>
     }

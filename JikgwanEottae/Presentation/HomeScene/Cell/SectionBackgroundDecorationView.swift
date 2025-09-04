@@ -14,8 +14,8 @@ final class SectionBackgroundDecorationView: UICollectionReusableView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .white
-        self.layer.cornerRadius = 25
+        self.backgroundColor = .red
+        self.layer.cornerRadius = Constants.cornerRadius
         self.clipsToBounds = true
     }
     
