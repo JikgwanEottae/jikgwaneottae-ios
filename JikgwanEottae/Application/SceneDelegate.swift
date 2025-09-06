@@ -7,6 +7,10 @@
 
 import UIKit
 
+import KakaoSDKAuth
+import KakaoSDKCommon
+import KakaoSDKUser
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
@@ -15,14 +19,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        let mainTabBarController = MainTabBarController()
-        window?.rootViewController = mainTabBarController
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared, keychainManager: KeychainManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let signIngViewModel = SignInViewModel(useCase: authUseCase)
+        let signInViewController = SignInViewController(viewModel: signIngViewModel)
+        window?.rootViewController = signInViewController
         window?.makeKeyAndVisible()
         window?.overrideUserInterfaceStyle = .light
-        
-//        guard let url = Bundle.main.url(forResource: "Info", withExtension: "plist") else { return }
-//        guard let dic = NSDictionary(contentsOf: url, error: ()) else { return }
-//        print(dic["KakaoAppKey"] as! String)
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            if AuthApi.isKakaoTalkLoginUrl(url) {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
