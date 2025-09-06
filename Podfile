@@ -16,7 +16,9 @@ target 'JikgwanEottae' do
 	pod 'KeychainAccess'
 	pod 'Kingfisher', '~> 8.0'
 	pod 'KakaoMapsSDK'
-	pod 'FloatingPanel'
+        pod 'KakaoSDKCommon'
+        pod 'KakaoSDKAuth'
+        pod 'KakaoSDKUser'
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths

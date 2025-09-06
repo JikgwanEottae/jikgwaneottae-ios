@@ -8,6 +8,8 @@
 import CoreData
 import UIKit
 
+import KakaoSDKCommon
+import KakaoSDKAuth
 import KakaoMapsSDK
 
 @main
@@ -20,10 +22,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             fatalError("KakaoAppKey not found in Info.plist")
         }
         SDKInitializer.InitSDK(appKey: kakaoAppKey)
+        KakaoSDK.initSDK(appKey: kakaoAppKey)
         return true
     }
-
-    // MARK: UISceneSession Lifecycle
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if AuthApi.isKakaoTalkLoginUrl(url) {
+            return AuthController.handleOpenUrl(url: url)
+        }
+        return false
+    }
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Called when a new scene session is being created.
