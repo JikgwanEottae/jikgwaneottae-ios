@@ -17,12 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // 카카오 지도에서 사용할 키를 가져옵니다.
-        guard let kakaoAppKey = Bundle.main.infoDictionary?["KakaoAppKey"] as? String
-        else {
+        guard let kakaoAppKey = Bundle.main.infoDictionary?["KakaoAppKey"] as? String else {
             fatalError("KakaoAppKey not found in Info.plist")
         }
         SDKInitializer.InitSDK(appKey: kakaoAppKey)
         KakaoSDK.initSDK(appKey: kakaoAppKey)
+        sleep(3)
         return true
     }
     
