@@ -19,6 +19,7 @@ target 'JikgwanEottae' do
         pod 'KakaoSDKCommon'
         pod 'KakaoSDKAuth'
         pod 'KakaoSDKUser'
+	pod 'MarkdownKit'
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths

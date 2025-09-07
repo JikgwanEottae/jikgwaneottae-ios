@@ -25,10 +25,11 @@ final class MyPageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideBackBarButtonItem()
         configureNaviBarButtonItem()
         setupDelegates()
-        myPageView.headerView.frame = CGRect(x: 0, y: 0, width: 0, height: 220)
-        myPageView.tableView.tableHeaderView = myPageView.headerView
+        setupTableViewHeader()
+        bindTableView()
     }
     
     private func configureNaviBarButtonItem() {
@@ -40,7 +41,44 @@ final class MyPageViewController: UIViewController {
         myPageView.tableView.delegate = self
         myPageView.tableView.dataSource = self
     }
+    
+    private func setupTableViewHeader() {
+        myPageView.headerView.frame = CGRect(x: 0, y: 0, width: 0, height: 220)
+        myPageView.tableView.tableHeaderView = myPageView.headerView
+    }
+    
+    private func bindTableView() {
+        myPageView.tableView.rx.itemSelected
+            .withUnretained(self)
+            .subscribe(onNext: { owner, indexPath in
+                let selectedTitle = owner.items[indexPath.section][indexPath.row]
+                owner.handleCellSelection(title: selectedTitle)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func handleCellSelection(title: String) {
+        switch title {
+        case "프로필 사진 설정":
+            break
+        case "닉네임 설정":
+            break
+        case "이용약관":
+            break
+        case "개인정보 처리방침":
+            navigateToPrivacyPolicy(title: title)
+        case "로그아웃":
+            break
+        case "회원탈퇴":
+            break
+        default:
+            break
+        }
+    }
+    
 }
+
+
 
 extension MyPageViewController: UITableViewDelegate {
     /// 섹션의 타이틀을 설정합니다.
@@ -76,5 +114,16 @@ extension MyPageViewController: UITableViewDataSource {
     /// 섹션의 행 수를 지정합니다.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items[section].count
+    }
+}
+
+
+extension MyPageViewController {
+    /// 개인정보 처리방침 화면으로 이동합니다.
+    private func navigateToPrivacyPolicy(title: String) {
+        let privacyPolicyViewController = PrivacyPolicyViewController()
+        privacyPolicyViewController.title = title
+        privacyPolicyViewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(privacyPolicyViewController, animated: true)
     }
 }
