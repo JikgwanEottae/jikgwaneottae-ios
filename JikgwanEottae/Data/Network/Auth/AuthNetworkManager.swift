@@ -12,12 +12,16 @@ import RxSwift
 
 final class AuthNetworkManager {
     static let shared = AuthNetworkManager()
-    private let provider = MoyaProvider<AuthAPIService>()
+    private let provider: MoyaProvider<AuthAPIService>
     
-    private init() { }
+    private init() {
+        let token = KeychainManager.shared.readAccessToken() ?? ""
+        let authPlugin = AccessTokenPlugin { _ in token }
+        self.provider = MoyaProvider(plugins: [authPlugin])
+    }
     
     public func authenticateWithKakao(accessToken: String) -> Single<AuthToken> {
-        return self.provider.rx.request(.authenticateWithKakao(accessToken: accessToken))
+        return provider.rx.request(.authenticateWithKakao(accessToken: accessToken))
             .map(AuthResponseDTO.self)
             .map { $0.toDomain() }
     }
@@ -26,8 +30,14 @@ final class AuthNetworkManager {
         identityToken: String,
         authorizationCode: String
     ) -> Single<AuthToken> {
-        return self.provider.rx.request(.authenticateWithApple(identityToken: identityToken, authorizationCode: authorizationCode))
+        return provider.rx.request(.authenticateWithApple(identityToken: identityToken, authorizationCode: authorizationCode))
             .map(AuthResponseDTO.self)
             .map { $0.toDomain() }
+    }
+    
+    public func setProfileNickname(nickname: String) -> Completable {
+        return provider.rx.request(.setProfileNickname(nickname: nickname))
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
     }
 }

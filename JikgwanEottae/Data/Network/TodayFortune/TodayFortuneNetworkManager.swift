@@ -15,7 +15,7 @@ final class TodayFortuneNetworkManager {
     private let provider: MoyaProvider<TodayFortuneAPIService>
     
     private init() {
-        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1Njg5MTY5NywiZXhwIjoxNzU2OTc4MDk3fQ.o5wPMmGgIsQmnjHTGkLi4vAG7PxkD1mgteMfd74eW48"
+        let token = KeychainManager.shared.readAccessToken() ?? ""
         let authPlugin = AccessTokenPlugin { _ in token }
         self.provider = MoyaProvider(plugins: [authPlugin])
     }

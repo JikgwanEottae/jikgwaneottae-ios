@@ -67,7 +67,15 @@ final class SignInViewController: UIViewController {
         output.loginSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                print("로그인 성공")
+                let authRepository = AuthRepository(
+                    networkManaer: AuthNetworkManager.shared,
+                    keychainManager: KeychainManager.shared
+                )
+                let authUseCase = AuthUseCase(repository: authRepository)
+                let nicknameViewModel = NicknameEditViewModel(useCase: authUseCase)
+                let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameViewModel)
+                nicknameEditViewController.modalPresentationStyle = .fullScreen
+                owner.present(nicknameEditViewController, animated: true)
             })
             .disposed(by: disposeBag)
         

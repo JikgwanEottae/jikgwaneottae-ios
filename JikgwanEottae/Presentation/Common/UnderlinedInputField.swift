@@ -11,32 +11,25 @@ import SnapKit
 import Then
 
 final class UnderlinedInputField: UIView {
-    private lazy var stackView = UIStackView(
-        arrangedSubviews: [
-            titleLabel,
-            textField,
-            underlineView
-        ]
-    ).then {
-        $0.axis = .vertical
-        $0.alignment = .fill
-        $0.spacing = 12
-    }
     private let titleLabel = UILabel().then {
         $0.font = .gMarketSans(size: 13, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
         $0.textAlignment = .left
     }
+    
+    private let containerView = UIView()
+    
     private(set) var textField = UITextField().then {
         $0.setPlaceholder(color: .placeholderColor)
-        $0.font = .gMarketSans(size: 17, family: .medium)
+        $0.font = .gMarketSans(size: 16, family: .medium)
         $0.textColor = .primaryTextColor
         $0.clearButtonMode = .always
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
         $0.contentVerticalAlignment = .center
     }
+    
     private let underlineView = UIView().then {
         $0.backgroundColor = .primaryBackgroundColor
     }
@@ -60,18 +53,40 @@ final class UnderlinedInputField: UIView {
     }
     
     private func setupUI() {
-        addSubview(stackView)
+        self.addSubview(titleLabel)
+        self.addSubview(containerView)
+        self.addSubview(underlineView)
+        self.containerView.addSubview(textField)
     }
+    
     private func setupLayout() {
-        stackView.snp.makeConstraints { make in
-            make.edges
+        titleLabel.snp.makeConstraints { make in
+            make.top.leading.trailing
                 .equalToSuperview()
+        }
+        containerView.snp.makeConstraints { make in
+            make.top
+                .equalTo(titleLabel.snp.bottom)
+            make.leading.trailing.bottom
+                .equalToSuperview()
+            make.height
+                .equalTo(40)
+        }
+        textField.snp.makeConstraints { make in
+            make.leading.trailing
+                .equalToSuperview()
+            make.top.bottom
+                .equalToSuperview()
+                .inset(5)
         }
         underlineView.snp.makeConstraints { make in
             make.height
                 .equalTo(2)
+            make.leading.trailing.bottom
+                .equalToSuperview()
         }
     }
+    
     public func setUnderlineColor(_ color: UIColor) {
         underlineView.backgroundColor = color
     }

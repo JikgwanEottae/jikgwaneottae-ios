@@ -246,7 +246,7 @@ final class DiaryEditView: UIView {
                 .equalTo(Constants.buttonHeight)
         }
         activityIndicator.snp.makeConstraints { make in
-            make.centerX.centerY
+            make.center
                 .equalToSuperview()
         }
     }
