@@ -64,7 +64,7 @@ final class MyPageViewController: UIViewController {
         case "닉네임 설정":
             break
         case "이용약관":
-            break
+            navigateToTermsOfService(title: title)
         case "개인정보 처리방침":
             navigateToPrivacyPolicy(title: title)
         case "로그아웃":
@@ -125,5 +125,13 @@ extension MyPageViewController {
         privacyPolicyViewController.title = title
         privacyPolicyViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(privacyPolicyViewController, animated: true)
+    }
+    
+    /// 이용약관 화면으로 이동합니다.
+    private func navigateToTermsOfService(title: String) {
+        let termsOfServiceViewController = TermsOfServiceViewController()
+        termsOfServiceViewController.title = title
+        termsOfServiceViewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(termsOfServiceViewController, animated: true)
     }
 }
