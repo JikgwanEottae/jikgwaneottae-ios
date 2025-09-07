@@ -52,6 +52,11 @@ final class AuthRepository: AuthRepositoryProtocol {
             }
         }
     }
+    
+    public func setProfileNickname(_ nickname: String) -> Completable {
+        return networkManaer.setProfileNickname(nickname: nickname)
+    }
+    
 }
 
 extension AuthRepository {

@@ -65,12 +65,10 @@ public final class LabeledInputField: UIView {
             make.top
                 .equalTo(titleLabel.snp.bottom)
                 .offset(10)
-            make.leading.trailing
+            make.leading.trailing.bottom
                 .equalToSuperview()
             make.height
                 .equalTo(55)
-            make.bottom
-                .equalToSuperview()
         }
         textField.snp.makeConstraints { make in
             make.leading.trailing

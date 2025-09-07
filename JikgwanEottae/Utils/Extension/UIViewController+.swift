@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIViewController {
-    /// 네비게이션 바의 백 버튼 아이템을 "뒤로"에서 공백으로 설정
+    /// 네비게이션 바의 백 버튼 아이템을 공백으로 설정합니다.
     func hideBackBarButtonItem() {
         let backBarButtonItem = UIBarButtonItem(
             title: "",
@@ -20,7 +20,7 @@ extension UIViewController {
         self.navigationItem.backBarButtonItem = backBarButtonItem
     }
     
-    /// 제스처에 탭을 등록하고, 탭 이벤트가 발생할 경우 키보드 내리기
+    /// 탭 이벤트가 발생할 경우 키보드를 내립니다.
     func hideKeyboardWhenTappedAround() {
         let tap = UITapGestureRecognizer(
             target: self,
@@ -30,11 +30,9 @@ extension UIViewController {
         view.addGestureRecognizer(tap)
     }
     
-    /// 편집 종료. 키보드 내리기
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-
 }
 
 // MARK: - UIGestureRecognizerDelegate extension
@@ -54,3 +52,34 @@ extension UIViewController: UIGestureRecognizerDelegate {
     }
 }
 
+extension UIViewController {
+    /// 알람 화면을 표시합니다.
+    func showAlert(
+        title: String,
+        message: String? = nil,
+        doneTitle: String = "확인",
+        cancelTitle: String? = nil,
+        preferredStyle: UIAlertController.Style = .alert,
+        completion: (() -> Void)? = nil
+    ) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: preferredStyle)
+        let doneAction = UIAlertAction(
+            title: doneTitle,
+            style: .default
+        ) { _ in
+            completion?()
+        }
+        alert.addAction(doneAction)
+        if let cancelTitle = cancelTitle {
+            let cancelAction = UIAlertAction(
+                title: cancelTitle,
+                style: .cancel
+            )
+            alert.addAction(cancelAction)
+        }
+        self.present(alert, animated: true)
+    }
+}

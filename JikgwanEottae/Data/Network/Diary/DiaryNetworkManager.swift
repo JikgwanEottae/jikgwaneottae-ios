@@ -17,7 +17,7 @@ final class DiaryNetworkManager {
     private let provider: MoyaProvider<DiaryAPIService>
     
     private init() {
-        let token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdGl0Y2g4OTcxQGdhY2hvbi5hYy5rciIsImlhdCI6MTc1NjkwOTM5OSwiZXhwIjoxNzU2OTk1Nzk5fQ.I156Qq9hR9z8_DA6bt6ouXuZurTdc-FpsbgLv94iE4k"
+        let token = KeychainManager.shared.readAccessToken() ?? ""
         let authPlugin = AccessTokenPlugin { _ in token }
         self.provider = MoyaProvider(plugins: [authPlugin])
     }

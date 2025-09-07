@@ -1,0 +1,117 @@
+//
+//  NicknameEditView.swift
+//  JikgwanEottae
+//
+//  Created by 7aeHoon on 9/6/25.
+//
+
+import UIKit
+
+import SnapKit
+import Then
+
+final class NicknameEditView: UIView {
+    // 로딩 인디케이터입니다.
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    
+    private(set) var titleLabel = UILabel().then {
+        $0.text = "닉네임을 입력해주세요"
+        $0.numberOfLines = 1
+        $0.font = .gMarketSans(size: 20, family: .medium)
+        $0.textColor = .primaryTextColor
+    }
+    
+    private(set) var nicknameInputField = UnderlinedInputField(
+        title: "닉네임",
+        placeholder: "입력해주세요"
+    )
+    
+    private(set) var noticeLabel = UILabel().then {
+        $0.text = "한글, 영문, 숫자를 조합해서 입력해주세요. (2-10자)"
+        $0.numberOfLines = 1
+        $0.font = .gMarketSans(size: 11, family: .medium)
+        $0.textColor = .tossRedColor
+        $0.isHidden = true
+    }
+    
+    private(set) var completeButton = UIButton(type: .custom).then {
+        $0.setTitle("확인", for: .normal)
+        $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
+        $0.setTitleColor(.white, for: .normal)
+        $0.backgroundColor = .mainCharcoalColor.withAlphaComponent(0.3)
+        $0.layer.cornerRadius = 17
+        $0.clipsToBounds = true
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+        setupLayout()
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupUI() {
+        self.backgroundColor = .white
+        self.addSubview(activityIndicator)
+        self.addSubview(titleLabel)
+        self.addSubview(nicknameInputField)
+        self.addSubview(noticeLabel)
+        self.addSubview(completeButton)
+    }
+    
+    private func setupLayout() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
+        }
+        titleLabel.snp.makeConstraints { make in
+            make.top
+                .equalTo(safeAreaLayoutGuide)
+                .offset(60)
+            make.leading.trailing
+                .equalToSuperview()
+                .inset(20)
+        }
+        nicknameInputField.snp.makeConstraints { make in
+            make.top
+                .equalTo(titleLabel.snp.bottom)
+                .offset(50)
+            make.leading.trailing
+                .equalToSuperview()
+                .inset(20)
+        }
+        noticeLabel.snp.makeConstraints { make in
+            make.top
+                .equalTo(nicknameInputField.snp.bottom)
+                .offset(10)
+            make.leading.trailing
+                .equalToSuperview()
+                .inset(20)
+        }
+        completeButton.snp.makeConstraints { make in
+            make.leading.trailing
+                .equalTo(safeAreaLayoutGuide)
+                .inset(20)
+            make.bottom
+                .equalTo(keyboardLayoutGuide.snp.top)
+                .offset(-10)
+            make.height
+                .equalTo(Constants.buttonHeight)
+        }
+    }
+}
+
+extension NicknameEditView {
+    public func setButtonState(_ isEnabled: Bool) {
+        completeButton.backgroundColor = (isEnabled ? .mainCharcoalColor : .mainCharcoalColor.withAlphaComponent(0.3))
+        completeButton.isEnabled = isEnabled
+    }
+}

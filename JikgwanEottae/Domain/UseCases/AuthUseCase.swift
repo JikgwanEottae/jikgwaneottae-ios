@@ -16,6 +16,8 @@ protocol AuthUseCaseProtocol {
         identityToken: String,
         authorizationCode: String
     ) -> Completable
+    
+    func setProfileNickname(_ nickname: String) -> Completable
 }
 
 final class AuthUseCase: AuthUseCaseProtocol {
@@ -37,5 +39,9 @@ final class AuthUseCase: AuthUseCaseProtocol {
             identityToken: identityToken,
             authorizationCode: authorizationCode
         )
+    }
+    
+    public func setProfileNickname(_ nickname: String) -> Completable {
+        return repository.setProfileNickname(nickname)
     }
 }

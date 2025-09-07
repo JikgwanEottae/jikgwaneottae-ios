@@ -62,7 +62,4 @@ final class SignInView: UIView {
                 .equalTo(Constants.buttonHeight)
         }
     }
-    
-    
-
 }
