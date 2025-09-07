@@ -7,6 +7,8 @@
 
 // MARK: - 토큰 관리를 위한 키체인 매니저
 
+import Foundation
+
 import KeychainAccess
 
 final class KeychainManager {
@@ -34,6 +36,14 @@ final class KeychainManager {
     func deleteTokens() throws {
         try keychain.remove("accessToken")
         try keychain.remove("refreshToken")
+    }
+    
+    func clearIfFirstLaunch() {
+        let isFirstLaunchAfterInstall = "isFirstLaunchAfterInstall"
+        if UserDefaults.standard.bool(forKey: isFirstLaunchAfterInstall) == false {
+            try? deleteTokens()
+            UserDefaults.standard.set(true, forKey: isFirstLaunchAfterInstall)
+        }
     }
     
 }

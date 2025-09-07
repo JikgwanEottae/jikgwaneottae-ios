@@ -15,7 +15,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     static let ID = "DiaryCollectionViewCell"
     
     public let thumbnailImageView = UIImageView().then {
-        $0.image = UIImage(resource: .empty)
+        $0.image = UIImage(resource: .imagePlaceholder)
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 14
@@ -110,7 +110,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        thumbnailImageView.image = UIImage(resource: .empty)
+        thumbnailImageView.image = UIImage(resource: .imagePlaceholder)
         homeTeamLabel.text = nil
         awayTeamLabel.text = nil
         homeScoreLabel.text = nil
