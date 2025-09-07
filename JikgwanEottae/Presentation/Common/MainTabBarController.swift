@@ -51,8 +51,8 @@ final class MainTabBarController: UITabBarController {
         let home = createHome()
         let tour = createTour()
         let diary = createDiary()
-        let my = createMy()
-        self.viewControllers = [home, tour, diary, my]
+        let myPage = createMyPage()
+        self.viewControllers = [home, tour, diary, myPage]
     }
     
     private func addTopLine(color: UIColor, height: CGFloat) {
@@ -117,16 +117,16 @@ extension MainTabBarController {
     }
     
     /// 마이 페이지 화면을 생성합니다.
-    private func createMy() -> UINavigationController {
-        let myViewController = UIViewController()
-        let myNavigationController = UINavigationController(rootViewController: myViewController)
-        myNavigationController.configureBarAppearnace()
-        myNavigationController.tabBarItem = UITabBarItem(
+    private func createMyPage() -> UINavigationController {
+        let myPageViewController = MyPageViewController()
+        let myPageNavigationController = UINavigationController(rootViewController: myPageViewController)
+        myPageNavigationController.configureBarAppearnace()
+        myPageNavigationController.tabBarItem = UITabBarItem(
             title: "마이",
             image: .userIcon,
             tag: 1
         )
-        return myNavigationController
+        return myPageNavigationController
     }
 }
 
