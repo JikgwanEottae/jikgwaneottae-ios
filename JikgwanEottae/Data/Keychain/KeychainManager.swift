@@ -33,7 +33,7 @@ final class KeychainManager {
         return try? keychain.get("refreshToken")
     }
     
-    func deleteTokens() throws {
+    func deleteAllTokens() throws {
         try keychain.remove("accessToken")
         try keychain.remove("refreshToken")
     }
@@ -41,7 +41,7 @@ final class KeychainManager {
     func clearIfFirstLaunch() {
         let isFirstLaunchAfterInstall = "isFirstLaunchAfterInstall"
         if UserDefaults.standard.bool(forKey: isFirstLaunchAfterInstall) == false {
-            try? deleteTokens()
+            try? deleteAllTokens()
             UserDefaults.standard.set(true, forKey: isFirstLaunchAfterInstall)
         }
     }

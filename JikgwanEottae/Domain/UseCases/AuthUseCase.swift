@@ -12,12 +12,11 @@ import RxSwift
 protocol AuthUseCaseProtocol {
     func authenticateWithKakao(accessToken: String) -> Completable
     
-    func authenticateWithApple(
-        identityToken: String,
-        authorizationCode: String
-    ) -> Completable
+    func authenticateWithApple(identityToken: String, authorizationCode: String) -> Completable
     
     func setProfileNickname(_ nickname: String) -> Completable
+    
+    func validateRefreshToken(_ refreshToken: String) -> Completable
 }
 
 final class AuthUseCase: AuthUseCaseProtocol {
@@ -43,5 +42,9 @@ final class AuthUseCase: AuthUseCaseProtocol {
     
     public func setProfileNickname(_ nickname: String) -> Completable {
         return repository.setProfileNickname(nickname)
+    }
+    
+    public func validateRefreshToken(_ refreshToken: String) -> Completable {
+        return repository.validateRefreshToken(refreshToken)
     }
 }

@@ -22,4 +22,5 @@ extension UIColor {
     static let borderColor = #colorLiteral(red: 0.9098039216, green: 0.9176470588, blue: 0.9254901961, alpha: 1)
     static let placeholderColor = #colorLiteral(red: 0.5490196078, green: 0.5882352941, blue: 0.6274509804, alpha: 1)
     static let tagBackgroundColor = #colorLiteral(red: 0.2705882353, green: 0.2705882353, blue: 0.2705882353, alpha: 1)
+    static let splashBackgroundColor = #colorLiteral(red: 0.05882352941, green: 0.05882352941, blue: 0.05882352941, alpha: 1)
 }

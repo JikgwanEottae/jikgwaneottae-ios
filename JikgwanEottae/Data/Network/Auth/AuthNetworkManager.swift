@@ -20,24 +20,30 @@ final class AuthNetworkManager {
         self.provider = MoyaProvider(plugins: [authPlugin])
     }
     
-    public func authenticateWithKakao(accessToken: String) -> Single<AuthToken> {
+    public func authenticateWithKakao(accessToken: String) -> Single<SignInResponseDTO> {
         return provider.rx.request(.authenticateWithKakao(accessToken: accessToken))
-            .map(AuthResponseDTO.self)
-            .map { $0.toDomain() }
+            .map(SignInResponseDTO.self)
     }
     
     public func authenticateWithApple(
         identityToken: String,
         authorizationCode: String
-    ) -> Single<AuthToken> {
+    ) -> Single<SignInResponseDTO> {
         return provider.rx.request(.authenticateWithApple(identityToken: identityToken, authorizationCode: authorizationCode))
-            .map(AuthResponseDTO.self)
-            .map { $0.toDomain() }
+            .map(SignInResponseDTO.self)
     }
     
     public func setProfileNickname(nickname: String) -> Completable {
         return provider.rx.request(.setProfileNickname(nickname: nickname))
             .filterSuccessfulStatusCodes()
+            .do(onSuccess: { response in
+                print("응답 상태: \(response.statusCode)")
+            })
             .asCompletable()
+    }
+    
+    public func validateRefreshToken(_ refreshToken: String) -> Single<TokenRefreshResponseDTO> {
+        return provider.rx.request(.validateRefreshToken(refreshToken))
+            .map(TokenRefreshResponseDTO.self)
     }
 }

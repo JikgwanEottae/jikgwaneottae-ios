@@ -61,9 +61,11 @@ final class NicknameEditViewModel: ViewModelType {
                 isLoadingRelay.accept(true)
                 return owner.useCase.setProfileNickname(nickname)
                     .do(onError: { error in
+                        print(error)
                         errorRelay.accept(error)
                         isLoadingRelay.accept(false)
-                    }, onCompleted: { 
+                    }, onCompleted: {
+                        UserDefaultsManager.shared.nickname = nickname
                         successRelay.accept(())
                         isLoadingRelay.accept(false)
                     })

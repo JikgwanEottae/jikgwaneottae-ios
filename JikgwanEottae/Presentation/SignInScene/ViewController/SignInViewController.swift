@@ -64,25 +64,24 @@ final class SignInViewController: UIViewController {
         
         let output = viewModel.transform(input: input)
         
+        // 소셜 계정을 통한 로그인에 성공했습니다.
         output.loginSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                let authRepository = AuthRepository(
-                    networkManaer: AuthNetworkManager.shared,
-                    keychainManager: KeychainManager.shared
-                )
-                let authUseCase = AuthUseCase(repository: authRepository)
-                let nicknameViewModel = NicknameEditViewModel(useCase: authUseCase)
-                let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameViewModel)
-                nicknameEditViewController.modalPresentationStyle = .fullScreen
-                owner.present(nicknameEditViewController, animated: true)
+                if UserDefaultsManager.shared.isProfileCompleted {
+                    let mainTabBarController = MainTabBarController()
+                    owner.transitionRoot(to: mainTabBarController)
+                } else {
+                    owner.presentNicknameEdit()
+                }
             })
             .disposed(by: disposeBag)
         
+        // 소셜 계정을 통한 로그인에 실패했습니다.
         output.loginFailure
             .withUnretained(self)
-            .emit(onNext: { error in
-                print("에러: \(error)")
+            .emit(onNext: { owner, error in
+                owner.showAlert(title: "로그인 실패", message: "계정을 불러올 수 없어요")
             })
             .disposed(by: disposeBag)
     }
@@ -179,3 +178,22 @@ extension SignInViewController: ASAuthorizationControllerPresentationContextProv
         self.view.window ?? UIWindow()
     }
 }
+
+extension SignInViewController {
+    private func transitionRoot(to viewController: UIViewController) {
+        if let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let sceneDelate = scene.delegate as? SceneDelegate {
+            sceneDelate.setRootViewController(to: viewController)
+        }
+    }
+    
+    private func presentNicknameEdit() {
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let nicknameViewModel = NicknameEditViewModel(useCase: authUseCase)
+        let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameViewModel)
+        nicknameEditViewController.modalPresentationStyle = .fullScreen
+        self.present(nicknameEditViewController, animated: true)
+    }
+}
+

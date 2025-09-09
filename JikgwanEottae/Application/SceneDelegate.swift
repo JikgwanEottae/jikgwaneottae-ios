@@ -18,7 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = MainTabBarController()
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let splashViewModel = SplahViewModel(useCase: authUseCase)
+        let splashViewController = SplashViewController(viewModel: splashViewModel)
+        window?.rootViewController = splashViewController
         window?.makeKeyAndVisible()
         window?.overrideUserInterfaceStyle = .light
     }
@@ -65,19 +69,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate {
     /// 상태에 따라 루트 뷰 컨트롤러를 설정합니다.
-    public func setInitialViewController() -> UIViewController {
-        let hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedInitialProfile")
-        let hasValidToken = KeychainManager.shared.readAccessToken() != nil
-        if hasValidToken && hasCompletedProfile {
-            return MainTabBarController()
-        } else {
-            let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared, keychainManager: KeychainManager.shared)
-            let authUseCase = AuthUseCase(repository: authRepository)
-            let signIngViewModel = SignInViewModel(useCase: authUseCase)
-            let signInViewController = SignInViewController(viewModel: signIngViewModel)
-            return signInViewController
-        }
-    }
+//    public func setInitialViewController() -> UIViewController {
+//        let hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedInitialProfile")
+//        let hasValidToken = KeychainManager.shared.readAccessToken() != nil
+//        if hasValidToken && hasCompletedProfile {
+//            return MainTabBarController()
+//        } else {
+//            let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared, keychainManager: KeychainManager.shared)
+//            let authUseCase = AuthUseCase(repository: authRepository)
+//            let signIngViewModel = SignInViewModel(useCase: authUseCase)
+//            let signInViewController = SignInViewController(viewModel: signIngViewModel)
+//            return signInViewController
+//        }
+//    }
     
     /// 현재 윈도우의 루트 뷰 컨트롤러를 설정합니다.
     public func setRootViewController(to viewController: UIViewController, animated: Bool = true) {
