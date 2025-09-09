@@ -13,6 +13,7 @@ enum AuthAPIService {
     case authenticateWithKakao(accessToken: String)
     case authenticateWithApple(identityToken: String, authorizationCode: String)
     case setProfileNickname(nickname: String)
+    case validateRefreshToken(_ refreshToken: String)
 }
 
 extension AuthAPIService: TargetType {
@@ -28,6 +29,8 @@ extension AuthAPIService: TargetType {
             return "/api/auth/login/apple"
         case .setProfileNickname:
             return "/api/auth/profile"
+        case .validateRefreshToken:
+            return "/api/auth/refresh"
         }
     }
     
@@ -39,9 +42,7 @@ extension AuthAPIService: TargetType {
         switch self {
         case .authenticateWithKakao(let accessToken):
             return .requestParameters(
-                parameters: [
-                    "accessToken": accessToken
-                ],
+                parameters: ["accessToken": accessToken],
                 encoding: JSONEncoding.default)
         case .authenticateWithApple(let identityToken, let authorizationCode):
             return .requestParameters(
@@ -49,11 +50,18 @@ extension AuthAPIService: TargetType {
                     "identityToken": identityToken,
                     "authorizationCode": authorizationCode
                 ],
-                encoding: JSONEncoding.default)
+                encoding: JSONEncoding.default
+            )
         case .setProfileNickname(let nickname):
             return .requestParameters(
-                parameters: ["nickname" : nickname],
-                encoding: JSONEncoding.default)
+                parameters: ["nickname": nickname],
+                encoding: JSONEncoding.default
+            )
+        case .validateRefreshToken(let refreshToken):
+            return .requestParameters(
+                parameters: ["refreshToken": refreshToken],
+                encoding: JSONEncoding.default
+            )
         }
     }
     

@@ -50,7 +50,7 @@ final class MyPageView: UIView {
     }
     
     public let nicknameLabel = UILabel().then {
-        $0.text = "슬기로운 생활"
+        $0.text = UserDefaultsManager.shared.nickname
         $0.numberOfLines = 1
         $0.font = UIFont.gMarketSans(size: 17, family: .bold)
         $0.textColor = .primaryTextColor

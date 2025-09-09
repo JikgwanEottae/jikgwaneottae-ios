@@ -59,7 +59,6 @@ final class NicknameEditViewController: UIViewController {
         output.success
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
-                UserDefaults.standard.set(true, forKey: "hasCompletedInitialProfile")
                 let mainTabBarController = MainTabBarController()
                 owner.transitionRoot(to: mainTabBarController)
             })

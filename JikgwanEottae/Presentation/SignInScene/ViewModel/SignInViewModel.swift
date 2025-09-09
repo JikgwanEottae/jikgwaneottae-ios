@@ -38,7 +38,7 @@ final class SignInViewModel: ViewModelType {
                 owner.useCase.authenticateWithKakao(accessToken: accessToken)
                     .subscribe(onCompleted: {
                         loginSuccessRelay.accept(())
-                    }, onError: { error in
+                    },onError: { error in
                         loginFailureRelay.accept(error.localizedDescription)
                     })
                     .disposed(by: owner.disposeBag)

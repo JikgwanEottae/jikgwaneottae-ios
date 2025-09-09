@@ -56,6 +56,7 @@ final class HomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print(UserDefaultsManager.shared.nickname)
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
