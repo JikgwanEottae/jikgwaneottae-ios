@@ -59,7 +59,7 @@ final class PopupViewController: UIViewController {
     
     // 메인 타이틀 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 22, family: .medium)
+        $0.font = .gMarketSans(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }

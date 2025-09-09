@@ -54,6 +54,7 @@ final class MyPageView: UIView {
         $0.numberOfLines = 1
         $0.font = UIFont.gMarketSans(size: 17, family: .bold)
         $0.textColor = .primaryTextColor
+        $0.textAlignment = .center
     }
     
     override init(frame: CGRect) {
@@ -99,9 +100,12 @@ final class MyPageView: UIView {
         nicknameLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(imageContainerView.snp.bottom)
-                .offset(20)
+                .offset(5)
             make.centerX
                 .equalToSuperview()
+            make.bottom
+                .equalToSuperview()
+                .offset(-5)
         }
     }
 

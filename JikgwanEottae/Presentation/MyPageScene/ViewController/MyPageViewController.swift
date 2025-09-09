@@ -43,6 +43,11 @@ final class MyPageViewController: UIViewController {
         setupTableViewHeader()
         bindViewModel()
         bindTableView()
+        print("accessToken: \(KeychainManager.shared.readAccessToken())")
+        print("refreshToken: \(KeychainManager.shared.readRefreshToken())")
+        print("isProfileCompleted: \(UserDefaultsManager.shared.isProfileCompleted)")
+        print("nickname: \(UserDefaultsManager.shared.nickname)")
+        print("profileImageURL: \(UserDefaultsManager.shared.profileImageURL)")
     }
     
     private func configureNaviBarButtonItem() {
@@ -81,7 +86,6 @@ final class MyPageViewController: UIViewController {
                 self.dismissPopupAndNavigateToLogin()
             })
             .disposed(by: disposeBag)
-        
     }
     
     /// 테이블 뷰의 셀 클릭 이벤트를 처리합니다.
@@ -109,7 +113,7 @@ final class MyPageViewController: UIViewController {
         case "로그아웃":
             presentSignOutConfirmationPopup(title: title)
         case "회원탈퇴":
-            break
+            navigateToWithdrawAccount()
         default:
             break
         }
@@ -171,6 +175,16 @@ extension MyPageViewController {
         self.navigationController?.pushViewController(termsOfServiceViewController, animated: true)
     }
     
+    /// 회원탈퇴 화면으로 이동합니다.
+    private func navigateToWithdrawAccount() {
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let withdrawalViewModel = WithdrawalViewModel(useCase: authUseCase)
+        let withdrawalViewController = WithdrawalViewController(viewModel: withdrawalViewModel)
+        withdrawalViewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(withdrawalViewController, animated: true)
+    }
+    
     /// 루트 뷰 컨트롤러를 로그인 화면으로 전환합니다.
     private func navigateToLoginScreen() {
         guard let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -184,7 +198,7 @@ extension MyPageViewController {
     private func presentSignOutConfirmationPopup(title: String) {
         let popupViewController = PopupViewController(
             title: title,
-            subtitle: "정말로 로그아웃 할까요?",
+            subtitle: "로그인 화면으로 이동할게요",
             mainButtonStyle: .init(title: "확인", backgroundColor: .tossRedColor),
             subButtonStyle: .init(title: "취소", backgroundColor: .primaryBackgroundColor),
             blurEffect: .init(style: .systemUltraThinMaterialLight))

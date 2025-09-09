@@ -44,6 +44,7 @@ final class TermsOfServiceViewController: UIViewController {
         }
     }
     
+    /// 개인정보 처리방침 마크다운 파일을 불러옵니다.
     private func loadPrivacyPolicy() {
         guard let path = Bundle.main.path(forResource: "terms_of_service", ofType: "md"),
               let content = try? String(contentsOfFile: path) else { return }
