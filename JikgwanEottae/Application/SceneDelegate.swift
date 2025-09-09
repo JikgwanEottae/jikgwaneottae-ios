@@ -68,23 +68,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 extension SceneDelegate {
-    /// 상태에 따라 루트 뷰 컨트롤러를 설정합니다.
-//    public func setInitialViewController() -> UIViewController {
-//        let hasCompletedProfile = UserDefaults.standard.bool(forKey: "hasCompletedInitialProfile")
-//        let hasValidToken = KeychainManager.shared.readAccessToken() != nil
-//        if hasValidToken && hasCompletedProfile {
-//            return MainTabBarController()
-//        } else {
-//            let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared, keychainManager: KeychainManager.shared)
-//            let authUseCase = AuthUseCase(repository: authRepository)
-//            let signIngViewModel = SignInViewModel(useCase: authUseCase)
-//            let signInViewController = SignInViewController(viewModel: signIngViewModel)
-//            return signInViewController
-//        }
-//    }
-    
-    /// 현재 윈도우의 루트 뷰 컨트롤러를 설정합니다.
-    public func setRootViewController(to viewController: UIViewController, animated: Bool = true) {
+    /// 현재 윈도우의 루트 뷰 컨트롤러를 변경합니다.
+    public func changeRootViewController(to viewController: UIViewController, animated: Bool = true) {
         guard let window = window else { return }
         window.rootViewController = viewController
         if animated {
@@ -97,5 +82,13 @@ extension SceneDelegate {
             )
         }
     }
+    
+    /// 로그인 화면으로 루트 뷰 컨트롤러를 재설정합니다.
+    public func resetToLoginScreen() {
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let signIngViewModel = SignInViewModel(useCase: authUseCase)
+        let signInViewController = SignInViewController(viewModel: signIngViewModel)
+        changeRootViewController(to: signInViewController)
+    }
 }
-

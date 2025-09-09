@@ -12,12 +12,24 @@ import RxCocoa
 
 final class MyPageViewController: UIViewController {
     private let myPageView = MyPageView()
+    private let viewModel: MyPageViewModel
+    private let signOutButtonRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private let sectionTitles = ["내 정보", "기타"]
     private let items = [
         ["프로필 사진 설정", "닉네임 설정"],
         ["이용약관", "개인정보 처리방침", "로그아웃", "회원탈퇴"]
     ]
+    
+    init(viewModel: MyPageViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         self.view = myPageView
@@ -29,6 +41,7 @@ final class MyPageViewController: UIViewController {
         configureNaviBarButtonItem()
         setupDelegates()
         setupTableViewHeader()
+        bindViewModel()
         bindTableView()
     }
     
@@ -37,16 +50,41 @@ final class MyPageViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = leftBarButtonItem
     }
     
+    /// 델리게이트를 설정합니다.
     private func setupDelegates() {
         myPageView.tableView.delegate = self
         myPageView.tableView.dataSource = self
     }
     
+    /// 테이블 뷰의 헤더를 설정합니다.
     private func setupTableViewHeader() {
         myPageView.headerView.frame = CGRect(x: 0, y: 0, width: 0, height: 220)
         myPageView.tableView.tableHeaderView = myPageView.headerView
     }
     
+    private func bindViewModel() {
+        let input = MyPageViewModel.Input(
+            signOutButtonTapped: signOutButtonRelay.asObservable()
+        )
+        let output = viewModel.transform(input: input)
+        
+        output.isLoading
+            .drive(onNext: { [weak self] isLoading in
+                guard let self = self else { return }
+                self.updateSignOutPopupLoadingState(isLoading: isLoading)
+            })
+            .disposed(by: disposeBag)
+
+        output.signOutSuccess
+            .emit(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.dismissPopupAndNavigateToLogin()
+            })
+            .disposed(by: disposeBag)
+        
+    }
+    
+    /// 테이블 뷰의 셀 클릭 이벤트를 처리합니다.
     private func bindTableView() {
         myPageView.tableView.rx.itemSelected
             .withUnretained(self)
@@ -57,6 +95,7 @@ final class MyPageViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    /// 셀 클릭에 따라 적절한 이벤트를 처리합니다.
     private func handleCellSelection(title: String) {
         switch title {
         case "프로필 사진 설정":
@@ -68,7 +107,7 @@ final class MyPageViewController: UIViewController {
         case "개인정보 처리방침":
             navigateToPrivacyPolicy(title: title)
         case "로그아웃":
-            break
+            presentSignOutConfirmationPopup(title: title)
         case "회원탈퇴":
             break
         default:
@@ -77,8 +116,6 @@ final class MyPageViewController: UIViewController {
     }
     
 }
-
-
 
 extension MyPageViewController: UITableViewDelegate {
     /// 섹션의 타이틀을 설정합니다.
@@ -117,7 +154,6 @@ extension MyPageViewController: UITableViewDataSource {
     }
 }
 
-
 extension MyPageViewController {
     /// 개인정보 처리방침 화면으로 이동합니다.
     private func navigateToPrivacyPolicy(title: String) {
@@ -133,5 +169,44 @@ extension MyPageViewController {
         termsOfServiceViewController.title = title
         termsOfServiceViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(termsOfServiceViewController, animated: true)
+    }
+    
+    /// 루트 뷰 컨트롤러를 로그인 화면으로 전환합니다.
+    private func navigateToLoginScreen() {
+        guard let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let sceneDelegate = scene.delegate as? SceneDelegate else { return }
+        sceneDelegate.resetToLoginScreen()
+    }
+}
+
+extension MyPageViewController {
+    /// 로그아웃 팝업을 표시합니다.
+    private func presentSignOutConfirmationPopup(title: String) {
+        let popupViewController = PopupViewController(
+            title: title,
+            subtitle: "정말로 로그아웃 할까요?",
+            mainButtonStyle: .init(title: "확인", backgroundColor: .tossRedColor),
+            subButtonStyle: .init(title: "취소", backgroundColor: .primaryBackgroundColor),
+            blurEffect: .init(style: .systemUltraThinMaterialLight))
+        popupViewController.modalPresentationStyle = .overFullScreen
+        popupViewController.modalTransitionStyle = .crossDissolve
+        popupViewController.onMainAction = { [weak self] in
+            self?.signOutButtonRelay.accept(())
+        }
+        self.present(popupViewController, animated: true)
+    }
+    
+    /// 로그아웃 팝업 화면의 로딩 인디케이터 상태를 업데이트합니다.
+    private func updateSignOutPopupLoadingState(isLoading: Bool) {
+        guard let popupViewController = self.presentedViewController as? PopupViewController else{ return }
+        popupViewController.updateActivityIndicatorState(isLoading)
+    }
+    
+    /// 로그아웃 팝업 화면을 닫고 로그인 화면으로 전환합니다.
+    private func dismissPopupAndNavigateToLogin() {
+        guard let popupViewController = self.presentedViewController as? PopupViewController else { return }
+        popupViewController.dismiss(animated: true) { [weak self] in
+            self?.navigateToLoginScreen()
+        }
     }
 }

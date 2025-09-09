@@ -84,7 +84,7 @@ final class SplashViewController: UIViewController {
     private func transitionRoot(to viewController: UIViewController) {
         if let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let sceneDelate = scene.delegate as? SceneDelegate {
-            sceneDelate.setRootViewController(to: viewController)
+            sceneDelate.changeRootViewController(to: viewController)
         }
     }
 }

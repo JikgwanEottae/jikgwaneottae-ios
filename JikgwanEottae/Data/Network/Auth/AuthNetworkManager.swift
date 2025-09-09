@@ -14,15 +14,18 @@ final class AuthNetworkManager {
     static let shared = AuthNetworkManager()
     private let provider: MoyaProvider<AuthAPIService>
     
+    private let tokenClosure: (TargetType) -> String = { _ in
+        return KeychainManager.shared.readAccessToken() ?? ""
+    }
+    
     private init() {
-        let token = KeychainManager.shared.readAccessToken() ?? ""
-        let authPlugin = AccessTokenPlugin { _ in token }
+        let authPlugin = AccessTokenPlugin(tokenClosure: tokenClosure)
         self.provider = MoyaProvider(plugins: [authPlugin])
     }
     
-    public func authenticateWithKakao(accessToken: String) -> Single<SignInResponseDTO> {
+    public func authenticateWithKakao(accessToken: String) -> Single<AuthResponseDTO> {
         return provider.rx.request(.authenticateWithKakao(accessToken: accessToken))
-            .map(SignInResponseDTO.self)
+            .map(AuthResponseDTO.self)
     }
     
     public func authenticateWithApple(
@@ -45,5 +48,11 @@ final class AuthNetworkManager {
     public func validateRefreshToken(_ refreshToken: String) -> Single<TokenRefreshResponseDTO> {
         return provider.rx.request(.validateRefreshToken(refreshToken))
             .map(TokenRefreshResponseDTO.self)
+    }
+    
+    public func signOut() -> Completable {
+        return provider.rx.request(.signOut)
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
     }
 }

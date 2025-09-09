@@ -14,9 +14,10 @@ enum AuthAPIService {
     case authenticateWithApple(identityToken: String, authorizationCode: String)
     case setProfileNickname(nickname: String)
     case validateRefreshToken(_ refreshToken: String)
+    case signOut
 }
 
-extension AuthAPIService: TargetType {
+extension AuthAPIService: TargetType, AccessTokenAuthorizable {
     var baseURL: URL {
         URL(string: "https://api.jikgwaneottae.xyz")!
     }
@@ -31,6 +32,8 @@ extension AuthAPIService: TargetType {
             return "/api/auth/profile"
         case .validateRefreshToken:
             return "/api/auth/refresh"
+        case .signOut:
+            return "/api/auth/logout"
         }
     }
     
@@ -62,6 +65,8 @@ extension AuthAPIService: TargetType {
                 parameters: ["refreshToken": refreshToken],
                 encoding: JSONEncoding.default
             )
+        case .signOut:
+            return .requestPlain
         }
     }
     
@@ -71,7 +76,7 @@ extension AuthAPIService: TargetType {
     
     var authorizationType: Moya.AuthorizationType? {
         switch self {
-        case .setProfileNickname:
+        case .setProfileNickname, .signOut:
             return .bearer
         default:
             return nil

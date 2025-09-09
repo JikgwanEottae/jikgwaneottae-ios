@@ -51,4 +51,10 @@ final class UserDefaultsManager {
         UserDefaults.standard.removeObject(forKey: Keys.isProfileCompleted)
     }
     
+    public func clearAllKeys() {
+        UserDefaults.standard.removeObject(forKey: Keys.nickname)
+        UserDefaults.standard.removeObject(forKey: Keys.profileImageURL)
+        UserDefaults.standard.removeObject(forKey: Keys.isProfileCompleted)
+        UserDefaults.standard.removeObject(forKey: Keys.hasLaunchedBefore)
+    }
 }

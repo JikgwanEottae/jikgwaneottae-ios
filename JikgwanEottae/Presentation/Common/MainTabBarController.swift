@@ -118,7 +118,10 @@ extension MainTabBarController {
     
     /// 마이 페이지 화면을 생성합니다.
     private func createMyPage() -> UINavigationController {
-        let myPageViewController = MyPageViewController()
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let myPageViewModel = MyPageViewModel(useCase: authUseCase)
+        let myPageViewController = MyPageViewController(viewModel: myPageViewModel)
         let myPageNavigationController = UINavigationController(rootViewController: myPageViewController)
         myPageNavigationController.configureBarAppearnace()
         myPageNavigationController.tabBarItem = UITabBarItem(
