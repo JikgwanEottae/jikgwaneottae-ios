@@ -17,6 +17,8 @@ protocol AuthUseCaseProtocol {
     func setProfileNickname(_ nickname: String) -> Completable
     
     func validateRefreshToken(_ refreshToken: String) -> Completable
+    
+    func signOut() -> Completable
 }
 
 final class AuthUseCase: AuthUseCaseProtocol {
@@ -46,5 +48,9 @@ final class AuthUseCase: AuthUseCaseProtocol {
     
     public func validateRefreshToken(_ refreshToken: String) -> Completable {
         return repository.validateRefreshToken(refreshToken)
+    }
+    
+    public func signOut() -> Completable {
+        return repository.signOut()
     }
 }

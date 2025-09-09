@@ -35,31 +35,38 @@ final class PopupViewController: UIViewController {
         $0.clipsToBounds = true
     }
     
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    
     // 블러 효과를 가지는 뷰입니다.
     private let blurEffectView = UIVisualEffectView().then {
         $0.effect = UIBlurEffect(style: .systemUltraThinMaterialDark)
         $0.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
-    // 레이블을 배치하는 스택 뷰입니다.
-    private lazy var labelStackView = UIStackView(arrangedSubviews: [
-        titleLabel, subtitleLabel
+    private lazy var containerStackVew = UIStackView(arrangedSubviews: [
+        titleLabel,
+        subtitleLabel,
+        buttonStackView
     ]).then {
         $0.axis = .vertical
-        $0.spacing = 25
         $0.alignment = .center
+        $0.distribution = .equalSpacing
     }
     
     // 메인 타이틀 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 23, family: .medium)
+        $0.font = .gMarketSans(size: 22, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
     
     // 서브 타이틀 레이블입니다.
     private let subtitleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 17, family: .medium)
+        $0.font = .gMarketSans(size: 16, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
     
@@ -75,7 +82,7 @@ final class PopupViewController: UIViewController {
     
     // 메인 버튼입니다.
     public let mainButton = UIButton(type: .custom).then {
-        $0.titleLabel?.font = .gMarketSans(size: 17, family: .medium)
+        $0.titleLabel?.font = .gMarketSans(size: 16, family: .medium)
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 15
         $0.clipsToBounds = true
@@ -84,7 +91,7 @@ final class PopupViewController: UIViewController {
     
     // 서브 버튼입니다.
     public let subButton = UIButton(type: .custom).then {
-        $0.titleLabel?.font = .gMarketSans(size: 17, family: .medium)
+        $0.titleLabel?.font = .gMarketSans(size: 16, family: .medium)
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = #colorLiteral(red: 0.9592481256, green: 0.9657639861, blue: 0.97197932, alpha: 1)
         $0.layer.cornerRadius = 15
@@ -127,8 +134,8 @@ final class PopupViewController: UIViewController {
     private func setupUI() {
         view.addSubview(blurEffectView)
         view.addSubview(popupView)
-        popupView.addSubview(labelStackView)
-        popupView.addSubview(buttonStackView)
+        popupView.addSubview(activityIndicator)
+        popupView.addSubview(containerStackVew)
     }
     
     private func setupLayout() {
@@ -136,10 +143,10 @@ final class PopupViewController: UIViewController {
             make.center
                 .equalToSuperview()
             make.height
-                .equalTo(200)
+                .equalTo(180)
             make.width
                 .equalToSuperview()
-                .multipliedBy(0.8)
+                .multipliedBy(0.75)
         }
         
         blurEffectView.snp.makeConstraints { make in
@@ -147,23 +154,20 @@ final class PopupViewController: UIViewController {
                 .equalToSuperview()
         }
         
-        labelStackView.snp.makeConstraints { make in
-            make.centerX
+        activityIndicator.snp.makeConstraints { make in
+            make.center
                 .equalToSuperview()
-            make.leading.trailing.top
+        }
+        
+        containerStackVew.snp.makeConstraints { make in
+            make.edges
                 .equalToSuperview()
                 .inset(20)
         }
         
         buttonStackView.snp.makeConstraints { make in
-            make.centerX
+            make.leading.trailing
                 .equalToSuperview()
-            make.top
-                .greaterThanOrEqualTo(labelStackView.snp.bottom)
-                .offset(20)
-            make.leading.trailing.bottom
-                .equalToSuperview()
-                .inset(20)
             make.height
                 .equalTo(50)
         }
@@ -173,12 +177,17 @@ final class PopupViewController: UIViewController {
 extension PopupViewController {
     /// 메인 버튼이 클릭됬을 때 이벤트입니다
     @objc private func mainButtonTapped() {
-        dismiss(animated: true) { [weak self] in
-            self?.onMainAction?()
-        }
+        onMainAction?()
     }
     /// 서브 버튼이 클릭됬을 때 이벤트입니다.
     @objc private func subButtonTapped() {
         dismiss(animated: true)
+    }
+}
+
+extension PopupViewController {
+    /// 로딩 인디케이터의 상태를 업데이트합니다.
+    public func updateActivityIndicatorState(_ isLoading: Bool) {
+        isLoading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
     }
 }

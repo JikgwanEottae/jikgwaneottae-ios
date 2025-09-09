@@ -23,4 +23,7 @@ protocol AuthRepositoryProtocol {
 
     /// 리프레쉬 토큰 검증을 수행합니다.
     func validateRefreshToken(_ refreshToken: String) -> Completable
+    
+    /// 로그아웃을 수행합니다.
+    func signOut() -> Completable
 }
