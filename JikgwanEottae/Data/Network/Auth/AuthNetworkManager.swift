@@ -39,9 +39,6 @@ final class AuthNetworkManager {
     public func setProfileNickname(nickname: String) -> Completable {
         return provider.rx.request(.setProfileNickname(nickname: nickname))
             .filterSuccessfulStatusCodes()
-            .do(onSuccess: { response in
-                print("응답 상태: \(response.statusCode)")
-            })
             .asCompletable()
     }
     
@@ -55,4 +52,11 @@ final class AuthNetworkManager {
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }
+    
+    public func withdrawAccount() -> Completable {
+        return provider.rx.request(.withdrawAccount)
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
+    }
+    
 }

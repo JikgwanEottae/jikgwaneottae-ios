@@ -44,6 +44,7 @@ final class PrivacyPolicyViewController: UIViewController {
         }
     }
     
+    /// 이용약관 마크다운 파일을 불러옵니다.
     private func loadPrivacyPolicy() {
         guard let path = Bundle.main.path(forResource: "privacy_policy", ofType: "md"),
               let content = try? String(contentsOfFile: path) else { return }

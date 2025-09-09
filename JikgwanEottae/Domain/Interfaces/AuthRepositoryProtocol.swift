@@ -26,4 +26,7 @@ protocol AuthRepositoryProtocol {
     
     /// 로그아웃을 수행합니다.
     func signOut() -> Completable
+    
+    /// 가입된 계정을 탈퇴합니다.
+    func withdrawAccount() -> Completable
 }

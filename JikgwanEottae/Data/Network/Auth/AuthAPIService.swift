@@ -15,6 +15,7 @@ enum AuthAPIService {
     case setProfileNickname(nickname: String)
     case validateRefreshToken(_ refreshToken: String)
     case signOut
+    case withdrawAccount
 }
 
 extension AuthAPIService: TargetType, AccessTokenAuthorizable {
@@ -34,11 +35,18 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
             return "/api/auth/refresh"
         case .signOut:
             return "/api/auth/logout"
+        case .withdrawAccount:
+            return "/api/auth/withdraw"
         }
     }
     
     var method: Moya.Method {
-        return .post
+        switch self {
+        case .withdrawAccount:
+            return .delete
+        default:
+            return .post
+        }
     }
     
     var task: Task {
@@ -67,6 +75,8 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
             )
         case .signOut:
             return .requestPlain
+        case .withdrawAccount:
+            return .requestPlain
         }
     }
     
@@ -76,7 +86,7 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
     
     var authorizationType: Moya.AuthorizationType? {
         switch self {
-        case .setProfileNickname, .signOut:
+        case .setProfileNickname, .signOut, .withdrawAccount:
             return .bearer
         default:
             return nil

@@ -35,6 +35,11 @@ final class NicknameEditViewController: UIViewController {
         hideKeyboardWhenTappedAround()
         bindViewModel()
         bindUnderlineColorToEditingState()
+        print("accessToken: \(KeychainManager.shared.readAccessToken())")
+        print("refreshToken: \(KeychainManager.shared.readRefreshToken())")
+        print("isProfileCompleted: \(UserDefaultsManager.shared.isProfileCompleted)")
+        print("nickname: \(UserDefaultsManager.shared.nickname)")
+        print("profileImageURL: \(UserDefaultsManager.shared.profileImageURL)")
     }
     
     private func bindViewModel() {

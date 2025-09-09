@@ -39,6 +39,11 @@ final class SignInViewController: UIViewController {
         super.viewDidLoad()
         setupButtonActions()
         bindViewModel()
+        print("accessToken: \(KeychainManager.shared.readAccessToken())")
+        print("refreshToken: \(KeychainManager.shared.readRefreshToken())")
+        print("isProfileCompleted: \(UserDefaultsManager.shared.isProfileCompleted)")
+        print("nickname: \(UserDefaultsManager.shared.nickname)")
+        print("profileImageURL: \(UserDefaultsManager.shared.profileImageURL)")
     }
 
     /// 각 버튼의 addTarget을 설정합니다.

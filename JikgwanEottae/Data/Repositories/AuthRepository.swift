@@ -70,6 +70,9 @@ final class AuthRepository: AuthRepositoryProtocol {
     
     public func setProfileNickname(_ nickname: String) -> Completable {
         return networkManager.setProfileNickname(nickname: nickname)
+            .do(onCompleted: { [weak self]  in
+                self?.saveProfileNickname(with: nickname)
+            })
     }
     
     public func signOut() -> Completable {
@@ -80,10 +83,19 @@ final class AuthRepository: AuthRepositoryProtocol {
                 self?.clearUserData()
             })
     }
+    
+    public func withdrawAccount() -> Completable {
+        return networkManager.withdrawAccount()
+            .do(onError: { [weak self] _ in
+                self?.clearUserData()
+            }, onCompleted: { [weak self]  in
+                self?.clearUserData()
+            })
+    }
 }
 
 extension AuthRepository {
-    /// 인증에 성공하여 사용자 데이터를 저장합니다.
+    /// 인증에 성공하여 사용자 데이터 상태를 저장합니다.
     private func saveAuthenticationData(from responseDTO: AuthResponseDTO) throws {
         guard let data = responseDTO.data,
               let accessToken = data.accessToken,
@@ -102,5 +114,11 @@ extension AuthRepository {
     private func clearUserData() {
         try? KeychainManager.shared.deleteAllTokens()
         UserDefaultsManager.shared.clearAllKeys()
+    }
+    
+    /// 사용자 닉네임 상태를 저장합니다.
+    private func saveProfileNickname(with nickname: String) {
+        UserDefaultsManager.shared.nickname = nickname
+        UserDefaultsManager.shared.isProfileCompleted = true
     }
 }

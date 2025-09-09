@@ -19,6 +19,8 @@ protocol AuthUseCaseProtocol {
     func validateRefreshToken(_ refreshToken: String) -> Completable
     
     func signOut() -> Completable
+    
+    func withdrawAccount() -> Completable
 }
 
 final class AuthUseCase: AuthUseCaseProtocol {
@@ -52,5 +54,9 @@ final class AuthUseCase: AuthUseCaseProtocol {
     
     public func signOut() -> Completable {
         return repository.signOut()
+    }
+    
+    public func withdrawAccount() -> Completable {
+        return repository.withdrawAccount()
     }
 }
