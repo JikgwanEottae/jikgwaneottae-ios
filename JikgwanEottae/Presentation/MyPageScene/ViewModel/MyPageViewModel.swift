@@ -16,12 +16,15 @@ final class MyPageViewModel: ViewModelType {
     
     struct Input {
         let signOutButtonTapped: Observable<Void>
+        let profileImageData: Observable<(Bool, Data?)>
     }
     
     struct Output {
         let isLoading: Driver<Bool>
         let signOutSuccess: Signal<Void>
         let signOutFailure: Signal<Void>
+        let updateProfileImageSuccess: Signal<Void>
+        let updateProfileImagefailure: Signal<Void>
     }
     
     init(useCase: AuthUseCaseProtocol) {
@@ -32,6 +35,8 @@ final class MyPageViewModel: ViewModelType {
         let isLoadingRelay = BehaviorRelay<Bool>(value: false)
         let signOutSuccessRelay = PublishRelay<Void>()
         let signOutFailureRelay = PublishRelay<Void>()
+        let updateProfileImageSuccessRelay = PublishRelay<Void>()
+        let updateProfileImageErrorRelay = PublishRelay<Void>()
     
         input.signOutButtonTapped
             .withUnretained(self)
@@ -49,10 +54,31 @@ final class MyPageViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
+        input.profileImageData
+            .withUnretained(self)
+            .flatMap { owner, tuple -> Observable<Void> in
+                let (isImageRemoved, imageData) = tuple
+                return owner.useCase.updateProfileImage(
+                    isImageRemoved: isImageRemoved,
+                    imageData: imageData
+                )
+                .andThen(Observable.just(()))
+                .catch { error in
+                    updateProfileImageErrorRelay.accept(())
+                    return Observable.empty()
+                }
+            }
+            .subscribe(onNext: {
+                updateProfileImageSuccessRelay.accept(())
+            })
+            .disposed(by: disposeBag)
+        
         return Output(
             isLoading: isLoadingRelay.asDriver(),
             signOutSuccess: signOutSuccessRelay.asSignal(),
-            signOutFailure: signOutFailureRelay.asSignal()
+            signOutFailure: signOutFailureRelay.asSignal(),
+            updateProfileImageSuccess: updateProfileImageSuccessRelay.asSignal(),
+            updateProfileImagefailure: updateProfileImageErrorRelay.asSignal()
         )
     }
 }

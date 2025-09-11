@@ -102,9 +102,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             }
             return .uploadMultipart(multipartFormData)
         case .updateDiary(_, let dto, let imageData):
-            let json = try! JSONEncoder().encode(dto)
             var multipartFormData: [MultipartFormData] = []
-            
+            let json = try! JSONEncoder().encode(dto)
             multipartFormData.append(
                 MultipartFormData(
                     provider: .data(json),

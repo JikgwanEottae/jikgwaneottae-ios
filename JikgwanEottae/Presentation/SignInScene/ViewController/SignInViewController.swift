@@ -86,7 +86,11 @@ final class SignInViewController: UIViewController {
         output.loginFailure
             .withUnretained(self)
             .emit(onNext: { owner, error in
-                owner.showAlert(title: "로그인 실패", message: "계정을 불러올 수 없어요")
+                owner.showAlert(
+                    title: "로그인 실패",
+                    message: "계정을 불러올 수 없어요",
+                    doneTitle: "확인"
+                )
             })
             .disposed(by: disposeBag)
     }
@@ -196,7 +200,7 @@ extension SignInViewController {
         let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
         let authUseCase = AuthUseCase(repository: authRepository)
         let nicknameViewModel = NicknameEditViewModel(useCase: authUseCase)
-        let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameViewModel)
+        let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameViewModel, isInitialEdit: true)
         nicknameEditViewController.modalPresentationStyle = .fullScreen
         self.present(nicknameEditViewController, animated: true)
     }

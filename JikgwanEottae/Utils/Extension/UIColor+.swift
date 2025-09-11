@@ -23,4 +23,10 @@ extension UIColor {
     static let placeholderColor = #colorLiteral(red: 0.5490196078, green: 0.5882352941, blue: 0.6274509804, alpha: 1)
     static let tagBackgroundColor = #colorLiteral(red: 0.2705882353, green: 0.2705882353, blue: 0.2705882353, alpha: 1)
     static let splashBackgroundColor = #colorLiteral(red: 0.05882352941, green: 0.05882352941, blue: 0.05882352941, alpha: 1)
+    
+    enum Kakao {
+        static let backgroundColor = #colorLiteral(red: 0.9960784314, green: 0.8980392157, blue: 0, alpha: 1)
+        static let textColor = #colorLiteral(red: 0.09803921569, green: 0.09803921569, blue: 0.09803921569, alpha: 1)
+        static let tintColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.9)
+    }
 }

@@ -31,9 +31,9 @@ final class AuthNetworkManager {
     public func authenticateWithApple(
         identityToken: String,
         authorizationCode: String
-    ) -> Single<SignInResponseDTO> {
+    ) -> Single<AuthResponseDTO> {
         return provider.rx.request(.authenticateWithApple(identityToken: identityToken, authorizationCode: authorizationCode))
-            .map(SignInResponseDTO.self)
+            .map(AuthResponseDTO.self)
     }
     
     public func setProfileNickname(nickname: String) -> Completable {
@@ -42,9 +42,17 @@ final class AuthNetworkManager {
             .asCompletable()
     }
     
-    public func validateRefreshToken(_ refreshToken: String) -> Single<TokenRefreshResponseDTO> {
+    public func updateProfileImage(
+        isImageRemoved: Bool,
+        imageData: Data?
+    ) -> Single<AuthResponseDTO> {
+        return provider.rx.request(.updateProfileImage(isRemoveImage: isImageRemoved, imageData: imageData))
+            .map(AuthResponseDTO.self)
+    }
+    
+    public func validateRefreshToken(_ refreshToken: String) -> Single<AuthResponseDTO> {
         return provider.rx.request(.validateRefreshToken(refreshToken))
-            .map(TokenRefreshResponseDTO.self)
+            .map(AuthResponseDTO.self)
     }
     
     public func signOut() -> Completable {

@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Kingfisher
 import SnapKit
 import Then
 
@@ -16,6 +17,12 @@ final class MyPageView: UIView {
         $0.numberOfLines = 1
         $0.font = UIFont.gMarketSans(size: 24, family: .bold)
         $0.textColor = .black
+    }
+    
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
     }
     
     private(set) var tableView = UITableView(
@@ -33,7 +40,7 @@ final class MyPageView: UIView {
         $0.clipsToBounds = true
     }
     
-    private let imageContainerView = UIView().then {
+    private let profileImageContainerView = UIView().then {
         $0.layer.cornerRadius = 70
         $0.layer.shadowColor = UIColor.black.cgColor
         $0.layer.shadowOpacity = 0.2
@@ -42,10 +49,21 @@ final class MyPageView: UIView {
         $0.clipsToBounds = false
     }
     
-    private let imageView = UIImageView().then {
+    private let profileImageView = UIImageView().then {
         $0.layer.cornerRadius = 70
-        $0.image = UIImage(named: "seulgi")
+        $0.image = UIImage(named: "placeholder")
         $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
+    
+    private(set) var profileEditButton = UIButton().then {
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(systemName: "plus.circle.fill")
+        config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 22)
+        config.baseForegroundColor = .mainCharcoalColor
+        config.background.backgroundColor = .white
+        config.cornerStyle = .capsule
+        $0.configuration = config
         $0.clipsToBounds = true
     }
     
@@ -61,6 +79,7 @@ final class MyPageView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
+        setupProfileImage()
     }
     
     @available(*, unavailable)
@@ -71,18 +90,25 @@ final class MyPageView: UIView {
     private func setupUI() {
         self.backgroundColor = .white
         self.addSubview(tableView)
-        headerView.addSubview(imageContainerView)
+        self.addSubview(activityIndicator)
+        headerView.addSubview(profileImageContainerView)
         headerView.addSubview(nicknameLabel)
-        imageContainerView.addSubview(imageView)
+        profileImageContainerView.addSubview(profileImageView)
+        profileImageContainerView.addSubview(profileEditButton)
     }
     
     private func setupLayout() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
+        }
+        
         tableView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
         }
         
-        imageContainerView.snp.makeConstraints { make in
+        profileImageContainerView.snp.makeConstraints { make in
             make.top
                 .equalToSuperview()
                 .offset(20)
@@ -92,14 +118,21 @@ final class MyPageView: UIView {
                 .equalTo(140)
         }
         
-        imageView.snp.makeConstraints { make in
+        profileImageView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
         }
         
+        profileEditButton.snp.makeConstraints { make in
+            make.trailing.bottom
+                .equalToSuperview()
+            make.size
+                .equalTo(34)
+        }
+        
         nicknameLabel.snp.makeConstraints { make in
             make.top
-                .equalTo(imageContainerView.snp.bottom)
+                .equalTo(profileImageContainerView.snp.bottom)
                 .offset(5)
             make.centerX
                 .equalToSuperview()
@@ -108,5 +141,21 @@ final class MyPageView: UIView {
                 .offset(-5)
         }
     }
+}
 
+extension MyPageView {
+    /// 초기 프로필 이미지를 설정합니다.
+    public func setupProfileImage() {
+        if let profileImage = UserDefaultsManager.shared.profileImageURL {
+            let url = URL(string: profileImage)
+            profileImageView.kf.setImage(with: url)
+        } else {
+            profileImageView.image = UIImage(named: "placeholder")
+        }
+    }
+    
+    /// 프로필 닉네임을 업데이트합니다.
+    public func updateProfileNickname(_ nickname: String?) {
+        nicknameLabel.text = nickname
+    }
 }

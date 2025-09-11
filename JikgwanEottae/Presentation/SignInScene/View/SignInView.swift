@@ -22,19 +22,20 @@ final class SignInView: UIView {
     }
     
     // 카카오 로그인 버튼입니다.
-    private(set) var kakaoSignInButton = UIButton(type: .custom).then {
-        let image = UIImage(named: "kakaoLogin")
-        $0.setBackgroundImage(image, for: .normal)
-        $0.layer.cornerRadius = Constants.buttonCornerRadius
+    private(set) var kakaoSignInButton = CustomButton().then {
+        $0.setTitle(text: "Kakao로 계속하기", textColor: UIColor.Kakao.textColor)
+        $0.setImage(UIImage(systemName: "message.fill"), tintColor: UIColor.Kakao.tintColor)
+        $0.backgroundColor = UIColor.Kakao.backgroundColor
         $0.clipsToBounds = true
     }
     
     // 애플 로그인 버튼입니다.
-    private(set) var appleSignInButton = ASAuthorizationAppleIDButton(
-        type: .signIn,
-        style: .black).then {
-            $0.cornerRadius = Constants.buttonCornerRadius
-        }
+    private(set) var appleSignInButton = CustomButton().then {
+        $0.setTitle(text: "Apple로 계속하기", textColor: .white)
+        $0.setImage(UIImage(systemName: "apple.logo"), tintColor: .white)
+        $0.backgroundColor = .black
+        $0.clipsToBounds = true
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)

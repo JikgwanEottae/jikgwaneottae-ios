@@ -20,7 +20,10 @@ protocol AuthRepositoryProtocol {
     
     /// 프로필 닉네임을 설정합니다.
     func setProfileNickname(_ nickname: String) -> Completable
-
+    
+    /// 프로필 이미지를 업데이트합니다.
+    func updateProfileImage(isImageRemoved: Bool, imageData: Data?) -> Completable
+    
     /// 리프레쉬 토큰 검증을 수행합니다.
     func validateRefreshToken(_ refreshToken: String) -> Completable
     
@@ -29,4 +32,5 @@ protocol AuthRepositoryProtocol {
     
     /// 가입된 계정을 탈퇴합니다.
     func withdrawAccount() -> Completable
+    
 }

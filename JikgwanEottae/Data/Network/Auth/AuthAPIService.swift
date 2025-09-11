@@ -13,6 +13,7 @@ enum AuthAPIService {
     case authenticateWithKakao(accessToken: String)
     case authenticateWithApple(identityToken: String, authorizationCode: String)
     case setProfileNickname(nickname: String)
+    case updateProfileImage(isRemoveImage: Bool, imageData: Data?)
     case validateRefreshToken(_ refreshToken: String)
     case signOut
     case withdrawAccount
@@ -31,12 +32,14 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
             return "/api/auth/login/apple"
         case .setProfileNickname:
             return "/api/auth/profile"
+        case .updateProfileImage:
+            return "/api/images/user/profile"
         case .validateRefreshToken:
             return "/api/auth/refresh"
         case .signOut:
             return "/api/auth/logout"
         case .withdrawAccount:
-            return "/api/auth/withdraw"
+            return "/api/auth/withdraw/immediate"
         }
     }
     
@@ -68,6 +71,28 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
                 parameters: ["nickname": nickname],
                 encoding: JSONEncoding.default
             )
+        case .updateProfileImage(let isImageRemoved, let imageData):
+            var multipartFormData: [MultipartFormData] = []
+            let json = try! JSONEncoder().encode(isImageRemoved)
+            multipartFormData.append(
+                MultipartFormData(
+                    provider: .data(json),
+                    name: "isImageRemoved",
+                    fileName: "dto.json",
+                    mimeType: "application/json"
+                )
+            )
+            if let data = imageData {
+                multipartFormData.append(
+                    MultipartFormData(
+                        provider: .data(data),
+                        name: "file",
+                        fileName: "image.jpeg",
+                        mimeType: "image/jpeg"
+                    )
+                )
+            }
+            return .uploadMultipart(multipartFormData)
         case .validateRefreshToken(let refreshToken):
             return .requestParameters(
                 parameters: ["refreshToken": refreshToken],
@@ -81,12 +106,17 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
     }
     
     var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+        switch self {
+        case .updateProfileImage:
+            return ["Content-Type": "multipart/form-data"]
+        default:
+            return ["Content-Type": "application/json"]
+        }
     }
     
     var authorizationType: Moya.AuthorizationType? {
         switch self {
-        case .setProfileNickname, .signOut, .withdrawAccount:
+        case .setProfileNickname, .signOut, .withdrawAccount, .updateProfileImage:
             return .bearer
         default:
             return nil

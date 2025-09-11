@@ -46,16 +46,13 @@ final class WithdrawalViewController: UIViewController {
         let output = viewModel.transform(input: input)
         
         output.isLoading
-            .drive(onNext: { [weak self] isLoading in
-                guard let self = self else { return }
-                self.updateSignOutPopupLoadingState(isLoading: isLoading)
-            })
+            .drive(withdrawalView.activityIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
 
         output.withdrawalSuccess
-            .emit(onNext: { [weak self] in
-                guard let self = self else { return }
-                self.dismissPopupAndNavigateToLogin()
+            .withUnretained(self)
+            .emit(onNext: { owner, _ in
+                owner.navigateToLoginScreen()
             })
             .disposed(by: disposeBag)
     }
@@ -66,40 +63,31 @@ final class WithdrawalViewController: UIViewController {
             .asObservable()
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
-                owner.presentWithdrawConfirmationPopup()
+                owner.presentWithdrawAlert()
             })
             .disposed(by: disposeBag)
     }
     
     /// 회원탈퇴 팝업 화면을 표시합니다.
-    private func presentWithdrawConfirmationPopup() {
+    private func presentWithdrawAlert() {
         HapticFeedbackManager.shared.light()
-        let popupViewController = PopupViewController(
+        self.showAlert(
             title: "회원탈퇴",
-            subtitle: "정말로 회원을 탈퇴할까요?",
-            mainButtonStyle: .init(title: "확인", backgroundColor: .tossRedColor),
-            subButtonStyle: .init(title: "취소", backgroundColor: .primaryBackgroundColor),
-            blurEffect: .init(style: .systemUltraThinMaterialLight))
-        popupViewController.modalPresentationStyle = .overFullScreen
-        popupViewController.modalTransitionStyle = .crossDissolve
-        popupViewController.onMainAction = { [weak self] in
-            self?.withdrawButtonRelay.accept(())
-        }
-        self.present(popupViewController, animated: true)
+            message: "정말 회원을 탈퇴할까요?",
+            doneTitle: "탈퇴",
+            doneStyle: .destructive,
+            cancelTitle: "닫기",
+            cancelStyle: .cancel,
+            doneCompletion: { [weak self] in
+                self?.withdrawButtonRelay.accept(())
+            }
+        )
     }
     
     /// 회원탈퇴 팝업 화면의 로딩 인디케이터 상태를 업데이트합니다.
     private func updateSignOutPopupLoadingState(isLoading: Bool) {
         guard let popupViewController = self.presentedViewController as? PopupViewController else{ return }
         popupViewController.updateActivityIndicatorState(isLoading)
-    }
-    
-    /// 회원탈퇴 팝업 화면을 닫고 로그인 화면으로 전환합니다.
-    private func dismissPopupAndNavigateToLogin() {
-        guard let popupViewController = self.presentedViewController as? PopupViewController else { return }
-        popupViewController.dismiss(animated: true) { [weak self] in
-            self?.navigateToLoginScreen()
-        }
     }
     
     /// 루트 뷰 컨트롤러를 로그인 화면으로 전환합니다.

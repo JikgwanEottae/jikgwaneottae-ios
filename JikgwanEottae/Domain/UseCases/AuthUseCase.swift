@@ -16,6 +16,8 @@ protocol AuthUseCaseProtocol {
     
     func setProfileNickname(_ nickname: String) -> Completable
     
+    func updateProfileImage(isImageRemoved: Bool, imageData: Data?) -> Completable
+    
     func validateRefreshToken(_ refreshToken: String) -> Completable
     
     func signOut() -> Completable
@@ -46,6 +48,16 @@ final class AuthUseCase: AuthUseCaseProtocol {
     
     public func setProfileNickname(_ nickname: String) -> Completable {
         return repository.setProfileNickname(nickname)
+    }
+    
+    public func updateProfileImage(
+        isImageRemoved: Bool,
+        imageData: Data?
+    ) -> Completable {
+        return repository.updateProfileImage(
+            isImageRemoved: isImageRemoved,
+            imageData: imageData
+        )
     }
     
     public func validateRefreshToken(_ refreshToken: String) -> Completable {
