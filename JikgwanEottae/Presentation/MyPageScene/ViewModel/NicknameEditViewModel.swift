@@ -22,8 +22,8 @@ final class NicknameEditViewModel: ViewModelType {
     struct Output {
         let isButtonEnabled: Observable<Bool>
         let isLoading: Driver<Bool>
-        let success: Observable<Void>
-        let error: Observable<Error>
+        let success: Signal<Void>
+        let error: Signal<Void>
         let validation: Driver<Bool>
     }
     
@@ -35,7 +35,7 @@ final class NicknameEditViewModel: ViewModelType {
     public func transform(input: Input) -> Output {
         let isLoadingRelay = BehaviorRelay<Bool>(value: false)
         let successRelay = PublishRelay<Void>()
-        let errorRelay = PublishRelay<Error>()
+        let errorRelay = PublishRelay<Void>()
         let isNoticeHiddenRelay = BehaviorRelay<Bool>(value: true)
         
         let isButtonEnable = input.nickname
@@ -57,27 +57,24 @@ final class NicknameEditViewModel: ViewModelType {
             .withLatestFrom(input.nickname)
             .filter{ _ in isNoticeHiddenRelay.value }
             .withUnretained(self)
-            .flatMapLatest { owner, nickname in
-                isLoadingRelay.accept(true)
+            .flatMap { owner, nickname -> Observable<Void> in
                 return owner.useCase.setProfileNickname(nickname)
-                    .do(onError: { error in
-                        print(error)
-                        errorRelay.accept(error)
-                        isLoadingRelay.accept(false)
-                    }, onCompleted: {
-                        UserDefaultsManager.shared.nickname = nickname
-                        successRelay.accept(())
-                        isLoadingRelay.accept(false)
-                    })
+                    .andThen(Observable.just(()))
+                    .catch { error in
+                        errorRelay.accept(())
+                        return Observable.empty()
+                    }
             }
-            .subscribe()
+            .subscribe(onNext: {
+                successRelay.accept(())
+            })
             .disposed(by: disposeBag)
         
         return Output(
             isButtonEnabled: isButtonEnable,
             isLoading: isLoadingRelay.asDriver(),
-            success: successRelay.asObservable(),
-            error: errorRelay.asObservable(),
+            success: successRelay.asSignal(),
+            error: errorRelay.asSignal(),
             validation: isNoticeHiddenRelay.asDriver()
             
         )

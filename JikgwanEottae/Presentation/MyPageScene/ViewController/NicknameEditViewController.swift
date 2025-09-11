@@ -13,10 +13,13 @@ import RxCocoa
 final class NicknameEditViewController: UIViewController {
     private let nicknameEditView = NicknameEditView()
     private let viewModel: NicknameEditViewModel
+    public var onNicknameUpdated: ((String) -> Void)?
+    private let isInitialEdit: Bool
     private let disposeBag = DisposeBag()
     
-    init(viewModel: NicknameEditViewModel) {
+    init(viewModel: NicknameEditViewModel, isInitialEdit: Bool) {
         self.viewModel = viewModel
+        self.isInitialEdit = isInitialEdit
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -35,11 +38,6 @@ final class NicknameEditViewController: UIViewController {
         hideKeyboardWhenTappedAround()
         bindViewModel()
         bindUnderlineColorToEditingState()
-        print("accessToken: \(KeychainManager.shared.readAccessToken())")
-        print("refreshToken: \(KeychainManager.shared.readRefreshToken())")
-        print("isProfileCompleted: \(UserDefaultsManager.shared.isProfileCompleted)")
-        print("nickname: \(UserDefaultsManager.shared.nickname)")
-        print("profileImageURL: \(UserDefaultsManager.shared.profileImageURL)")
     }
     
     private func bindViewModel() {
@@ -63,16 +61,26 @@ final class NicknameEditViewController: UIViewController {
         
         output.success
             .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                let mainTabBarController = MainTabBarController()
-                owner.transitionRoot(to: mainTabBarController)
+            .emit(onNext: { owner, _ in
+                if owner.isInitialEdit {
+                    let mainTabBarController = MainTabBarController()
+                    owner.transitionRoot(to: mainTabBarController)
+                } else {
+                    guard let nickname = UserDefaultsManager.shared.nickname else { return }
+                    owner.onNicknameUpdated?(nickname)
+                    owner.navigationController?.popViewController(animated: true)
+                }
             })
             .disposed(by: disposeBag)
         
         output.error
             .withUnretained(self)
-            .subscribe(onNext: { owner, error in
-                owner.showAlert(title: "실패", message: "이미 다른 사용자가 사용하고 있어요")
+            .emit(onNext: { owner, error in
+                owner.showAlert(
+                    title: "변경 실패",
+                    message: "이미 다른 사용자가 사용하고 있어요",
+                    doneTitle: "확인"
+                )
             })
             .disposed(by: disposeBag)
         

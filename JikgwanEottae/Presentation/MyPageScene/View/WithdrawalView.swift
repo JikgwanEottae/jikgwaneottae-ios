@@ -11,6 +11,12 @@ import SnapKit
 import Then
 
 final class WithdrawalView: UIView {
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = .mainCharcoalColor
+    }
+    
     private let titleInfoLabel = UILabel().then {
         $0.text = "잠깐! 그전에 확인해 주세요"
         $0.numberOfLines = 1
@@ -48,12 +54,18 @@ final class WithdrawalView: UIView {
     
     private func setupUI() {
         self.backgroundColor = .white
+        self.addSubview(activityIndicator)
         self.addSubview(titleInfoLabel)
         self.addSubview(subTitleInfoLabel)
         self.addSubview(withdrawButton)
     }
     
     private func setupLayout() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
+        }
+        
         titleInfoLabel.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
                 .offset(20)

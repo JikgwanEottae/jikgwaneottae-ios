@@ -58,7 +58,6 @@ final class SignInViewModel: ViewModelType {
                     loginFailureRelay.accept(error.localizedDescription)
                 })
                 .disposed(by: owner.disposeBag)
-                
             })
             .disposed(by: disposeBag)
 

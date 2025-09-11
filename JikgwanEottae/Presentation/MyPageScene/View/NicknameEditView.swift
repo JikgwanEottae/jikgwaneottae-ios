@@ -10,8 +10,9 @@ import UIKit
 import SnapKit
 import Then
 
+// MARK: - 사용자의 프로필 닉네임을 설정하기 위한 뷰입니다.
+
 final class NicknameEditView: UIView {
-    // 로딩 인디케이터입니다.
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
@@ -51,6 +52,7 @@ final class NicknameEditView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
+        setupNicknameTextField()
     }
     
     @available(*, unavailable)
@@ -72,14 +74,16 @@ final class NicknameEditView: UIView {
             make.center
                 .equalToSuperview()
         }
+        
         titleLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(safeAreaLayoutGuide)
-                .offset(60)
+                .offset(30)
             make.leading.trailing
                 .equalToSuperview()
                 .inset(20)
         }
+        
         nicknameInputField.snp.makeConstraints { make in
             make.top
                 .equalTo(titleLabel.snp.bottom)
@@ -88,6 +92,7 @@ final class NicknameEditView: UIView {
                 .equalToSuperview()
                 .inset(20)
         }
+        
         noticeLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(nicknameInputField.snp.bottom)
@@ -96,9 +101,10 @@ final class NicknameEditView: UIView {
                 .equalToSuperview()
                 .inset(20)
         }
+        
         completeButton.snp.makeConstraints { make in
             make.leading.trailing
-                .equalTo(safeAreaLayoutGuide)
+                .equalToSuperview()
                 .inset(20)
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
@@ -113,5 +119,11 @@ extension NicknameEditView {
     public func setButtonState(_ isEnabled: Bool) {
         completeButton.backgroundColor = (isEnabled ? .mainCharcoalColor : .mainCharcoalColor.withAlphaComponent(0.3))
         completeButton.isEnabled = isEnabled
+    }
+    
+    private func setupNicknameTextField() {
+        if UserDefaultsManager.shared.isProfileCompleted {
+            nicknameInputField.textField.text = UserDefaultsManager.shared.nickname
+        }
     }
 }

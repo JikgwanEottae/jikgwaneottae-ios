@@ -57,27 +57,41 @@ extension UIViewController {
     func showAlert(
         title: String,
         message: String? = nil,
-        doneTitle: String = "확인",
+        doneTitle: String,
+        doneStyle: UIAlertAction.Style = .default,
         cancelTitle: String? = nil,
+        cancelStyle: UIAlertAction.Style = .cancel,
         preferredStyle: UIAlertController.Style = .alert,
-        completion: (() -> Void)? = nil
+        doneCompletion: (() -> Void)? = nil,
+        cancelCompletion: (() -> Void)? = nil
     ) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: preferredStyle)
-        let doneAction = UIAlertAction(
-            title: doneTitle,
-            style: .default
-        ) { _ in
-            completion?()
+        let alert = UIAlertController(title: "", message: "", preferredStyle: preferredStyle)
+        // 타이틀의 폰트를 설정합니다.
+        let titleAttributes = [
+            NSAttributedString.Key.font: UIFont.gMarketSans(size: 16, family: .medium),
+            NSAttributedString.Key.foregroundColor: UIColor.primaryTextColor
+        ]
+        let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
+        alert.setValue(attributedTitle, forKey: "attributedTitle")
+        // 메시지가 있을 경우 메시지의 폰트를 설정합니다.
+        if let message = message {
+            let messageAttributes = [
+                NSAttributedString.Key.font: UIFont.gMarketSans(size: 12, family: .medium),
+                NSAttributedString.Key.foregroundColor: UIColor.tertiaryTextColor
+            ]
+            let attributedMessage = NSAttributedString(string: message, attributes: messageAttributes)
+            alert.setValue(attributedMessage, forKey: "attributedMessage")
+        }
+        // 확인 버튼의 액션을 설정합니다.
+        let doneAction = UIAlertAction(title: doneTitle, style: doneStyle) { _ in
+            doneCompletion?()
         }
         alert.addAction(doneAction)
+        // 취소 버튼의 액션을 설정합니다.
         if let cancelTitle = cancelTitle {
-            let cancelAction = UIAlertAction(
-                title: cancelTitle,
-                style: .cancel
-            )
+            let cancelAction = UIAlertAction(title: cancelTitle, style: cancelStyle) { _ in
+                cancelCompletion?()
+            }
             alert.addAction(cancelAction)
         }
         self.present(alert, animated: true)
