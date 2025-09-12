@@ -16,7 +16,7 @@ final class HomeViewModel: ViewModelType {
     private let disposeBag = DisposeBag()
     
     struct Input {
-        let viewDidAppear: PublishRelay<Void>
+        let viewWillApper: PublishRelay<Void>
     }
     
     struct Output {
@@ -30,23 +30,23 @@ final class HomeViewModel: ViewModelType {
     }
     
     public func transform(input: Input) -> Output {
-        let diaryStats = input.viewDidAppear
+        let diaryStats = input.viewWillApper
+            .filter { AppState.shared.needsStatisticsRefresh }
             .flatMapLatest { [weak self]  _ -> Observable<DiaryStats> in
                 guard let self = self else { return .never() }
                 return self.diaryUseCase.fetchDiaryStats()
                     .asObservable()
                     .catch { error in
-                        print("DiaryStats 로드 실패: \(error.localizedDescription)")
                         return .empty()
                     }
             }
-        let todayGames = input.viewDidAppear
+        
+        let todayGames = input.viewWillApper
             .flatMapLatest { [weak self] _ -> Observable<[KBOGame]> in
                 guard let self = self else { return .never()}
                 return self.kboGameUseCase.fetchDailyGames(date: Date())
                     .asObservable()
                     .catch { error in
-                        print("KBOGame 로드 실패: \(error.localizedDescription)")
                         return .empty()
                     }
             }

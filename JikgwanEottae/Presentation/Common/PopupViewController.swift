@@ -179,6 +179,7 @@ extension PopupViewController {
     @objc private func mainButtonTapped() {
         onMainAction?()
     }
+    
     /// 서브 버튼이 클릭됬을 때 이벤트입니다.
     @objc private func subButtonTapped() {
         dismiss(animated: true)

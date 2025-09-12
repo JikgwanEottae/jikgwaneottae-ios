@@ -15,10 +15,9 @@ import RxCocoa
 protocol DiaryUseCaseProtocol {
     func fetchAllDiaries() -> Single<[Diary]>
 
-    func fetchDiaries(
-        year: String,
-        month: String
-    ) -> Single<[Diary]>
+    func fetchDiaries(selectedMonth: Date) -> Single<[Diary]>
+    
+    func fetchDailyDiaries(selectedDay: Date) -> [Diary]
     
     func createDiary(
         gameId: Int,
@@ -55,15 +54,15 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
         return self.repository.fetchAllDiaries()
     }
     
-    public func fetchDiaries(
-        year: String,
-        month: String
-    ) -> Single<[Diary]> {
-        return self.repository.fetchDiaries(
-            year: year,
-            month: month
-        )
+    public func fetchDiaries(selectedMonth: Date) -> Single<[Diary]> {
+        return repository.fetchDiaries(selectedMonth: selectedMonth)
     }
+    
+    public func fetchDailyDiaries(selectedDay: Date) -> [Diary] {
+        return repository.fetchDiaries(selectedDay: selectedDay)
+    }
+    
+    
     
     public func createDiary(
         gameId: Int,

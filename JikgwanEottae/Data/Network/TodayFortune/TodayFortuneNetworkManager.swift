@@ -15,9 +15,7 @@ final class TodayFortuneNetworkManager {
     private let provider: MoyaProvider<TodayFortuneAPIService>
     
     private init() {
-        let token = KeychainManager.shared.readAccessToken() ?? ""
-        let authPlugin = AccessTokenPlugin { _ in token }
-        self.provider = MoyaProvider(plugins: [authPlugin])
+        self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
     }
     
     public func fetchTodayFortune(params: TodayFortuneRequestDTO) -> Single<Fortune> {

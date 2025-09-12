@@ -12,7 +12,6 @@ import SnapKit
 // MARK: - 메인 탭 바 컨트롤러
 
 final class MainTabBarController: UITabBarController {
-    // MARK: - Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

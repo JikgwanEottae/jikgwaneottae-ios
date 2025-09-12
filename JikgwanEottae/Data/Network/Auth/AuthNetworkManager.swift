@@ -14,13 +14,8 @@ final class AuthNetworkManager {
     static let shared = AuthNetworkManager()
     private let provider: MoyaProvider<AuthAPIService>
     
-    private let tokenClosure: (TargetType) -> String = { _ in
-        return KeychainManager.shared.readAccessToken() ?? ""
-    }
-    
     private init() {
-        let authPlugin = AccessTokenPlugin(tokenClosure: tokenClosure)
-        self.provider = MoyaProvider(plugins: [authPlugin])
+        self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
     }
     
     public func authenticateWithKakao(accessToken: String) -> Single<AuthResponseDTO> {

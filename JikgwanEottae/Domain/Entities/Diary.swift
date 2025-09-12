@@ -21,8 +21,8 @@ struct Diary: Hashable, Identifiable {
     let awayScore: Int
     let favoriteTeam: String
     let result: String?
-    let seat: String
-    let memo: String
+    let seat: String?
+    let memo: String?
     let imageURL: String?
 }
 

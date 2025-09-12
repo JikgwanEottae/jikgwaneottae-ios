@@ -69,124 +69,124 @@ final class DiaryEditViewController: UIViewController {
     
     /// 뷰 모델과 바인딩합니다.
     private func bindViewModel() {
-        let teamSegmentControl = diaryEditView.teamSegmentControl
-        
-        let input = DiaryEditViewModel.Input(
-            // 직관 일기 생성 버튼 클릭 이벤트입니다.
-            recordButtonTapped: diaryEditView.recordButton.rx
-                .tap
-                .asObservable(),
-            
-            // 직관 일기 삭제 버튼 클릭 이벤트입니다.
-            deleteButtonTapped: deleteConfirmRelay.asObservable(),
-            
-            // 팀 선택 세그먼트 컨트롤 이벤트입니다.
-            favoriteTeam: diaryEditView.teamSegmentControl.rx
-                .controlEvent(.valueChanged)
-                .map { teamSegmentControl.selectedTeam }
-                .asObservable(),
-            
-            seatText: diaryEditView.seatInputFieldView.textField.rx.text
-                .orEmpty
-                .distinctUntilChanged()
-                .asObservable(),
-            
-            memoText: diaryEditView.memoTextView.rx.text
-                .orEmpty
-                .distinctUntilChanged()
-                .asObservable(),
-            
-            selectedPhotoData: selectedPhotoDataRelay
-                .asObservable(),
-            
-            // 사진 수정 여부를 체크할 트리거입니다.
-            isPhotoChanged: photoChangedTriggered
-                .asObservable()
-        )
-        
-        let output = viewModel.transform(input: input)
-        // 직관 일기의 모드를 직관 일기 삭제 바 버튼 아이템과 연결합니다.
-        output.isCreateMode
-            .emit(to: diaryEditView.deleteDiaryBarButtonItem.rx.isHidden)
-            .disposed(by: disposeBag)
-        
-        // 홈팀 및 어웨이팀 그리고 응원팀을 세그먼트 컨트롤과 연결합니다.
-        output.initialTeams
-            .drive(onNext: { [weak self] homeTeam, awayTeam, favoriteTeam in
-                self?.diaryEditView.teamSegmentControl.configure(
-                    homeTeam: homeTeam,
-                    awayTeam: awayTeam,
-                    favoriteTeam: favoriteTeam
-                )
-            })
-            .disposed(by: disposeBag)
-        
-        // 초기 좌석 상태를 텍스트 필드와 연결합니다.
-        output.initialSeat
-            .drive(diaryEditView.seatInputFieldView.textField.rx.text)
-            .disposed(by: disposeBag)
-        
-        // 초기 메모 상태를 텍스트 뷰와 연결합니다.
-        output.initialMemo
-            .drive(onNext: { [weak self] memoText in
-                self?.diaryEditView.configureMemoText(memoText)
-            })
-            .disposed(by: disposeBag)
-        
-        // 초기 이미지 상태를 버튼의 이미지와 연결합니다.
-        output.initialImageURL
-            .drive(onNext: { [weak self] imageURL in
-                guard let self = self, let url = imageURL else { return }
-                self.diaryEditView.configureImage(url)
-            })
-            .disposed(by: disposeBag)
-        
-        // 네트워크 통신 중 로딩 인디케이터를 보여줍니다.
-        output.isLoading
-            .drive(diaryEditView.activityIndicator.rx.isAnimating)
-            .disposed(by: disposeBag)
-        
-        // 직관 일기 생성 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
-        output.createResult
-            .withUnretained(self)
-            .emit(onNext: { owner, result in
-                switch result {
-                case .success:
-                    owner.view.endEditing(true)
-                    owner.presentDiaryCreateSuccessPopup()
-                case .failure(let error):
-                    print(error)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        // 직관 일기 수정 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
-        output.updateResult
-            .withUnretained(self)
-            .emit(onNext: { owner, result in
-                switch result {
-                case .success:
-                    owner.view.endEditing(true)
-                    owner.dismiss(animated: true)
-                case .failure(let error):
-                    print(error)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        // 직관 일기 삭제 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
-        output.deleteResult
-            .withUnretained(self)
-            .emit(onNext: { owner, result in
-                switch result {
-                case .success:
-                    owner.view.endEditing(true)
-                    owner.dismiss(animated: true)
-                case .failure(let error):
-                    print(error)
-                }
-            })
-            .disposed(by: disposeBag)
+//        let teamSegmentControl = diaryEditView.teamSegmentControl
+//        
+//        let input = DiaryEditViewModel.Input(
+//            // 직관 일기 생성 버튼 클릭 이벤트입니다.
+//            recordButtonTapped: diaryEditView.recordButton.rx
+//                .tap
+//                .asObservable(),
+//            
+//            // 직관 일기 삭제 버튼 클릭 이벤트입니다.
+//            deleteButtonTapped: deleteConfirmRelay.asObservable(),
+//            
+//            // 팀 선택 세그먼트 컨트롤 이벤트입니다.
+//            favoriteTeam: diaryEditView.teamSegmentControl.rx
+//                .controlEvent(.valueChanged)
+//                .map { teamSegmentControl.selectedTeam }
+//                .asObservable(),
+//            
+//            seatText: diaryEditView.seatInputFieldView.textField.rx.text
+//                .orEmpty
+//                .distinctUntilChanged()
+//                .asObservable(),
+//            
+//            memoText: diaryEditView.memoTextView.rx.text
+//                .orEmpty
+//                .distinctUntilChanged()
+//                .asObservable(),
+//            
+//            selectedPhotoData: selectedPhotoDataRelay
+//                .asObservable(),
+//            
+//            // 사진 수정 여부를 체크할 트리거입니다.
+//            isPhotoChanged: photoChangedTriggered
+//                .asObservable()
+//        )
+//        
+//        let output = viewModel.transform(input: input)
+//        // 직관 일기의 모드를 직관 일기 삭제 바 버튼 아이템과 연결합니다.
+//        output.isCreateMode
+//            .emit(to: diaryEditView.deleteDiaryBarButtonItem.rx.isHidden)
+//            .disposed(by: disposeBag)
+//        
+//        // 홈팀 및 어웨이팀 그리고 응원팀을 세그먼트 컨트롤과 연결합니다.
+//        output.initialTeams
+//            .drive(onNext: { [weak self] homeTeam, awayTeam, favoriteTeam in
+//                self?.diaryEditView.teamSegmentControl.configure(
+//                    homeTeam: homeTeam,
+//                    awayTeam: awayTeam,
+//                    favoriteTeam: favoriteTeam
+//                )
+//            })
+//            .disposed(by: disposeBag)
+//        
+//        // 초기 좌석 상태를 텍스트 필드와 연결합니다.
+//        output.initialSeat
+//            .drive(diaryEditView.seatInputFieldView.textField.rx.text)
+//            .disposed(by: disposeBag)
+//        
+//        // 초기 메모 상태를 텍스트 뷰와 연결합니다.
+//        output.initialMemo
+//            .drive(onNext: { [weak self] memoText in
+//                self?.diaryEditView.configureMemoText(memoText)
+//            })
+//            .disposed(by: disposeBag)
+//        
+//        // 초기 이미지 상태를 버튼의 이미지와 연결합니다.
+//        output.initialImageURL
+//            .drive(onNext: { [weak self] imageURL in
+//                guard let self = self, let url = imageURL else { return }
+//                self.diaryEditView.configureImage(url)
+//            })
+//            .disposed(by: disposeBag)
+//        
+//        // 네트워크 통신 중 로딩 인디케이터를 보여줍니다.
+//        output.isLoading
+//            .drive(diaryEditView.activityIndicator.rx.isAnimating)
+//            .disposed(by: disposeBag)
+//        
+//        // 직관 일기 생성 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
+//        output.createResult
+//            .withUnretained(self)
+//            .emit(onNext: { owner, result in
+//                switch result {
+//                case .success:
+//                    owner.view.endEditing(true)
+//                    owner.presentDiaryCreateSuccessPopup()
+//                case .failure(let error):
+//                    print(error)
+//                }
+//            })
+//            .disposed(by: disposeBag)
+//        
+//        // 직관 일기 수정 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
+//        output.updateResult
+//            .withUnretained(self)
+//            .emit(onNext: { owner, result in
+//                switch result {
+//                case .success:
+//                    owner.view.endEditing(true)
+//                    owner.dismiss(animated: true)
+//                case .failure(let error):
+//                    print(error)
+//                }
+//            })
+//            .disposed(by: disposeBag)
+//        
+//        // 직관 일기 삭제 네트워크 통신 후, 성공/실패 결과를 전달받습니다.
+//        output.deleteResult
+//            .withUnretained(self)
+//            .emit(onNext: { owner, result in
+//                switch result {
+//                case .success:
+//                    owner.view.endEditing(true)
+//                    owner.dismiss(animated: true)
+//                case .failure(let error):
+//                    print(error)
+//                }
+//            })
+//            .disposed(by: disposeBag)
     }
     
     /// 직관 인증 사진을 업로드하는 버튼 클릭 이벤트를 받습니다.
@@ -266,17 +266,13 @@ extension DiaryEditViewController {
     
     /// 직관 일기 생성에 성공했을 때 팝업을 표시합니다.
     private func presentDiaryCreateSuccessPopup() {
-        let popupViewController = PopupViewController(
-            title: "기록 완료",
-            subtitle: "캘린더에서 일기를 확인해보세요",
-            mainButtonStyle: .init(title: "확인", backgroundColor: .mainCharcoalColor),
-            blurEffect: .init(style: .systemUltraThinMaterialLight))
-        popupViewController.modalPresentationStyle = .overFullScreen
-        popupViewController.modalTransitionStyle = .crossDissolve
-        popupViewController.onMainAction = { [weak self] in
+        self.showAlert(
+            title: "기록완료",
+            message: "캘린더에서 일기를 확인해보세요",
+            doneTitle: "확인",
+            doneStyle: .default) { [weak self] in
             self?.navigationController?.popToRootViewController(animated: true)
         }
-        present(popupViewController, animated: true)
     }
     
     /// // 직관 일기 삭제 버튼 클릭에 따른 팝업을 표시합니다.

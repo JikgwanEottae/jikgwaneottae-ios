@@ -23,10 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SDKInitializer.InitSDK(appKey: kakaoAppKey)
         KakaoSDK.initSDK(appKey: kakaoAppKey)
         
-        try! KeychainManager.shared.deleteAllTokens()
-        UserDefaultsManager.shared.clearAllKeys()
-        
-
         return true
     }
     

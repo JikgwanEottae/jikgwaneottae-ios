@@ -17,9 +17,7 @@ final class DiaryNetworkManager {
     private let provider: MoyaProvider<DiaryAPIService>
     
     private init() {
-        let token = KeychainManager.shared.readAccessToken() ?? ""
-        let authPlugin = AccessTokenPlugin { _ in token }
-        self.provider = MoyaProvider(plugins: [authPlugin])
+        self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
     }
     
     /// 전체 직관 일기 조회를 요청합니다.
@@ -28,15 +26,17 @@ final class DiaryNetworkManager {
             .map(DiaryResponseDTO.self)
             .map { $0.toDomain() }
     }
+    
     /// 해당 연·월 직관 일기 조회를 요청합니다
     public func fetchDiaries(
         year: String,
         month: String
     ) -> Single<[Diary]> {
-        return self.provider.rx.request(.fetchDiaries(year: year, month: month))
+        return provider.rx.request(.fetchDiaries(year: year, month: month))
             .map(DiaryResponseDTO.self)
             .map { $0.toDomain() }
     }
+    
     /// 직관 일기 생성을 요청합니다.
     public func createDiary(
         dto: DiaryCreateRequestDTO,
@@ -46,6 +46,7 @@ final class DiaryNetworkManager {
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }
+    
     /// 직관 일기 수정을 요청합니다.
     public func updateDiary(
         diaryId: Int,
@@ -56,6 +57,7 @@ final class DiaryNetworkManager {
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }
+    
     /// 직관 일기 삭제를 요청합니다.
     public func deleteDiary(
         diaryId: Int
@@ -64,6 +66,7 @@ final class DiaryNetworkManager {
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }
+    
     /// 직관 일기 승률을 조회합니다.
     public func fetchDiaryStats() -> Single<DiaryStats> {
         return self.provider.rx.request(.fetchDiaryStats)

@@ -53,6 +53,7 @@ final class SignInViewController: UIViewController {
             action: #selector(handleAppleSignInButtonTap),
             for: .touchUpInside
         )
+        
         self.signInView.kakaoSignInButton.addTarget(
             self,
             action: #selector(handleKakaoSignInButtonTap),
@@ -133,7 +134,11 @@ extension SignInViewController {
     /// 카카오 로그인 응답을 처리합니다.
     private func handleKakaoLoginResponse(oauthToken: OAuthToken?, error: Error?) {
         if let error = error {
-            print(error)
+            self.showAlert(
+                title: "카카오 로그인 실패",
+                message: "계정을 불러올 수 없어요",
+                doneTitle: "확인"
+            )
         } else if let accessToken = oauthToken?.accessToken {
             kakaoLoginResultRelay.accept(accessToken)
         }
@@ -167,7 +172,11 @@ extension SignInViewController: ASAuthorizationControllerDelegate {
         controller: ASAuthorizationController,
         didCompleteWithError error: any Error
     ) {
-        print("로그인 실패", error.localizedDescription)
+        self.showAlert(
+            title: "애플 로그인 실패",
+            message: "계정을 불러올 수 없어요",
+            doneTitle: "확인"
+        )
     }
     
     /// 애플 로그인 성공 처리입니다.

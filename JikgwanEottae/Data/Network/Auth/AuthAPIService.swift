@@ -122,4 +122,8 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
             return nil
         }
     }
+    
+    var validationType: ValidationType {
+        return .successCodes
+    }
 }

@@ -66,7 +66,4 @@ final class SignInViewModel: ViewModelType {
             loginFailure: loginFailureRelay.asSignal()
         )
     }
-    
-    
-    
 }

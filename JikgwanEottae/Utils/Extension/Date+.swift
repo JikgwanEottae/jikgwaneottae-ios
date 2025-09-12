@@ -13,4 +13,11 @@ extension Date {
         dateFormatter.dateFormat = dateFormat
         return dateFormatter.string(from: self)
     }
+    
+    func toYearMonth() -> (year: String, month: String) {
+        let components = self.toFormattedString("yyyy-MM")
+            .split(separator: "-")
+            .map { String($0) }
+        return (year: components[0], month: components[1])
+    }
 }

@@ -32,8 +32,8 @@ final class DiaryEditViewModel: ViewModelType {
         let recordButtonTapped: Observable<Void>
         let deleteButtonTapped: Observable<Void>
         let favoriteTeam: Observable<String>
-        let seatText: Observable<String>
-        let memoText: Observable<String>
+        let seatText: Observable<String?>
+        let memoText: Observable<String?>
         let selectedPhotoData: Observable<Data?>
         let isPhotoChanged: Observable<Void>
     }
@@ -101,22 +101,22 @@ final class DiaryEditViewModel: ViewModelType {
             .subscribe(onNext: { [weak self] favoriteTeam, seat, memo, imageData, isImageChanged in
                 guard let self = self else { return }
                 // placeholder 문자열을 필터링 합니다.
-                let filteredMemo = (memo != "직관 후기를 작성해보세요" && !memo.isEmpty) ? memo : ""
+                let filteredMemo = (memo != "직관 후기를 작성해보세요" && ((memo?.isEmpty) == nil)) ? memo : ""
                 switch mode {
                 case .create(let game):
                     self.createDiary(
                         gameId: game.id,
                         favoriteTeam: favoriteTeam,
-                        seat: seat,
-                        memo: filteredMemo,
+                        seat: seat ?? "",
+                        memo: filteredMemo ?? "",
                         imageData: imageData)
                 case .edit(let diary):
                     let isImageRemoved = imageData == nil && isImageChanged
                     self.updateDiary(
                         diaryId: diary.id,
                         favoriteTeam: favoriteTeam,
-                        seat: seat,
-                        memo: filteredMemo,
+                        seat: seat ?? "",
+                        memo: filteredMemo ?? "",
                         imageData: imageData,
                         isImageRemoved: isImageRemoved,
                     )
@@ -134,8 +134,8 @@ final class DiaryEditViewModel: ViewModelType {
         
         return Output(
             initialTeams: Driver.just((initialState.homeTeam, initialState.awayTeam, initialState.favoriteTeam)),
-            initialSeat: Driver.just(initialState.seat),
-            initialMemo: Driver.just(initialState.memo),
+            initialSeat: Driver.just(initialState.seat ?? ""),
+            initialMemo: Driver.just(initialState.memo ?? ""),
             initialImageURL: Driver.just(initialState.imageURL),
             isCreateMode: Signal.just(isCreateMode()),
             isLoading: isLoadingRelay.asDriver(),
@@ -152,8 +152,8 @@ extension DiaryEditViewModel {
         homeTeam: String,
         awayTeam: String,
         favoriteTeam: String?,
-        seat: String,
-        memo: String,
+        seat: String?,
+        memo: String?,
         imageURL: String?
     ) {
         switch mode {

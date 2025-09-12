@@ -16,10 +16,9 @@ final class DiaryViewController: UIViewController {
     private let viewModel: DiaryViewModel
     private var dataSource: UICollectionViewDiffableDataSource<Section, Diary>!
     private enum Section: CaseIterable { case main }
-    private let selectedDateRelay = BehaviorRelay<String>(value: Date().toFormattedString("yyyy-MM-dd"))
-    private let currentMonthRelay = BehaviorRelay<Date>(value: Date())
-    private var monthlyDiaries: [Diary] = []
-    private let diariesRelay = BehaviorRelay<[Diary]>(value: [])
+    private let selectedDayRelay = PublishRelay<Date>()
+    private let selectedMonthRelay = BehaviorRelay<Date>(value: Date())
+    private var currentMonthDiaries: [Diary] = []
     private let disposeBag = DisposeBag()
     
     init(viewModel: DiaryViewModel) {
@@ -39,37 +38,25 @@ final class DiaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         hideBackBarButtonItem()
-        setupFSCalendarDelegate()
-        configureNaviBarButtonItem()
-        configureNaviTitle(to: Date())
+        configureNavigationBarItem()
+        configureCalendarDelegates()
         configureDataSource()
         createRecordButtonTapped()
-        bindCollectionView()
         bindViewModel()
-        diaryView.fscalendarView.reloadData()
+        bindCollectionView()
+        updateNavigationTitle(to: Date())
+        print(KeychainManager.shared.readAccessToken())
     }
     
     /// 네비게이션 왼쪽 바 버튼 아이템에 타이틀을 설정합니다.
-    private func configureNaviBarButtonItem() {
+    private func configureNavigationBarItem() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryView.titleLabel)
     }
     
     /// FSCalendar의 델리게이트와 데이터소스를 설정합니다.
-    private func setupFSCalendarDelegate() {
+    private func configureCalendarDelegates() {
         self.diaryView.fscalendarView.delegate = self
         self.diaryView.fscalendarView.dataSource = self
-    }
-    
-    /// 네비게이션 타이틀을 설정합니다.
-    /// 캘린더의 스와이프에 따라 네비게이션 타이틀이 변경됩니다.
-    private func configureNaviTitle(to date: Date) {
-        self.navigationItem.title = date.toFormattedString("yyyy년 MM월")
-    }
-    
-    /// 달력에서 선택된 날짜를 표시합니다.
-    /// 캘린더의 날짜 선택에 따라 레이블이 변경됩니다.
-    private func configureDateLabel(to date: Date) {
-        self.diaryView.selectedDateLabel.text = date.toFormattedString("d. E")
     }
     
     /// 직관 일기 컬렉션 뷰를 뷰 컨트롤러와 바인딩합니다.
@@ -95,12 +82,20 @@ final class DiaryViewController: UIViewController {
     /// 뷰 모델을 뷰 컨트롤러와 바인딩합니다.
     private func bindViewModel() {
         let input = DiaryViewModel.Input(
-            currentMonth: currentMonthRelay
+            selectedMonth: selectedMonthRelay,
+            selectedDay: selectedDayRelay
         )
-        
         let output = viewModel.transform(input: input)
         
         output.monthlyDiaries
+            .withUnretained(self)
+            .subscribe(onNext: { owner, diaries in
+                owner.currentMonthDiaries = diaries
+                owner.diaryView.fscalendarView.reloadData()
+            })
+            .disposed(by: disposeBag)
+        
+        output.dailyDiaries
             .withUnretained(self)
             .subscribe(onNext: { owner, diaries in
                 owner.updateSnapshot(diaries: diaries)
@@ -116,12 +111,11 @@ final class DiaryViewController: UIViewController {
                 let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: DiaryCollectionViewCell.ID,
                     for: indexPath
-                ) as! DiaryCollectionViewCell
-                cell.configure(diary: diary)
+                ) as? DiaryCollectionViewCell
+                cell?.configure(diary: diary)
                 return cell
             }
         )
-        
         var snapshot = NSDiffableDataSourceSnapshot<Section, Diary>()
         snapshot.appendSections(Section.allCases)
         dataSource.apply(snapshot, animatingDifferences: true)
@@ -150,6 +144,25 @@ final class DiaryViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
+    
+    /// 경기 결과에 따른 이벤트 표시 색상을 반환합니다.
+    private func getEventColor(for diary: Diary) -> [UIColor] {
+        guard let result = diary.result else { return [.yellowColor] }
+        if result == "WIN" { return [.tossBlueColor] }
+        return [.tossRedColor]
+    }
+}
+
+extension DiaryViewController {
+    /// 캘린더의 스와이프에 따라 네비게이션 타이틀이 변경됩니다.
+    private func updateNavigationTitle(to date: Date) {
+        self.navigationItem.title = date.toFormattedString("yyyy년 MM월")
+    }
+    
+    /// 캘린더의 날짜 선택에 따라 레이블이 변경됩니다.
+    private func updateSelectedDateLabel(to date: Date) {
+        self.diaryView.selectedDateLabel.text = date.toFormattedString("d. E")
+    }
 }
 
 // MARK: - FSCalendarDelegate Extension
@@ -158,19 +171,21 @@ extension DiaryViewController: FSCalendarDelegate {
     /// 캘린더가 좌우로 스와이프될 때 호출됩니다.
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
         let currentPage = calendar.currentPage
-        // 네비게이션 타이틀 변경
-        configureNaviTitle(to: currentPage)
+        // 네비게이션 타이틀을 업데이트합니다.
+        updateNavigationTitle(to: currentPage)
         // '월'이 변경될 때마다 이벤트를 방출
-        currentMonthRelay.accept(currentPage)
+        selectedMonthRelay.accept(currentPage)
     }
     
     /// 캘린더에서 날짜가 선택됬을 때 호출됩니다.
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        configureDateLabel(to: date)
+        // 선택된 날짜 레이블을 업데이트합니다.
+        updateSelectedDateLabel(to: date)
+        selectedDayRelay.accept(date)
         calendar.appearance.todayColor = .systemGray5
         calendar.appearance.titleTodayColor = .primaryTextColor
         let dateString = date.toFormattedString("yyyy-MM-dd")
-        selectedDateRelay.accept(dateString)
+        print(dateString)
     }
 }
 
@@ -190,6 +205,28 @@ extension DiaryViewController: FSCalendarDataSource {
     /// 캘린더의 날짜에 이벤트 표시합니다.
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
         let date = date.toFormattedString("yyyy-MM-dd")
-        return monthlyDiaries.contains { $0.gameDate == date } ? 1 : 0
+        return currentMonthDiaries.contains { $0.gameDate == date } ? 1 : 0
+    }
+}
+
+extension DiaryViewController: FSCalendarDelegateAppearance {
+    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, eventDefaultColorsFor date: Date) -> [UIColor]? {
+        let dateString = date.toFormattedString("yyyy-MM-dd")
+        
+        guard let diary = currentMonthDiaries.first(where: { $0.gameDate == dateString }) else {
+            return nil
+        }
+        
+        return getEventColor(for: diary)
+    }
+    
+    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, eventSelectionColorsFor date: Date) -> [UIColor]? {
+        let dateString = date.toFormattedString("yyyy-MM-dd")
+        
+        guard let diary = currentMonthDiaries.first(where: { $0.gameDate == dateString }) else {
+            return nil
+        }
+        
+        return getEventColor(for: diary)
     }
 }

@@ -14,6 +14,7 @@ import RxCocoa
 
 protocol KBOGameUseCaseProtocol {
     func fetchDailyGames(date: Date) -> Single<[KBOGame]>
+    
     func fetchMonthlyGames(date: Date) -> Single<[KBOGame]>
 }
 
