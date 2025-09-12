@@ -67,5 +67,7 @@ extension KBOGameAPIService: TargetType, AccessTokenAuthorizable {
         }
     }
     
-    
+    var validationType: ValidationType {
+        return .successCodes
+    }
 }

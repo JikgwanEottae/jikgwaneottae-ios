@@ -15,11 +15,9 @@ import RxSwift
 final class KBOGameNetworkManager {
     static let shared = KBOGameNetworkManager()
     private let provider: MoyaProvider<KBOGameAPIService>
-    
+
     private init() {
-        let token = KeychainManager.shared.readAccessToken() ?? ""
-        let authPlugin = AccessTokenPlugin { _ in token }
-        self.provider = MoyaProvider(plugins: [authPlugin])
+        self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
     }
     
     /// 특정 일자 KBO 경기 조회하기

@@ -26,7 +26,7 @@ final class HomeViewController: UIViewController {
     private let homeView = HomeView()
     private let viewModel: HomeViewModel
     private var dataSource: UICollectionViewDiffableDataSource<HomeSection, HomeItem>!
-    private let viewDidAppearRelay = PublishRelay<Void>()
+    private let viewWillAppearRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     
     init(viewModel: HomeViewModel) {
@@ -51,12 +51,12 @@ final class HomeViewController: UIViewController {
         applySnapshot()
         bindCollectionView()
         bindViewModel()
-        viewDidAppearRelay.accept(())
+        viewWillAppearRelay.accept(())
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print(UserDefaultsManager.shared.nickname)
+        viewWillAppearRelay.accept(())
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
@@ -104,7 +104,7 @@ final class HomeViewController: UIViewController {
     }
     /// 뷰 모델과 바인드합니다.
     private func bindViewModel() {
-        let input = HomeViewModel.Input(viewDidAppear: viewDidAppearRelay)
+        let input = HomeViewModel.Input(viewWillApper: viewWillAppearRelay)
         let output = viewModel.transform(input: input)
         // 모든 데이터가 준비되면 한 번에 스냅샷 구성
         Observable.combineLatest(output.diaryStats, output.todayGames)
@@ -112,6 +112,7 @@ final class HomeViewController: UIViewController {
             .subscribe(onNext: { owner, data in
                 let (diaryStats, games) = data
                 owner.updateSnapshot(diaryStats: diaryStats, games: games)
+                AppState.shared.needsStatisticsRefresh = false
             })
             .disposed(by: disposeBag)
     }

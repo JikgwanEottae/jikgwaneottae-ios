@@ -46,4 +46,8 @@ extension TodayFortuneAPIService: TargetType, AccessTokenAuthorizable {
             return .bearer
         }
     }
+    
+    var validationType: ValidationType {
+        return .successCodes
+    }
 }

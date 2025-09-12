@@ -12,15 +12,16 @@ import RxCocoa
 
 final class DiaryViewModel: ViewModelType {
     private let useCase: DiaryUseCaseProtocol
-    private let monthlyDiariesRelay = PublishRelay<[Diary]>()
     private let disposeBag = DisposeBag()
     
     struct Input {
-        let currentMonth: BehaviorRelay<Date>
+        let selectedMonth: BehaviorRelay<Date>
+        let selectedDay: PublishRelay<Date>
     }
 
     struct Output {
-        let monthlyDiaries: PublishRelay<[Diary]>
+        let monthlyDiaries: Observable<[Diary]>
+        let dailyDiaries: Observable<[Diary]>
     }
     
     public init(useCase: DiaryUseCaseProtocol) {
@@ -28,30 +29,25 @@ final class DiaryViewModel: ViewModelType {
     }
     
     public func transform(input: Input) -> Output {
-        input.currentMonth
+        let monthlyDiaries = input.selectedMonth
             .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] currentMonth in
-                let formattedCurrentMonth = currentMonth
-                    .toFormattedString("yyyy-MM")
-                    .split(separator: "-")
-                    .map { String($0) }
-                let year = formattedCurrentMonth[0], month = formattedCurrentMonth[1]
-                self?.fetchDiaries(year: year, month: month)
-            })
-            .disposed(by: disposeBag)
+            .withUnretained(self)
+            .flatMapLatest { owner, selectedMonth -> Observable<[Diary]> in
+                return owner.useCase.fetchDiaries(selectedMonth: selectedMonth)
+                    .asObservable()
+                    .catchAndReturn([])
+            }
+        
+        let dailyDiaries = input.selectedDay
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .map { owner, selectedDay in
+                owner.useCase.fetchDailyDiaries(selectedDay: selectedDay)
+            }
 
         return Output(
-            monthlyDiaries: monthlyDiariesRelay
+            monthlyDiaries: monthlyDiaries,
+            dailyDiaries: dailyDiaries
         )
-    }
-}
-
-extension DiaryViewModel {
-    private func fetchDiaries(year: String, month: String) {
-        useCase.fetchDiaries(year: year, month: month)
-            .subscribe(onSuccess: { [weak self] diaries in
-                self?.monthlyDiariesRelay.accept(diaries)
-            })
-            .disposed(by: disposeBag)
     }
 }

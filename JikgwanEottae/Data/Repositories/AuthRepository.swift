@@ -86,9 +86,6 @@ final class AuthRepository: AuthRepositoryProtocol {
 extension AuthRepository {
     /// 인증에 성공하여 사용자 데이터 상태를 저장합니다.
     private func saveAuthenticationData(from responseDTO: AuthResponseDTO) throws {
-        print("---------------------")
-        print(responseDTO)
-        print("---------------------")
         guard let data = responseDTO.data,
               let accessToken = data.accessToken,
               let refreshToken = data.refreshToken

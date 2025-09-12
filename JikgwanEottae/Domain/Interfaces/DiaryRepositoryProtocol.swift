@@ -17,10 +17,10 @@ protocol DiaryRepositoryProtocol {
     func fetchAllDiaries() -> Single<[Diary]>
     
     /// 해당 연도-월 직관 일기를 조회합니다.
-    func fetchDiaries(
-        year: String,
-        month: String
-    ) -> Single<[Diary]>
+    func fetchDiaries(selectedMonth: Date) -> Single<[Diary]>
+    
+    /// 해당 날짜의 직관 일기를 조횝합니다.
+    func fetchDiaries(selectedDay: Date) -> [Diary]
     
     /// 직관 일기를 생성합니다.
     func createDiary(

@@ -67,8 +67,7 @@ final class DiaryView: UIView {
         // 선택된 날짜 텍스트 색상
         $0.appearance.titleSelectionColor = .white
         $0.appearance.subtitleOffset = CGPoint(x: 0, y: 15)
-        $0.appearance.eventDefaultColor = .tossRedColor
-        $0.appearance.eventSelectionColor = .tossRedColor
+
     }
     // 캘린더 아래 구분선 표시를 위한 뷰
     private let fscalendarBottomLineView = UIView().then {
@@ -150,7 +149,7 @@ final class DiaryView: UIView {
         }
         fscalendarView.snp.makeConstraints { make in
             make.height
-                .equalTo(380)
+                .equalTo(350)
         }
         selectedDateLabel.snp.makeConstraints { make in
             make.edges
@@ -193,7 +192,7 @@ final class DiaryView: UIView {
         )
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
-        section.orthogonalScrollingBehavior = .groupPaging
+        section.orthogonalScrollingBehavior = .groupPagingCentered
         section.interGroupSpacing = 30
         return UICollectionViewCompositionalLayout(section: section)
     }
