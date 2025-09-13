@@ -64,27 +64,7 @@ final class TourMapView: UIView {
         $0.layer.shadowRadius = 6
         $0.configuration = config
     }
-//    // 리스트로 보여주기 위한 버튼입니다.
-//    public let showListButton = UIButton().then {
-//        var config = UIButton.Configuration.filled()
-//        // 이미지 설정
-//        config.image = UIImage(
-//            systemName: "list.bullet",
-//            withConfiguration: UIImage.SymbolConfiguration(
-//                pointSize: 15,
-//                weight: .bold
-//            )
-//        )
-//        config.cornerStyle = .capsule
-//        config.baseBackgroundColor = .white
-//        config.baseForegroundColor = .mainCharcoalColor
-//        $0.layer.shadowColor = UIColor.black.cgColor
-//        $0.layer.shadowOpacity = 0.3
-//        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
-//        $0.layer.shadowRadius = 6
-//        $0.configuration = config
-//    }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -100,7 +80,6 @@ final class TourMapView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         resetCoordinateButton.layer.cornerRadius = resetCoordinateButton.bounds.width / 2.0
-//        showListButton.layer.cornerRadius = showListButton.bounds.width / 2.0
     }
     
     private func setupUI() {
@@ -110,7 +89,6 @@ final class TourMapView: UIView {
         mapContainer.addSubview(resetCoordinateButton)
         mapContainer.addSubview(centerActionButton)
         mapContainer.addSubview(activityIndicator)
-//        mapContainer.addSubview(showListButton)
     }
     
     private func setupLayout() {
@@ -160,16 +138,7 @@ final class TourMapView: UIView {
             make.center
                 .equalToSuperview()
         }
-        
-//        showListButton.snp.makeConstraints { make in
-//            make.trailing
-//                .equalToSuperview()
-//                .inset(30)
-//            make.centerY
-//                .equalTo(centerActionButton)
-//            make.size
-//                .equalTo(40)
-//        }
+
     }
     /// 센터 버튼의 상태를 변경합니다.
     public func updateCenterButtonState(isSearchMode: Bool) {

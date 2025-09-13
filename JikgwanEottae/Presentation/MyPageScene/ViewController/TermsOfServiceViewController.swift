@@ -22,7 +22,7 @@ final class TermsOfServiceViewController: UIViewController {
         $0.textColor = .primaryTextColor
         $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textAlignment = .left
-        $0.contentInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+        $0.contentInset = UIEdgeInsets(top: 25, left: 15, bottom: 15, right: 15)
     }
 
     override func viewDidLoad() {

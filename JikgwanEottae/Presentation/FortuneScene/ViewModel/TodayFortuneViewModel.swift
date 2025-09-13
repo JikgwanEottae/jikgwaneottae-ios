@@ -71,8 +71,7 @@ final class TodayFortuneViewModel: ViewModelType {
                 }, onError: { _ in
                     isLoadingRelay.accept(false)
                 })
-                .catch { error in
-                    print(error.localizedDescription)
+                .catch { _ in
                     return .empty()
                 }
             }

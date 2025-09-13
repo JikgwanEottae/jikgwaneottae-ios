@@ -40,7 +40,6 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     }
     
     private let ballparkAndGameTimeLabel = UILabel().then {
-        $0.text = "대구삼성라이온즈파크 18:00"
         $0.font = .gMarketSans(size: 13, family: .bold)
         $0.numberOfLines = 1
         $0.textColor = .secondaryTextColor

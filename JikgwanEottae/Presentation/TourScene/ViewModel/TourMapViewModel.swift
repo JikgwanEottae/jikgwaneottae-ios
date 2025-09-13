@@ -168,7 +168,6 @@ extension TourMapViewModel {
     /// 위치기반 관광지 데이터 에러 처리입니다.
     private func handleTourPlaceError(_ error: Error) {
         isLoadingRelay.accept(false)
-        print("관광지 데이터 로드 실패: \(error.localizedDescription)")
     }
     
     /// 위치기반 관광지 데이터를 패치합니다.
