@@ -75,14 +75,8 @@ final class DiaryGameDateSelectionView: UIView {
     }
     
     // 경기 정보를 보여줄 컬렉션 뷰
-    public lazy var collectionView = UICollectionView(
-        frame: .zero,
-        collectionViewLayout: makeLayout()
-    ).then {
-        $0.register(
-            KBOGameCollectionViewCell.self,
-            forCellWithReuseIdentifier: KBOGameCollectionViewCell.ID
-        )
+    public lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout()).then {
+        $0.register(KBOGameCollectionViewCell.self, forCellWithReuseIdentifier: KBOGameCollectionViewCell.ID)
         $0.showsHorizontalScrollIndicator = false
     }
     

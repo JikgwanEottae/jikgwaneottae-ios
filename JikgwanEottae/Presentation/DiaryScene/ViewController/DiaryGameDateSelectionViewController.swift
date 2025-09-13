@@ -45,7 +45,7 @@ final class DiaryGameDateSelectionViewController: UIViewController {
         )
         
         let output = viewModel.transform(input: input)
-        // 날짜에 맞는 경기 리스트 바인딩
+
         output.dailyGames
             .drive(onNext: { [weak self] games in
                 if games.isEmpty {
@@ -60,7 +60,6 @@ final class DiaryGameDateSelectionViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        // 로딩 인디케이터 바인딩
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
                 self?.diaryGameDateSelectionView.interactionBlocker.isHidden = !isLoading
@@ -80,17 +79,21 @@ final class DiaryGameDateSelectionViewController: UIViewController {
             .compactMap { [weak self] indexPath in
                 return self?.dataSource.itemIdentifier(for: indexPath)
             }
-            .subscribe(onNext: { [weak self] selectedKBOGame in
-                let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
-                let diaryUseCase = DiaryUseCase(repository: diaryRepository)
-                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .create(gameInfo: selectedKBOGame))
-                let diaryEditViewController = DiaryEditViewController(viewModel: diaryEditViewModel)
-                self?.navigationController?.pushViewController(diaryEditViewController, animated: true)
+            .withUnretained(self)
+            .subscribe(onNext: { owner, selectedKBOGame in
+                owner.handleGameSelection(selectedKBOGame)
             })
             .disposed(by: disposeBag)
     }
     
+    /// 전반적인 데이터 소스를 설정합니다.
     private func configureDataSource() {
+         setupCollectionViewDataSource()
+         applyInitialSnapshot()
+     }
+    
+    /// 컬렉션뷰 데이터 소스를 설정합니다.
+    private func setupCollectionViewDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, KBOGame>(
             collectionView: diaryGameDateSelectionView.collectionView,
             cellProvider: { collectionView, indexPath, game in
@@ -102,16 +105,57 @@ final class DiaryGameDateSelectionViewController: UIViewController {
                 return cell
             }
         )
-        
+    }
+    
+    /// 스냅샷의 초기 상태를 적용합니다.
+    private func applyInitialSnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, KBOGame>()
         snapshot.appendSections(Section.allCases)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
+    /// 스냅샷을 업데이트합니다.
     private func updateSnapshot(games: [KBOGame]) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, KBOGame>()
         snapshot.appendSections([.main])
         snapshot.appendItems(games, toSection: .main)
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    
+    private func handleGameSelection(_ game: KBOGame) {
+        guard isGamePlayCompleted(game) else {
+            showGameNotAvailableAlert()
+            return
+        }
+        navigateToDiaryCreation(with: game)
+    }
+    
+    /// 진행 완료된 경기인지 체크합니다.
+    private func isGamePlayCompleted(_ game: KBOGame) -> Bool {
+        return game.status == "PLAYED"
+    }
+    
+    /// 직관 일기 생성화면으로 이동합니다.
+    private func navigateToDiaryCreation(with game: KBOGame) {
+         let diaryCreationViewController = createDiaryCreationViewController(for: game)
+         navigationController?.pushViewController(diaryCreationViewController, animated: true)
+     }
+    
+    /// 직관 일기 생성화면을 생성합니다.
+    private func createDiaryCreationViewController(for game: KBOGame) -> DiaryCreationViewController {
+        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+        let diaryUseCase = DiaryUseCase(repository: diaryRepository)
+        let diaryCreationViewModel = DiaryCreationViewModel(useCase: diaryUseCase, selectedGame: game)
+        return DiaryCreationViewController(viewModel: diaryCreationViewModel)
+    }
+    
+    /// 직관 일기 기록 불가 알림창을 표시합니다.
+    private func showGameNotAvailableAlert() {
+        showAlert(
+            title: "알림",
+            message: "경기가 끝난 후에 기록할 수 있어요",
+            doneTitle: "확인"
+        )
     }
 }

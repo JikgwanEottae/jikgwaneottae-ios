@@ -63,9 +63,6 @@ final class TeamSegmentedControl: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
     
     private func setupUI() {
         addSubview(stackView)
@@ -76,17 +73,6 @@ final class TeamSegmentedControl: UIControl {
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
-        }
-    }
-    
-    /// 홈팀, 어웨이팀, 응원팀을 통해 세그먼트 컨트롤을 설정합니다.
-    public func configure(homeTeam: String, awayTeam: String, favoriteTeam: String?) {
-        segmentTitles = [homeTeam, awayTeam]
-        buttons.forEach { $0.removeFromSuperview() }
-        buttons.removeAll()
-        createButton()
-        if let favoriteTeam = favoriteTeam {
-            selectedSegmentIndex = (homeTeam != favoriteTeam ? 1 : 0)
         }
     }
     
@@ -102,6 +88,21 @@ final class TeamSegmentedControl: UIControl {
             }
             buttons.append(btn)
             stackView.addArrangedSubview(btn)
+        }
+    }
+    
+    /// 홈팀, 어웨이팀, 응원팀을 통해 세그먼트 컨트롤을 설정합니다.
+    public func configure(homeTeam: String, awayTeam: String, favoriteTeam: String?) {
+        segmentTitles = [homeTeam, awayTeam]
+        buttons.forEach { $0.removeFromSuperview() }
+        buttons.removeAll()
+        createButton()
+        if let favoriteTeam = favoriteTeam {
+            selectedSegmentIndex = (homeTeam != favoriteTeam ? 1 : 0)
+        }
+        // 레이아웃 완료 후 위치 설정
+        DispatchQueue.main.async {
+            self.updateUI(animated: false)
         }
     }
     

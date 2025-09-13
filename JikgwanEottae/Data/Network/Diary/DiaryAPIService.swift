@@ -17,11 +17,11 @@ enum DiaryAPIService {
     // 해당 연·월 직관 일기를 조회합니다.
     case fetchDiaries(year: String, month: String)
     // 직관 일기를 생성합니다.
-    case createDiary(dto: DiaryCreateRequestDTO, imageData: Data?)
+    case createDiary(dto: DiaryCreationRequestDTO, imageData: Data?)
     // 직관 일기를 수정합니다.
     case updateDiary(diaryId: Int, dto: DiaryUpdateRequestDTO, imageData: Data?)
     // 직관 일기를 삭제합니다.
-    case deleteDiary(DiaryId: Int)
+    case deleteDiary(DiaryID: Int)
     // 직관 일기 통계를 조회합니다.
     case fetchDiaryStats
 }
@@ -43,8 +43,8 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             return "/api/diaries"
         case .updateDiary(let diaryId, _, _):
             return "/api/diaries/\(diaryId)"
-        case .deleteDiary(let diaryId):
-            return "/api/diaries/\(diaryId)"
+        case .deleteDiary(let diaryID):
+            return "/api/diaries/\(diaryID)"
         case .fetchDiaryStats:
             return "/api/diaries/stats"
         }
@@ -101,6 +101,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                 )
             }
             return .uploadMultipart(multipartFormData)
+            
         case .updateDiary(_, let dto, let imageData):
             var multipartFormData: [MultipartFormData] = []
             let json = try! JSONEncoder().encode(dto)
@@ -123,8 +124,10 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                 )
             }
             return .uploadMultipart(multipartFormData)
+            
         case .deleteDiary:
             return .requestPlain
+            
         case .fetchDiaryStats:
             return .requestPlain
         }

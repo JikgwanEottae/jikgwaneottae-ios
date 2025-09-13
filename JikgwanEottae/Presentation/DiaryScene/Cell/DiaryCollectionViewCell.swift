@@ -14,90 +14,65 @@ import Then
 final class DiaryCollectionViewCell: UICollectionViewCell {
     static let ID = "DiaryCollectionViewCell"
     
-    public let thumbnailImageView = UIImageView().then {
+    public let containerView = UIView().then {
+        $0.backgroundColor = .white
+        $0.layer.cornerRadius = 25
+        $0.clipsToBounds = true
+    }
+    
+    public let backgroundImageView = UIImageView().then {
         $0.image = UIImage(named: "placeholder")
         $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 14
     }
     
     private let resultContainerView = UIView().then {
-        $0.backgroundColor = .tagBackgroundColor
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 7
     }
     
     private let resultLabel = UILabel().then {
-        $0.text = "승리"
         $0.font = .gMarketSans(size: 15, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .white
         $0.clipsToBounds = true
+        $0.setContentHuggingPriority(.required, for: .vertical)
     }
     
-    private lazy var stackView = UIStackView(
-        arrangedSubviews: [
-            homeTeamLabel,
-            homeScoreLabel,
-            versusLabel,
-            awayScoreLabel,
-            awayTeamLabel
-        ]
-    ).then {
-        $0.axis = .horizontal
+    private let blurEffectView = UIVisualEffectView().then {
+//        let blurEffect = UIBlurEffect(style: .dark)
+        $0.effect =  UIBlurEffect(style: .systemThickMaterialDark)
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.alpha = 0.7
+    }
+    
+    private lazy var labelsStackView = UIStackView(arrangedSubviews: [
+        matchScoreLabel,
+        ballparkLabel
+    ]).then {
+        $0.axis = .vertical
         $0.distribution = .equalSpacing
-        $0.alignment = .fill
-    }
+        $0.alignment = .leading
+        $0.distribution = .fill
+     }
     
-    private let homeTeamLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 27, family: .bold)
-        $0.textColor = .secondaryTextColor
+    private let matchScoreLabel = UILabel().then {
+        $0.font = .gMarketSans(size: 20, family: .bold)
         $0.numberOfLines = 1
+        $0.textColor = .white
         $0.textAlignment = .left
-    }
-    
-    private let homeScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 27, family: .bold)
-        $0.textColor = .secondaryTextColor
-        $0.numberOfLines = 1
-        $0.textAlignment = .right
-    }
-    
-    private let versusLabel = UILabel().then {
-        $0.text = "VS"
-        $0.font = .gMarketSans(size: 13, family: .bold)
-        $0.numberOfLines = 1
-        $0.textColor = .secondaryTextColor
-        $0.textAlignment = .center
         $0.clipsToBounds = true
     }
-    
-    private let awayScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 27, family: .bold)
-        $0.textColor = .secondaryTextColor
-        $0.numberOfLines = 1
-        $0.textAlignment = .left
-    }
-    
-    private let awayTeamLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 27, family: .bold)
-        $0.textColor = .secondaryTextColor
-        $0.numberOfLines = 1
-        $0.textAlignment = .right
-    }
-    
+
     private let ballparkLabel = UILabel().then {
-        $0.text = "대구삼성라이온즈파크"
-        $0.font = .gMarketSans(size: 13, family: .bold)
+        $0.font = .gMarketSans(size: 14, family: .medium)
         $0.numberOfLines = 1
-        $0.textColor = .secondaryTextColor
-        $0.textAlignment = .center
+        $0.textColor = .white
+        $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addSubviews()
         setupUI()
         setupLayout()
         addShadow()
@@ -110,74 +85,65 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        thumbnailImageView.image = UIImage(named: "placeholder")
-        homeTeamLabel.text = nil
-        awayTeamLabel.text = nil
-        homeScoreLabel.text = nil
-        awayScoreLabel.text = nil
-        resultLabel.text = nil
+        backgroundImageView.image = UIImage(named: "placeholder")
+        matchScoreLabel.text = nil
         ballparkLabel.text = nil
     }
     
-    private func addSubviews() {
-        contentView.addSubview(thumbnailImageView)
-        contentView.addSubview(resultContainerView)
-        contentView.addSubview(stackView)
-        contentView.addSubview(ballparkLabel)
-        resultContainerView.addSubview(resultLabel)
-    }
-    
     private func setupUI() {
-        contentView.layer.cornerRadius = Constants.cornerRadius
-        contentView.backgroundColor = .secondaryBackgroundColor
-        contentView.layer.masksToBounds = true
+        contentView.layer.cornerRadius = 30
+        contentView.backgroundColor = .white
+        contentView.addSubview(containerView)
+        containerView.addSubview(backgroundImageView)
+        containerView.addSubview(resultContainerView)
+        containerView.addSubview(blurEffectView)
+        resultContainerView.addSubview(resultLabel)
+        blurEffectView.contentView.addSubview(labelsStackView)
     }
     
     private func setupLayout() {
-        thumbnailImageView.snp.makeConstraints { make in
-            make.top.leading.trailing
+        containerView.snp.makeConstraints { make in
+            make.edges
                 .equalToSuperview()
-                .inset(10)
-            make.height
-                .equalTo(230)
+                .inset(5)
+        }
+        
+        backgroundImageView.snp.makeConstraints { make in
+            make.edges
+                .equalToSuperview()
         }
         
         resultContainerView.snp.makeConstraints { make in
-            make.top
-                .equalTo(thumbnailImageView.snp.bottom)
-                .offset(15)
-            make.leading
+            make.top.leading
                 .equalToSuperview()
-                .inset(10)
+                .inset(15)
         }
         
         resultLabel.snp.makeConstraints { make in
             make.leading.trailing
                 .equalToSuperview()
-                .inset(7)
+                .inset(6)
             make.top.bottom
                 .equalToSuperview()
-                .inset(5)
+                .inset(4)
         }
         
-        stackView.snp.makeConstraints { make in
-            make.top
-                .equalTo(resultContainerView.snp.bottom)
-                .offset(15)
-            make.leading.trailing
+        blurEffectView.snp.makeConstraints { make in
+            make.leading.trailing.bottom
                 .equalToSuperview()
-                .inset(10)
+            make.height
+                .equalTo(80)
         }
         
-        ballparkLabel.snp.makeConstraints { make in
-            make.centerX
+        labelsStackView.snp.makeConstraints { make in
+            make.top.leading.bottom
                 .equalToSuperview()
-            make.top
-                .equalTo(stackView.snp.bottom)
-                .offset(15)
+                .inset(15)
         }
     }
-    
+}
+
+extension DiaryCollectionViewCell {
     private func addShadow() {
         layer.masksToBounds = false
         layer.shadowColor   = UIColor.black.cgColor
@@ -188,17 +154,11 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     
     public func configure(diary: Diary) {
         if let imageURLString = diary.imageURL, let imageURL = URL(string: imageURLString) {
-            thumbnailImageView.kf.setImage(with: imageURL)
+            backgroundImageView.kf.setImage(with: imageURL)
         }
+        matchScoreLabel.text = "\(diary.homeTeam) \(diary.homeScore) vs \(diary.awayScore) \(diary.awayTeam)"
         ballparkLabel.text = diary.ballpark
-        homeTeamLabel.text = diary.homeTeam
-        homeTeamLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
-        homeScoreLabel.text = String(diary.homeScore)
-        homeScoreLabel.textColor = KBOTeam(rawValue: diary.homeTeam)?.color
-        awayTeamLabel.text = diary.awayTeam
-        awayTeamLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
-        awayScoreLabel.text = String(diary.awayScore)
-        awayScoreLabel.textColor = KBOTeam(rawValue: diary.awayTeam)?.color
+        
         switch diary.result {
         case "WIN":
             resultLabel.text = "승리"
@@ -208,17 +168,16 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
             resultContainerView.backgroundColor = .tossRedColor
         case "DRAW":
             resultLabel.text = "무승부"
-            resultContainerView.backgroundColor = .yellowColor
+            resultContainerView.backgroundColor = .mainCharcoalColor
         case "SCHEDULED":
             resultLabel.text = "경기예정"
             resultContainerView.backgroundColor = .mainCharcoalColor
-            homeScoreLabel.textColor = .clear
-            awayScoreLabel.textColor = .clear
-        default:
+        case "CANCELED":
             resultLabel.text = "경기취소"
             resultContainerView.backgroundColor = .mainCharcoalColor
-            homeScoreLabel.textColor = .clear
-            awayScoreLabel.textColor = .clear
+        default:
+            resultLabel.text = "-"
+            resultContainerView.backgroundColor = .mainCharcoalColor
         }
     }
 }

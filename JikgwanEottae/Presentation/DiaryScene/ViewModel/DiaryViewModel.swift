@@ -15,8 +15,8 @@ final class DiaryViewModel: ViewModelType {
     private let disposeBag = DisposeBag()
     
     struct Input {
-        let selectedMonth: BehaviorRelay<Date>
-        let selectedDay: PublishRelay<Date>
+        let selectedMonth: PublishRelay<Date>
+        let selectedDay: BehaviorRelay<Date>
     }
 
     struct Output {
@@ -30,7 +30,6 @@ final class DiaryViewModel: ViewModelType {
     
     public func transform(input: Input) -> Output {
         let monthlyDiaries = input.selectedMonth
-            .distinctUntilChanged()
             .withUnretained(self)
             .flatMapLatest { owner, selectedMonth -> Observable<[Diary]> in
                 return owner.useCase.fetchDiaries(selectedMonth: selectedMonth)
@@ -39,7 +38,6 @@ final class DiaryViewModel: ViewModelType {
             }
         
         let dailyDiaries = input.selectedDay
-            .distinctUntilChanged()
             .withUnretained(self)
             .map { owner, selectedDay in
                 owner.useCase.fetchDailyDiaries(selectedDay: selectedDay)

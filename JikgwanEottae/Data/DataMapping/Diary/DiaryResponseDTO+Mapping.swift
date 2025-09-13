@@ -27,8 +27,8 @@ extension DiaryResponseDTO {
         let awayTeam: String
         let result: String?
         let ballpark: String
-        let seat: String?
-        let memo: String?
+        let seat: String
+        let memo: String
         let imageURL: String?
         
         private enum CodingKeys: String, CodingKey {

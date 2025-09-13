@@ -69,48 +69,28 @@ final class DiaryView: UIView {
         $0.appearance.subtitleOffset = CGPoint(x: 0, y: 15)
 
     }
+    
     // 캘린더 아래 구분선 표시를 위한 뷰
     private let fscalendarBottomLineView = UIView().then {
         $0.backgroundColor = .systemGray6
     }
+    
     // 선택된 날짜 레이블 컨테이너 뷰
     private let selectedDateContainerView = UIView()
+    
     // 선택된 날짜 표시 레이블
     public let selectedDateLabel = UILabel().then {
         $0.text = Date().toFormattedString("d. E")
-//        $0.font = .pretendard(size: 20, family: .semiBold)
         $0.font = .gMarketSans(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
     
     // 작성된 직관 일기를 보여줄 컬렉션 뷰
-    public lazy var collectionView = UICollectionView(
-        frame: .zero,
-        collectionViewLayout: makeLayout()
-    ).then {
-        $0.register(
-            DiaryCollectionViewCell.self,
-            forCellWithReuseIdentifier: DiaryCollectionViewCell.ID
-        )
+    public lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout()).then {
+        $0.register(DiaryCollectionViewCell.self, forCellWithReuseIdentifier: DiaryCollectionViewCell.ID)
         $0.showsHorizontalScrollIndicator = false
     }
-    
-    // 직관 기록을 생성하기 위한 플로팅 버튼
-    public let createDiaryButton = UIButton(type: .custom).then {
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 23, weight: .medium)
-        $0.setImage(UIImage(systemName: "plus", withConfiguration: imageConfig), for: .normal)
-        $0.backgroundColor = .mainCharcoalColor
-        $0.tintColor = .white
-        $0.layer.shadowColor = UIColor.black.cgColor
-        $0.layer.shadowOpacity = 0.3
-        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
-        $0.layer.shadowRadius = 6
-        $0.layer.cornerRadius = 28
-        $0.adjustsImageWhenHighlighted = false
-    }
-
-    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -126,7 +106,6 @@ final class DiaryView: UIView {
     
     private func addSubViews() {
         self.addSubview(scrollView)
-        self.addSubview(createDiaryButton)
         self.scrollView.addSubview(stackView)
         self.selectedDateContainerView.addSubview(selectedDateLabel)
         self.scrollView.addSubview(fscalendarBottomLineView)
@@ -141,22 +120,28 @@ final class DiaryView: UIView {
             make.edges
                 .equalToSuperview()
         }
+        
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
+        
         fscalendarView.snp.makeConstraints { make in
             make.height
                 .equalTo(350)
         }
+        
         selectedDateLabel.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
                 .inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
             )
         }
+        
+        stackView.setCustomSpacing(0, after: selectedDateContainerView)
+        
         fscalendarBottomLineView.snp.makeConstraints { make in
             make.left.right
                 .equalToSuperview()
@@ -168,21 +153,13 @@ final class DiaryView: UIView {
         
         collectionView.snp.makeConstraints { make in
             make.height
-                .equalTo(400)
-        }
-        
-        createDiaryButton.snp.makeConstraints { make in
-            make.width.height
-                .equalTo(56)
-            make.trailing.bottom
-                .equalTo(safeAreaLayoutGuide)
-                .inset(20)
+                .equalTo(430)
         }
     }
     
     private func makeLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(260),
+            widthDimension: .absolute(300),
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)

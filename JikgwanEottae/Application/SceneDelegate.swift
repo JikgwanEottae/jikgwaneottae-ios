@@ -12,64 +12,67 @@ import KakaoSDKCommon
 import KakaoSDKUser
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+    
     var window: UIWindow?
-
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
-        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
-        let authUseCase = AuthUseCase(repository: authRepository)
-        let splashViewModel = SplahViewModel(useCase: authUseCase)
-        let splashViewController = SplashViewController(viewModel: splashViewModel)
-        window?.rootViewController = splashViewController
-        window?.makeKeyAndVisible()
-        window?.overrideUserInterfaceStyle = .light
+        setupWindow(with: windowScene)
+        setupInitialViewController()
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        handleKakaoLoginURL(from: URLContexts)
+    }
+    
+    func sceneDidDisconnect(_ scene: UIScene) {
+    }
+    
+    func sceneDidBecomeActive(_ scene: UIScene) {
+    }
+    
+    func sceneWillResignActive(_ scene: UIScene) {
+    }
+    
+    func sceneWillEnterForeground(_ scene: UIScene) {
+    }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+    }
+    
+    /// 윈도우를 설정합니다.
+    func setupWindow(with windowScene: UIWindowScene) {
+        window = UIWindow(windowScene: windowScene)
+        window?.overrideUserInterfaceStyle = .light
+        window?.makeKeyAndVisible()
+    }
+    
+    /// 초기 뷰 컨트롤러를 설정합니다.
+    func setupInitialViewController() {
+        let splashViewController = createSplashViewController()
+        window?.rootViewController = splashViewController
+    }
+    
+    /// 스플래시 뷰 컨트롤러를 생성합니다.
+    func createSplashViewController() -> SplashViewController {
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let splashViewModel = SplahViewModel(useCase: authUseCase)
+        return SplashViewController(viewModel: splashViewModel)
+    }
+    
+    ///카카오 로그인 URL을 처리합니다.
+    func handleKakaoLoginURL(from URLContexts: Set<UIOpenURLContext>) {
         if let url = URLContexts.first?.url {
             if AuthApi.isKakaoTalkLoginUrl(url) {
                 _ = AuthController.handleOpenUrl(url: url)
             }
         }
     }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
-
-        // Save changes in the application's managed object context when the application transitions to the background.
-        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
-    }
-}
-
-extension SceneDelegate {
+    
     /// 현재 윈도우의 루트 뷰 컨트롤러를 변경합니다.
-    public func changeRootViewController(to viewController: UIViewController, animated: Bool = true) {
+    func changeRootViewController(to viewController: UIViewController, animated: Bool = true) {
         guard let window = window else { return }
         window.rootViewController = viewController
         if animated {
@@ -84,7 +87,7 @@ extension SceneDelegate {
     }
     
     /// 로그인 화면으로 루트 뷰 컨트롤러를 재설정합니다.
-    public func resetToLoginScreen() {
+    func resetToLoginScreen() {
         let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
         let authUseCase = AuthUseCase(repository: authRepository)
         let signIngViewModel = SignInViewModel(useCase: authUseCase)
