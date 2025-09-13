@@ -46,11 +46,6 @@ final class MyPageViewController: UIViewController {
         bindViewModel()
         bindTableView()
         profileEditButtonTapped()
-        print("accessToken: \(KeychainManager.shared.readAccessToken())")
-        print("refreshToken: \(KeychainManager.shared.readRefreshToken())")
-        print("isProfileCompleted: \(UserDefaultsManager.shared.isProfileCompleted)")
-        print("nickname: \(UserDefaultsManager.shared.nickname)")
-        print("profileImageURL: \(UserDefaultsManager.shared.profileImageURL)")
     }
     
     private func configureNaviBarButtonItem() {

@@ -44,17 +44,14 @@ final class DiaryViewController: UIViewController {
         bindViewModel()
         bindCollectionView()
         updateNavigationTitle(to: Date())
-        print(KeychainManager.shared.readAccessToken())
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("viewWillAppear")
         // 직관 일기의 갱신이 필요한지 체크합니다.
         if AppState.shared.needsDiaryRefresh {
             let currentPage = diaryView.fscalendarView.currentPage
             let currentDay = diaryView.fscalendarView.selectedDate ?? Date()
-            print(currentDay)
             selectedMonthRelay.accept(currentPage)
             selectedDayRelay.accept(currentDay)
             AppState.shared.needsDiaryRefresh = false
@@ -110,7 +107,6 @@ final class DiaryViewController: UIViewController {
             .withUnretained(self)
             .subscribe(onNext: { owner, diaries in
                 owner.currentMonthDiaries = diaries
-                
                 owner.diaryView.fscalendarView.reloadData()
             })
             .disposed(by: disposeBag)
@@ -208,8 +204,6 @@ extension DiaryViewController: FSCalendarDelegate {
         selectedDayRelay.accept(date)
         calendar.appearance.todayColor = .systemGray5
         calendar.appearance.titleTodayColor = .primaryTextColor
-        let dateString = date.toFormattedString("yyyy-MM-dd")
-        print(dateString)
     }
 }
 

@@ -138,7 +138,7 @@ final class DiaryEditViewController: UIViewController {
         output.formInputError
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                owner.showAlert(title: "입력 안내", message: "응원팀은 필수로 선택해주세요", doneTitle: "확인")
+                owner.showAlert(title: "안내", message: "응원팀은 필수로 선택해주세요", doneTitle: "확인")
             })
             .disposed(by: disposeBag)
         
