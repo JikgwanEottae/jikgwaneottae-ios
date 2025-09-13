@@ -21,6 +21,8 @@ final class TodayFortuneView: UIView {
         $0.showsVerticalScrollIndicator = false
         $0.showsHorizontalScrollIndicator = false
         $0.alwaysBounceVertical = true
+        $0.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+        $0.scrollIndicatorInsets = $0.contentInset
     }
     private lazy var stackView = UIStackView(arrangedSubviews: [
         titleLabel,
@@ -36,6 +38,7 @@ final class TodayFortuneView: UIView {
         $0.spacing = 50
         $0.clipsToBounds = true
     }
+    
     // 타이틀 레이블
     private let titleLabel = UILabel().then {
         $0.text = "직관러를 위한 오늘의 직관 운세"
@@ -43,6 +46,7 @@ final class TodayFortuneView: UIView {
         $0.font = .gMarketSans(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
     }
+    
     // 서브 타이틀 레이블
     private let subtitleLabel = UILabel().then {
         $0.text = "점수를 확인하고 승리요정에 도전하세요"
@@ -50,6 +54,7 @@ final class TodayFortuneView: UIView {
         $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
+    
     // 생년월일을 선택하는 데이트 피커입니다.
     public let datePicker = UIDatePicker().then {
         $0.datePickerMode = .date
@@ -59,36 +64,43 @@ final class TodayFortuneView: UIView {
         $0.clipsToBounds = true
         $0.backgroundColor = .white
     }
+    
     // 시각을 선택하는 피커 뷰입니다.
     public let timePickerView = UIPickerView().then {
         $0.backgroundColor = .white
     }
+    
     // 성별을 선택하는 피커 뷰입니다.
     public let genderPickerView = UIPickerView().then {
         $0.backgroundColor = .white
     }
+    
     // 구단을 선택하는 피커 뷰입니다.
     public let kboTeamPickerView = UIPickerView().then {
         $0.backgroundColor = .white
     }
+    
     // 생년월일 텍스트 필드입니다.
     public lazy var birthInputField = UnderlinedInputField(
         title: "생년월일",
         placeholder: "20250101",
         inputView: datePicker
     )
+    
     // 시각 텍스트 필드입니다.
     public lazy var timeInputField = UnderlinedInputField(
         title: "태어난 시(선택사항)",
         placeholder: "15",
         inputView: timePickerView
     )
+    
     // 성별 텍스트 필드입니다.
     public lazy var genderInputField = UnderlinedInputField(
         title: "성별",
         placeholder: "선택해주세요",
         inputView: genderPickerView
     )
+    
     // 구단 텍스트 필드입니다.
     public lazy var kboTeamInputField = UnderlinedInputField(
         title: "응원 구단",
@@ -129,6 +141,7 @@ final class TodayFortuneView: UIView {
             make.centerX.centerY
                 .equalToSuperview()
         }
+        
         scrollView.snp.makeConstraints { make in
             make.top.leading.trailing
                 .equalToSuperview()
@@ -136,13 +149,16 @@ final class TodayFortuneView: UIView {
                 .equalTo(completeButton.snp.top)
                 .offset(-10)
         }
+        
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
+        
         stackView.setCustomSpacing(12, after: titleLabel)
+        
         completeButton.snp.makeConstraints { make in
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
@@ -182,6 +198,7 @@ extension TodayFortuneView {
         toolbar.setItems([flexSpace, confirmButton], animated: false)
         return toolbar
     }
+    
     /// 툴바를 적용합니다.
     public func setupToolBar(target: Any?, action: Selector) {
         let toolbar = createToolBar(target: target, action: action)

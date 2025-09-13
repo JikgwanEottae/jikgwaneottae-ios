@@ -21,4 +21,5 @@ struct KBOGame: Hashable, Identifiable {
     let awayScore: Int?
     let note: String?
     let status: String
+    let winTeam: String?
 }

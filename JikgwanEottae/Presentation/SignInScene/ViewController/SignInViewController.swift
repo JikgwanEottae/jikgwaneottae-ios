@@ -133,12 +133,8 @@ extension SignInViewController {
     
     /// 카카오 로그인 응답을 처리합니다.
     private func handleKakaoLoginResponse(oauthToken: OAuthToken?, error: Error?) {
-        if let error = error {
-            self.showAlert(
-                title: "카카오 로그인 실패",
-                message: "계정을 불러올 수 없어요",
-                doneTitle: "확인"
-            )
+        if let _ = error {
+            
         } else if let accessToken = oauthToken?.accessToken {
             kakaoLoginResultRelay.accept(accessToken)
         }

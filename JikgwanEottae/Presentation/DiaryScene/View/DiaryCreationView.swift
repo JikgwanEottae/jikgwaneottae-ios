@@ -1,8 +1,8 @@
 //
-//  DiaryEditView.swift
+//  DiaryCreationView.swift
 //  JikgwanEottae
 //
-//  Created by 7aeHoon on 7/28/25.
+//  Created by 7aeHoon on 9/12/25.
 //
 
 import UIKit
@@ -11,19 +11,7 @@ import Kingfisher
 import SnapKit
 import Then
 
-final class DiaryEditView: UIView {
-    private(set) var dismissButton = UIButton(type: .custom).then {
-        $0.setTitle("닫기", for: .normal)
-        $0.titleLabel?.font = UIFont.gMarketSans(size: 16, family: .medium)
-        $0.setTitleColor(.primaryTextColor, for: .normal)
-    }
-    
-    private(set) var deleteButton = UIButton(type: .custom).then {
-        $0.setTitle("삭제", for: .normal)
-        $0.titleLabel?.font = UIFont.gMarketSans(size: 16, family: .medium)
-        $0.setTitleColor(.tossRedColor, for: .normal)
-    }
-    
+final class DiaryCreationView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
@@ -77,7 +65,7 @@ final class DiaryEditView: UIView {
     }
     
     // 업로드할 사진을 제거하기 위한 버튼입니다.
-    public let removePhotoButton = UIButton(type: .custom).then {
+    public let removeImageButton = UIButton(type: .custom).then {
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .light)
         let image = UIImage(named: "xMarkIcon")?
             .withConfiguration(symbolConfig)
@@ -110,9 +98,9 @@ final class DiaryEditView: UIView {
     // 한줄 후기 입력 필드입니다.
     private(set) var memoInputField = UnderlinedInputField(title: "후기", placeholder: "짧은 후기를 남겨보세요")
     
-    // 직관 일기 수정하기 버튼입니다.
-    private(set) var updateButton = UIButton(type: .custom).then {
-        $0.setTitle("수정하기", for: .normal)
+    // 직관 일기 기록하기 버튼입니다.
+    private(set) var recordButton = UIButton(type: .custom).then {
+        $0.setTitle("기록하기", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
         $0.backgroundColor = .mainCharcoalColor
@@ -135,10 +123,10 @@ final class DiaryEditView: UIView {
     private func addSubviews() {
         addSubview(scrollView)
         addSubview(activityIndicator)
-        addSubview(updateButton)
+        addSubview(recordButton)
         scrollView.addSubview(stackView)
         ImageSelectionButtonContainerView.addSubview(selectImageButton)
-        selectImageButton.addSubview(removePhotoButton)
+        selectImageButton.addSubview(removeImageButton)
     }
     
     private func setupUI() {
@@ -157,7 +145,7 @@ final class DiaryEditView: UIView {
             make.leading.trailing
                 .equalToSuperview()
             make.bottom
-                .equalTo(updateButton.snp.top)
+                .equalTo(recordButton.snp.top)
                 .offset(-10)
         }
         
@@ -173,7 +161,7 @@ final class DiaryEditView: UIView {
                 .equalTo(ImageSelectionButtonContainerView.snp.width)
         }
         
-        removePhotoButton.snp.makeConstraints { make in
+        removeImageButton.snp.makeConstraints { make in
             make.top.trailing
                 .equalToSuperview().inset(10)
             make.size
@@ -191,7 +179,7 @@ final class DiaryEditView: UIView {
         
         stackView.setCustomSpacing(20, after: ImageSelectionButtonContainerView)
         
-        updateButton.snp.makeConstraints { make in
+        recordButton.snp.makeConstraints { make in
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
                 .offset(-10)
@@ -204,7 +192,7 @@ final class DiaryEditView: UIView {
     }
 }
 
-extension DiaryEditView {
+extension DiaryCreationView {
     /// PHPicker로 사진이 선택됬을 때 해당 사진으로 교체합니다.
     public func didPickImage(_ image: UIImage) {
         selectImageButton.setImage(image, for: .normal)
@@ -212,12 +200,11 @@ extension DiaryEditView {
     }
     
     /// 저장된 사진이 있다면 초기에 보여줄 사진으로 설정합니다.
-    public func configureImage(_ imageURL: String?) {
-        guard let imageURL = imageURL else { return }
+    public func configureImage(_ imageURL: String) {
         guard let url = URL(string: imageURL) else { return }
         selectImageButton.kf.setImage(with: url, for: .normal)
         setFillImage()
-        removePhotoButton.isHidden = false
+        removeImageButton.isHidden = false
     }
     
     /// 선택된 사진을 제거하기 위해 기본 사진으로 대체합니다.
@@ -228,11 +215,11 @@ extension DiaryEditView {
             .withTintColor(.secondaryTextColor, renderingMode: .alwaysOriginal)
         selectImageButton.setImage(image, for: .normal)
         setFitImage()
-        removePhotoButton.isHidden = true
+        removeImageButton.isHidden = true
     }
 }
 
-extension DiaryEditView {
+extension DiaryCreationView {
     /// 사진이 선택된 후의 레이아웃을 설정합니다.
     private func setFillImage() {
         selectImageButton.contentHorizontalAlignment = .fill
@@ -250,7 +237,7 @@ extension DiaryEditView {
     }
 }
 
-extension DiaryEditView {
+extension DiaryCreationView {
     /// 툴바를 생성합니다.
     private func createToolBar(target: Any?, action: Selector) -> UIToolbar {
         let toolbar = UIToolbar().then {

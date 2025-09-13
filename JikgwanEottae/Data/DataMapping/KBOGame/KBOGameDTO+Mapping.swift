@@ -33,7 +33,8 @@ extension KBOGameDTO {
             homeScore: homeScore,
             awayScore: awayScore,
             note: note,
-            status: status
+            status: status,
+            winTeam: winTeam
         )
     }
 }

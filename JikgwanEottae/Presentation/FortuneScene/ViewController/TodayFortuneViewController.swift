@@ -46,17 +46,20 @@ final class TodayFortuneViewController: UIViewController {
             .compactMap { $0.first }
             .bind(to: todayFortuneView.timeInputField.textField.rx.text)
             .disposed(by: disposeBag)
+        
         // 선택된 성별 아이템을 텍스트 필드와 바인드합니다.
         todayFortuneView.genderPickerView.rx.modelSelected(String.self)
             .compactMap { $0.first }
             .bind(to: todayFortuneView.genderInputField.textField.rx.text)
             .disposed(by: disposeBag)
+        
         // 선택된 KBO구단 아이템을 텍스트 필드와 바인드합니다.
         todayFortuneView.kboTeamPickerView.rx.modelSelected(String.self)
             .compactMap { $0.first }
             .bind(to: todayFortuneView.kboTeamInputField.textField.rx.text)
             .disposed(by: disposeBag)
     }
+    
     /// 데이트 피커를 설정합니다.
     private func setupDatePicker() {
         todayFortuneView.datePicker.rx.date
@@ -65,10 +68,12 @@ final class TodayFortuneViewController: UIViewController {
             .bind(to: todayFortuneView.birthInputField.textField.rx.text)
             .disposed(by: disposeBag)
     }
+    
     /// 툴바를 설정합니다.
     private func setupToolBar() {
         todayFortuneView.setupToolBar(target: self, action: #selector(dismissPicker))
     }
+    
     /// 언더라인을 편집 상태와 바인드하여 색상을 업데이트합니다.
     private func bindUnderlineColorToEditingState() {
         let textFields = [
@@ -111,24 +116,28 @@ final class TodayFortuneViewController: UIViewController {
             completeButtonTapped: todayFortuneView.completeButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(input: input)
+        
         // 태어난 시각 피커에 아이템을 전달합니다.
         output.timePickerItems
             .drive(todayFortuneView.timePickerView.rx.itemTitles) { _, item in
                 return "\(item)시"
             }
             .disposed(by: disposeBag)
+        
         // 성별 피커에 아이템을 전달합니다.
         output.genderPickerItems
             .drive(todayFortuneView.genderPickerView.rx.itemTitles) { _, item in
                 return item
             }
             .disposed(by: disposeBag)
+        
         // 구단 피커에 아이템을 전달합니다.
         output.kboTeamPickerItems
             .drive(todayFortuneView.kboTeamPickerView.rx.itemTitles) { _, item in
                 return item
             }
             .disposed(by: disposeBag)
+        
         // 오늘의 직관 운세 데이터를 전달합니다.
         output.fortune
             .withUnretained(self)
@@ -136,6 +145,7 @@ final class TodayFortuneViewController: UIViewController {
                 owner.showTodayFortuneResult(with: fortune)
             })
             .disposed(by: disposeBag)
+        
         // 필수 입력란 누락 에러를 전달합니다.
         output.error
             .withUnretained(self)
@@ -143,6 +153,7 @@ final class TodayFortuneViewController: UIViewController {
                 owner.showRequiredInputAlert()
             })
             .disposed(by: disposeBag)
+        
         // 로딩 상태를 전달합니다.
         output.isLoading
             .emit(to: todayFortuneView.activityIndicator.rx.isAnimating)
@@ -167,15 +178,9 @@ extension TodayFortuneViewController {
             self.navigationController?.popToRootViewController(animated: false)
         }
     }
+    
     /// 필수 입력란이 누락됬을 경우 안내 팝업을 표시합니다.
     private func showRequiredInputAlert() {
-        let popupViewController = PopupViewController(
-            title: "입력 안내",
-            subtitle: "필수 정보를 입력해주세요",
-            mainButtonStyle: .init(title: "확인", backgroundColor: .mainCharcoalColor),
-            blurEffect: .init(style: .systemUltraThinMaterialLight))
-        popupViewController.modalPresentationStyle = .overFullScreen
-        popupViewController.modalTransitionStyle = .crossDissolve
-        present(popupViewController, animated: true)
+        self.showAlert(title: "안내", message: "필수 정보를 모두 입력해주세요", doneTitle: "확인")
     }
 }

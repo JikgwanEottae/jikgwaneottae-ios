@@ -7,12 +7,10 @@
 
 import Foundation
 
-// MARK: - 직관 일기 요청 DTO를 관리합니다.
-
 // MARK: - 직관 일기 생성 요청 DTO입니다.
 
-struct DiaryCreateRequestDTO: Encodable {
-    let gameId: Int?
+struct DiaryCreationRequestDTO: Encodable {
+    let gameId: Int
     let favoriteTeam: String
     let seat: String
     let memo: String

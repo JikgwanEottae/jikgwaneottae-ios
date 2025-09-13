@@ -51,12 +51,14 @@ final class HomeViewController: UIViewController {
         applySnapshot()
         bindCollectionView()
         bindViewModel()
-        viewWillAppearRelay.accept(())
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewWillAppearRelay.accept(())
+        if AppState.shared.needsStatisticsRefresh {
+            viewWillAppearRelay.accept(())
+            AppState.shared.needsStatisticsRefresh = false
+        }
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.

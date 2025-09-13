@@ -19,13 +19,7 @@ protocol DiaryUseCaseProtocol {
     
     func fetchDailyDiaries(selectedDay: Date) -> [Diary]
     
-    func createDiary(
-        gameId: Int,
-        favoriteTeam: String,
-        seat: String,
-        memo: String,
-        imageData: Data?
-    ) -> Completable
+    func createDiary(gameID: Int, favoriteTeam: String, seat: String, memo: String, imageData: Data?) -> Completable
     
     func updateDiary(
         diaryId: Int,
@@ -36,7 +30,10 @@ protocol DiaryUseCaseProtocol {
         isImageRemoved: Bool
     ) -> Completable
     
-    func deleteDiary(diaryId: Int) -> Completable
+    func deleteDiary(
+        diaryID: Int,
+        gameDate: String
+    ) -> Completable
     
     func fetchDiaryStats() -> Single<DiaryStats>
 }
@@ -62,22 +59,8 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
         return repository.fetchDiaries(selectedDay: selectedDay)
     }
     
-    
-    
-    public func createDiary(
-        gameId: Int,
-        favoriteTeam: String,
-        seat: String,
-        memo: String,
-        imageData: Data?
-    ) -> Completable {
-        return self.repository.createDiary(
-            gameId: gameId,
-            favoriteTeam: favoriteTeam,
-            seat: seat,
-            memo: memo,
-            imageData: imageData
-        )
+    public func createDiary(gameID: Int, favoriteTeam: String, seat: String, memo: String, imageData: Data?) -> Completable {
+        return self.repository.createDiary(gameID: gameID, favoriteTeam: favoriteTeam, seat: seat, memo: memo, imageData: imageData)
     }
     
     public func updateDiary(
@@ -98,8 +81,8 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
         )
     }
     
-    public func deleteDiary(diaryId: Int) -> Completable {
-        return self.repository.deleteDiary(diaryId: diaryId)
+    public func deleteDiary(diaryID: Int, gameDate: String) -> Completable {
+        return self.repository.deleteDiary(diaryID: diaryID, gameDate: gameDate)
     }
     
     public func fetchDiaryStats() -> Single<DiaryStats> {

@@ -16,8 +16,8 @@ final class DiaryViewController: UIViewController {
     private let viewModel: DiaryViewModel
     private var dataSource: UICollectionViewDiffableDataSource<Section, Diary>!
     private enum Section: CaseIterable { case main }
-    private let selectedDayRelay = PublishRelay<Date>()
-    private let selectedMonthRelay = BehaviorRelay<Date>(value: Date())
+    private let selectedDayRelay = BehaviorRelay<Date>(value: Date())
+    private let selectedMonthRelay = PublishRelay<Date>()
     private var currentMonthDiaries: [Diary] = []
     private let disposeBag = DisposeBag()
     
@@ -41,16 +41,35 @@ final class DiaryViewController: UIViewController {
         configureNavigationBarItem()
         configureCalendarDelegates()
         configureDataSource()
-        createRecordButtonTapped()
         bindViewModel()
         bindCollectionView()
         updateNavigationTitle(to: Date())
         print(KeychainManager.shared.readAccessToken())
     }
     
-    /// 네비게이션 왼쪽 바 버튼 아이템에 타이틀을 설정합니다.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("viewWillAppear")
+        // 직관 일기의 갱신이 필요한지 체크합니다.
+        if AppState.shared.needsDiaryRefresh {
+            let currentPage = diaryView.fscalendarView.currentPage
+            let currentDay = diaryView.fscalendarView.selectedDate ?? Date()
+            print(currentDay)
+            selectedMonthRelay.accept(currentPage)
+            selectedDayRelay.accept(currentDay)
+            AppState.shared.needsDiaryRefresh = false
+        }
+    }
+    
+    /// 네비게이션 바 버튼 아이템을 설정합니다.
     private func configureNavigationBarItem() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryView.titleLabel)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "plus"),
+            style: .plain,
+            target: self,
+            action: #selector(navigateToGameDateSelection)
+        )
     }
     
     /// FSCalendar의 델리게이트와 데이터소스를 설정합니다.
@@ -69,11 +88,11 @@ final class DiaryViewController: UIViewController {
             .subscribe(onNext: { [weak self] selectedDiary in
                 let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
                 let diaryUseCase = DiaryUseCase(repository: diaryRepository)
-                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, mode: .edit(diaryInfo: selectedDiary))
+                let diaryEditViewModel = DiaryEditViewModel(usecase: diaryUseCase, selectedDiary: selectedDiary)
                 let diaryEditViewController = DiaryEditViewController(viewModel: diaryEditViewModel)
                 let navigationController = UINavigationController(rootViewController: diaryEditViewController)
                 navigationController.configureBarAppearnace()
-                navigationController.modalPresentationStyle = .pageSheet
+                navigationController.modalPresentationStyle = .fullScreen
                 self?.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
@@ -91,6 +110,7 @@ final class DiaryViewController: UIViewController {
             .withUnretained(self)
             .subscribe(onNext: { owner, diaries in
                 owner.currentMonthDiaries = diaries
+                
                 owner.diaryView.fscalendarView.reloadData()
             })
             .disposed(by: disposeBag)
@@ -98,6 +118,14 @@ final class DiaryViewController: UIViewController {
         output.dailyDiaries
             .withUnretained(self)
             .subscribe(onNext: { owner, diaries in
+                if diaries.isEmpty {
+                    owner.diaryView.collectionView.setEmptyView(
+                        image: UIImage(systemName: "questionmark.circle"),
+                        message: "직관 일기 기록이 없어요"
+                    )
+                } else {
+                    owner.diaryView.collectionView.restore()
+                }
                 owner.updateSnapshot(diaries: diaries)
             })
             .disposed(by: disposeBag)
@@ -129,27 +157,23 @@ final class DiaryViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    /// 직관 일기 생성 버튼의 클릭 이벤트를 받습니다.
-    /// 직관 일기 생성 화면으로 이동합니다.
-    private func createRecordButtonTapped() {
-        diaryView.createDiaryButton.rx.tap
-            .withUnretained(self)
-            .subscribe { owner, _ in
-                let KBOGameRepository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
-                let KBOGameUseCase = KBOGameUseCase(repository: KBOGameRepository)
-                let diaryGameDateSelectionViewModel = DiaryGameDateSelectionViewModel(useCase: KBOGameUseCase)
-                let diaryGameDateSelectionViewController = DiaryGameDateSelectionViewController(viewModel: diaryGameDateSelectionViewModel)
-                diaryGameDateSelectionViewController.hidesBottomBarWhenPushed = true
-                owner.navigationController?.pushViewController(diaryGameDateSelectionViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
-    }
-    
     /// 경기 결과에 따른 이벤트 표시 색상을 반환합니다.
     private func getEventColor(for diary: Diary) -> [UIColor] {
         guard let result = diary.result else { return [.yellowColor] }
         if result == "WIN" { return [.tossBlueColor] }
         return [.tossRedColor]
+    }
+}
+
+extension DiaryViewController {
+    /// 직관 일기 생성을 위한 경기 날짜 선택화면으로 이동합니다.
+    @objc private func navigateToGameDateSelection() {
+        let KBOGameRepository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
+        let KBOGameUseCase = KBOGameUseCase(repository: KBOGameRepository)
+        let diaryGameDateSelectionViewModel = DiaryGameDateSelectionViewModel(useCase: KBOGameUseCase)
+        let diaryGameDateSelectionViewController = DiaryGameDateSelectionViewController(viewModel: diaryGameDateSelectionViewModel)
+        diaryGameDateSelectionViewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(diaryGameDateSelectionViewController, animated: true)
     }
 }
 
@@ -204,29 +228,25 @@ extension DiaryViewController: FSCalendarDataSource {
     
     /// 캘린더의 날짜에 이벤트 표시합니다.
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
-        let date = date.toFormattedString("yyyy-MM-dd")
-        return currentMonthDiaries.contains { $0.gameDate == date } ? 1 : 0
+        let dateString = date.toFormattedString("yyyy-MM-dd")
+        let count = currentMonthDiaries.filter { $0.gameDate == dateString }.count
+        return min(count, 3)
     }
 }
 
 extension DiaryViewController: FSCalendarDelegateAppearance {
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, eventDefaultColorsFor date: Date) -> [UIColor]? {
         let dateString = date.toFormattedString("yyyy-MM-dd")
-        
-        guard let diary = currentMonthDiaries.first(where: { $0.gameDate == dateString }) else {
-            return nil
-        }
-        
-        return getEventColor(for: diary)
+        let diaries = currentMonthDiaries.filter { $0.gameDate == dateString }
+        if diaries.isEmpty { return nil }
+        let colors = diaries.prefix(3).map { getEventColor(for: $0).first! }
+        return colors
     }
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, eventSelectionColorsFor date: Date) -> [UIColor]? {
         let dateString = date.toFormattedString("yyyy-MM-dd")
-        
-        guard let diary = currentMonthDiaries.first(where: { $0.gameDate == dateString }) else {
-            return nil
-        }
-        
-        return getEventColor(for: diary)
+        let diaries = currentMonthDiaries.filter { $0.gameDate == dateString }
+        if diaries.isEmpty { return nil }
+        return diaries.prefix(3).map { getEventColor(for: $0).first! }
     }
 }

@@ -39,12 +39,12 @@ final class DiaryNetworkManager {
     
     /// 직관 일기 생성을 요청합니다.
     public func createDiary(
-        dto: DiaryCreateRequestDTO,
+        dto: DiaryCreationRequestDTO,
         imageData: Data?
-    ) -> Completable {
-        return self.provider.rx.request(.createDiary(dto: dto, imageData: imageData))
-            .filterSuccessfulStatusCodes()
-            .asCompletable()
+    ) -> Single<[Diary]> {
+        return provider.rx.request(.createDiary(dto: dto, imageData: imageData))
+            .map(DiaryResponseDTO.self)
+            .map { $0.toDomain() }
     }
     
     /// 직관 일기 수정을 요청합니다.
@@ -52,17 +52,15 @@ final class DiaryNetworkManager {
         diaryId: Int,
         dto: DiaryUpdateRequestDTO,
         imageData: Data?
-    ) -> Completable {
+    ) -> Single<[Diary]> {
         return self.provider.rx.request(.updateDiary(diaryId: diaryId, dto: dto, imageData: imageData))
-            .filterSuccessfulStatusCodes()
-            .asCompletable()
+            .map(DiaryResponseDTO.self)
+            .map { $0.toDomain() }
     }
     
     /// 직관 일기 삭제를 요청합니다.
-    public func deleteDiary(
-        diaryId: Int
-    ) -> Completable {
-        return self.provider.rx.request(.deleteDiary(DiaryId: diaryId))
+    public func deleteDiary(diaryID: Int) -> Completable {
+        return self.provider.rx.request(.deleteDiary(DiaryID: diaryID))
             .filterSuccessfulStatusCodes()
             .asCompletable()
     }

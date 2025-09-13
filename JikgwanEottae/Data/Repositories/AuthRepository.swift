@@ -110,9 +110,10 @@ extension AuthRepository {
         UserDefaultsManager.shared.isProfileCompleted = true
     }
     
-    /// 사용자의 모든 토큰과 데이터를 제거합니다.
+    /// 사용자의 모든 토큰과 데이터를 제거하고 상태를 초기화합니다.
     private func clearUserData() {
         try? KeychainManager.shared.deleteAllTokens()
         UserDefaultsManager.shared.clearAllKeys()
+        AppState.shared.clear()
     }
 }

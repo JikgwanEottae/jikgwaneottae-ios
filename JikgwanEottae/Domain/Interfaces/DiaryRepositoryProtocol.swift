@@ -23,13 +23,7 @@ protocol DiaryRepositoryProtocol {
     func fetchDiaries(selectedDay: Date) -> [Diary]
     
     /// 직관 일기를 생성합니다.
-    func createDiary(
-        gameId: Int,
-        favoriteTeam: String,
-        seat: String,
-        memo: String,
-        imageData: Data?
-    ) -> Completable
+    func createDiary(gameID: Int, favoriteTeam: String, seat: String, memo: String, imageData: Data?) -> Completable
     
     /// 직관 일기를 수정합니다.
     func updateDiary(
@@ -42,7 +36,7 @@ protocol DiaryRepositoryProtocol {
     ) -> Completable
     
     /// 직관 일기를 삭제합니다.
-    func deleteDiary(diaryId: Int) -> Completable
+    func deleteDiary(diaryID: Int, gameDate: String) -> Completable
     
     /// 직관 일기 승률을 조회합니다.
     func fetchDiaryStats() -> Single<DiaryStats>
