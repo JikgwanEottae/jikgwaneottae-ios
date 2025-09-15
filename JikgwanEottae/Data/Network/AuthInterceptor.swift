@@ -38,7 +38,10 @@ final class AuthInterceptor: RequestInterceptor {
         
         AuthNetworkManager.shared.validateRefreshToken(refreshToken)
             .subscribe(onSuccess: { responseDTO in
-                guard let accessToken = responseDTO.data?.accessToken else { return }
+                guard let accessToken = responseDTO.data?.accessToken else {
+                    completion(.doNotRetry)
+                    return
+                }
                 try? KeychainManager.shared.saveAccessToken(accessToken)
                 completion(.retry)
             }, onFailure: { _ in
