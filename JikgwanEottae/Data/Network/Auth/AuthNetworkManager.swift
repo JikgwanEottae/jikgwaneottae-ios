@@ -15,7 +15,8 @@ final class AuthNetworkManager {
     private let provider: MoyaProvider<AuthAPIService>
     
     private init() {
-        self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
+        let session = Session(interceptor: AuthInterceptor.shared)
+        self.provider = MoyaProvider<AuthAPIService>(session: session)
     }
     
     public func authenticateWithKakao(accessToken: String) -> Single<AuthResponseDTO> {

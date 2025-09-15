@@ -26,29 +26,6 @@ final class TourMapView: UIView {
     
     // 카카오 맵을 담는 컨테이너 뷰입니다.
     public var mapContainer = KMViewContainer()
-    
-    // 지도를 초기 위치로 재설정하는 버튼입니다.
-    public let resetCoordinateButton = UIButton(type: .custom).then {
-        var config = UIButton.Configuration.filled()
-        // 이미지 설정
-        config.image = UIImage(
-            systemName: "scope",
-            withConfiguration: UIImage.SymbolConfiguration(
-                pointSize: 15,
-                weight: .bold
-            )
-        )
-        config.cornerStyle = .capsule
-        // 배경색과 전경색
-        config.baseBackgroundColor = .white
-        config.baseForegroundColor = .mainCharcoalColor
-        // 그림자 설정
-        $0.layer.shadowColor = UIColor.black.cgColor
-        $0.layer.shadowOpacity = 0.3
-        $0.layer.shadowOffset = CGSize(width: 0, height: 3)
-        $0.layer.shadowRadius = 6
-        $0.configuration = config
-    }
 
     // 상태에 따라 기능이 변경되는 중앙 액션 버튼입니다.
     public let centerActionButton = UIButton().then {
@@ -77,16 +54,10 @@ final class TourMapView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        resetCoordinateButton.layer.cornerRadius = resetCoordinateButton.bounds.width / 2.0
-    }
-    
     private func setupUI() {
         self.backgroundColor = .white
         self.addSubview(categoryChipBar)
         self.addSubview(mapContainer)
-        mapContainer.addSubview(resetCoordinateButton)
         mapContainer.addSubview(centerActionButton)
         mapContainer.addSubview(activityIndicator)
     }
@@ -110,21 +81,7 @@ final class TourMapView: UIView {
                 .equalToSuperview()
         }
         
-        resetCoordinateButton.snp.makeConstraints { make in
-            make.leading
-                .equalToSuperview()
-                .inset(30)
-            make.centerY
-                .equalTo(centerActionButton)
-            make.size
-                .equalTo(40)
-        }
-        
         centerActionButton.snp.makeConstraints { make in
-            make.leading
-                .greaterThanOrEqualTo(resetCoordinateButton.snp.trailing)
-                .offset(15)
-                .priority(.required)
             make.centerX
                 .equalToSuperview()
             make.bottom

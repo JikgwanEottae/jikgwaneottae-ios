@@ -81,8 +81,7 @@ final class TourMapViewController: UIViewController {
         let input = TourMapViewModel.Input(
             tourTypeSelected: tourTypeRelay,
             mapCenterChanged: mapCenterCoordinateRelay,
-            centerButtonTapped: tourMapView.centerActionButton.rx.tap.asObservable(),
-            resetCoordinateButtonTapped: tourMapView.resetCoordinateButton.rx.tap.asObservable()
+            centerButtonTapped: tourMapView.centerActionButton.rx.tap.asObservable()
         )
         let output = viewModel.transform(input: input)
         
@@ -95,13 +94,6 @@ final class TourMapViewController: UIViewController {
         output.initialCoordinate
             .drive(onNext: { [weak self] initialCoordinate in
                 self?.coordinate = initialCoordinate
-            })
-            .disposed(by: disposeBag)
-
-        output.resetCoordinate
-            .withUnretained(self)
-            .subscribe(onNext: { owner, coordinate in
-                owner.resetToInitialLocation(coordinate: coordinate)
             })
             .disposed(by: disposeBag)
         
@@ -445,26 +437,6 @@ extension TourMapViewController {
         let longitude = center.wgsCoord.longitude
         let coordinate = Coordinate(latitude: latitude, longitude: longitude)
         self.mapCenterCoordinateRelay.accept(coordinate)
-    }
-    
-    /// 초기 위치로 지도를 이동시킵니다.
-    private func resetToInitialLocation(coordinate: Coordinate) {
-        let mapView = mapController?.getView("mapview") as! KakaoMap
-        let cameraUpdate = CameraUpdate.make(
-            target: MapPoint(
-                longitude: coordinate.longitude,
-                latitude: coordinate.latitude
-            ),
-            mapView: mapView
-        )
-        mapView.animateCamera(
-            cameraUpdate: cameraUpdate,
-            options: CameraAnimationOptions(
-                autoElevation: false,
-                consecutive: false,
-                durationInMillis: 100
-            )
-        )
     }
     
     /// Poi가 클릭됬을 때 핸들러입니다.
