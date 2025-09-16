@@ -79,7 +79,7 @@ final class MyPageView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
-        setupProfileImage()
+        updateProfileImage()
     }
     
     @available(*, unavailable)
@@ -145,7 +145,7 @@ final class MyPageView: UIView {
 
 extension MyPageView {
     /// 초기 프로필 이미지를 설정합니다.
-    public func setupProfileImage() {
+    public func updateProfileImage() {
         if let profileImage = UserDefaultsManager.shared.profileImageURL {
             let url = URL(string: profileImage)
             profileImageView.kf.setImage(with: url)
@@ -155,7 +155,7 @@ extension MyPageView {
     }
     
     /// 프로필 닉네임을 업데이트합니다.
-    public func updateProfileNickname(_ nickname: String?) {
-        nicknameLabel.text = nickname
+    public func updateProfileNickname() {
+        nicknameLabel.text = UserDefaultsManager.shared.nickname
     }
 }

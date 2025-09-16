@@ -37,12 +37,12 @@ final class DiaryEditViewController: UIViewController {
         super.viewDidLoad()
         hideKeyboardWhenTappedAround()
         configureNavigationBarItem()
-        setupPickerView()
-        setupToolBar()
         bindViewModel()
         bindUnderlineColorToEditingState()
         bindPhotoSelectionButton()
         bindPhotoRemoveButton()
+        setupPickerView()
+        setupToolBar()
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.

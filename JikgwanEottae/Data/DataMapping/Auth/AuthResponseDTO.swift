@@ -17,14 +17,12 @@ struct AuthResponseDTO: Decodable {
 extension AuthResponseDTO {
     struct AuthDataDTO: Decodable {
         let nickname: String?
-        let isProfileCompleted: Bool?
         let profileImageURL: String?
         let accessToken: String?
         let refreshToken: String?
         
         private enum CodingKeys: String, CodingKey {
             case nickname
-            case isProfileCompleted = "profileCompleted"
             case profileImageURL = "profileImageUrl"
             case accessToken
             case refreshToken

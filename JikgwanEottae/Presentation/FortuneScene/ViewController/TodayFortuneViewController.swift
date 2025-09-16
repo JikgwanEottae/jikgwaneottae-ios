@@ -115,6 +115,7 @@ final class TodayFortuneViewController: UIViewController {
             favoriteKBOTeam: todayFortuneView.kboTeamInputField.textField.rx.text.orEmpty.asObservable(),
             completeButtonTapped: todayFortuneView.completeButton.rx.tap.asObservable()
         )
+        
         let output = viewModel.transform(input: input)
         
         // 태어난 시각 피커에 아이템을 전달합니다.

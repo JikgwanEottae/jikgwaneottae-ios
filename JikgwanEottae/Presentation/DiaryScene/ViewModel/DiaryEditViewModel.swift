@@ -55,16 +55,23 @@ final class DiaryEditViewModel: ViewModelType {
         let deleteFailureRelay = PublishRelay<Void>()
         
         let inputCombined = Observable.combineLatest(
-            input.selectedPhotoData.startWith(nil),
-            input.supportTeam.skip(1).startWith(selectedDiary.favoriteTeam),
-            input.seat.skip(1).startWith(selectedDiary.seat),
-            input.memo.skip(1).startWith(selectedDiary.memo),
+            input.selectedPhotoData
+                .startWith(nil),
+            input.supportTeam
+                .skip(1)
+                .startWith(selectedDiary.favoriteTeam),
+            input.seat
+                .skip(1)
+                .startWith(selectedDiary.seat),
+            input.memo
+                .skip(1)
+                .startWith(selectedDiary.memo),
             input.isPhotoChanged
         )
         
         input.updateButtonTapped
             .withLatestFrom(inputCombined)
-            .filter { _, supportTeam, _, _, _ in
+            .filter { selectedPhotoData, supportTeam, seat, memo, isPhotoChanged in
                 if supportTeam.isEmpty {
                     formInputErrorRelay.accept(())
                     return false

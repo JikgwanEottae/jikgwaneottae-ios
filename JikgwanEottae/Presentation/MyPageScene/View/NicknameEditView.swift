@@ -122,8 +122,6 @@ extension NicknameEditView {
     }
     
     private func setupNicknameTextField() {
-        if UserDefaultsManager.shared.isProfileCompleted {
-            nicknameInputField.textField.text = UserDefaultsManager.shared.nickname
-        }
+        nicknameInputField.textField.text = UserDefaultsManager.shared.nickname
     }
 }

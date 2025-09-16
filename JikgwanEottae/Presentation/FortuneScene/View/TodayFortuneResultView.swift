@@ -38,7 +38,7 @@ final class TodayFortuneResultView: UIView {
     }
     
     private let dateLabel = UILabel().then {
-        $0.text = Date().toFormattedString("MM월 dd일 EEEE")
+        $0.text = Date().toFormattedString("M월 dd일 EEEE")
         $0.numberOfLines = 1
         $0.font = .gMarketSans(size: 17, family: .medium)
         $0.textColor = .primaryTextColor

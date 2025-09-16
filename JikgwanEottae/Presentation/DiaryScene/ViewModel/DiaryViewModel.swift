@@ -30,18 +30,28 @@ final class DiaryViewModel: ViewModelType {
     
     public func transform(input: Input) -> Output {
         let monthlyDiaries = input.selectedMonth
+//            .filter{ _ in !AppState.shared.isGuestMode }
             .withUnretained(self)
             .flatMapLatest { owner, selectedMonth -> Observable<[Diary]> in
+                guard !AppState.shared.isGuestMode else {
+                    return Observable.just([])
+                }
                 return owner.useCase.fetchDiaries(selectedMonth: selectedMonth)
                     .asObservable()
                     .catchAndReturn([])
             }
         
-        let dailyDiaries = input.selectedDay
-            .withUnretained(self)
-            .map { owner, selectedDay in
-                owner.useCase.fetchDailyDiaries(selectedDay: selectedDay)
-            }
+        let dailyDiaries = Observable.combineLatest(
+            monthlyDiaries,
+            input.selectedDay.filter{ _ in !AppState.shared.isGuestMode }
+        )
+        .map { (diaries, selectedDay) -> [Diary] in
+            guard !AppState.shared.isGuestMode else {
+                 return []
+             }
+            let dateString = selectedDay.toFormattedString("yyyy-MM-dd")
+            return diaries.filter { $0.gameDate == dateString }
+        }
 
         return Output(
             monthlyDiaries: monthlyDiaries,

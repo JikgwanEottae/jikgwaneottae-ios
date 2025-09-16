@@ -61,7 +61,7 @@ extension KBOGameAPIService: TargetType, AccessTokenAuthorizable {
     var authorizationType: Moya.AuthorizationType? {
         switch self {
         case .fetchDailyGames:
-            return .bearer
+            return nil
         case .fetchMonthlyGames:
             return .bearer
         }
