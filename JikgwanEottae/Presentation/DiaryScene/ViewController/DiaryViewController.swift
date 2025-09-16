@@ -49,7 +49,17 @@ final class DiaryViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // 직관 일기의 갱신이 필요한지 체크합니다.
-        if AppState.shared.needsDiaryRefresh {
+        if AppState.shared.isGuestMode {
+            currentMonthDiaries.removeAll()
+            diaryView.fscalendarView.reloadData()
+            diaryView.collectionView.setEmptyView(
+                image: UIImage(systemName: "questionmark.circle"),
+                message: "직관 일기 기록이 없어요"
+            )
+            updateSnapshot(diaries: [])
+        }
+        
+        if AppState.shared.needsDiaryRefresh && !AppState.shared.isGuestMode {
             let currentPage = diaryView.fscalendarView.currentPage
             let currentDay = diaryView.fscalendarView.selectedDate ?? Date()
             selectedMonthRelay.accept(currentPage)
@@ -65,7 +75,7 @@ final class DiaryViewController: UIViewController {
             image: UIImage(systemName: "plus"),
             style: .plain,
             target: self,
-            action: #selector(navigateToGameDateSelection)
+            action: #selector(plusButtonTapped)
         )
     }
     
@@ -162,14 +172,39 @@ final class DiaryViewController: UIViewController {
 }
 
 extension DiaryViewController {
-    /// 직관 일기 생성을 위한 경기 날짜 선택화면으로 이동합니다.
-    @objc private func navigateToGameDateSelection() {
+    /// 로그인 화면을 모달로 표시합니다.
+    private func presentSignInViewController() {
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let signIngViewModel = SignInViewModel(useCase: authUseCase)
+        let signInViewController = SignInViewController(viewModel: signIngViewModel)
+        signInViewController.delegate = self
+        let navigationController = UINavigationController(rootViewController: signInViewController)
+        navigationController.configureBarAppearnace()
+        navigationController.modalPresentationStyle = .overFullScreen
+        self.present(navigationController, animated: true)
+    }
+    
+    /// 경기 날짜 선택 화면으로 네비게이션 푸시합니다.
+    private func naviagateToGameDateSelectionViewController() {
         let KBOGameRepository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
         let KBOGameUseCase = KBOGameUseCase(repository: KBOGameRepository)
         let diaryGameDateSelectionViewModel = DiaryGameDateSelectionViewModel(useCase: KBOGameUseCase)
         let diaryGameDateSelectionViewController = DiaryGameDateSelectionViewController(viewModel: diaryGameDateSelectionViewModel)
         diaryGameDateSelectionViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(diaryGameDateSelectionViewController, animated: true)
+    }
+}
+
+extension DiaryViewController {
+    /// 플러스 버튼 탭 이벤트입니다.
+    @objc private func plusButtonTapped() {
+        // 게스트 또는 회원에 따라 화면을 설정합니다.
+        if AppState.shared.isGuestMode {
+            presentSignInViewController()
+        } else {
+            naviagateToGameDateSelectionViewController()
+        }
     }
 }
 
@@ -182,6 +217,12 @@ extension DiaryViewController {
     /// 캘린더의 날짜 선택에 따라 레이블이 변경됩니다.
     private func updateSelectedDateLabel(to date: Date) {
         self.diaryView.selectedDateLabel.text = date.toFormattedString("d. E")
+    }
+}
+
+extension DiaryViewController: SignInDelegate {
+    func signInDidComplete() {
+        naviagateToGameDateSelectionViewController()
     }
 }
 

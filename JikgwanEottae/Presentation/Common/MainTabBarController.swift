@@ -81,7 +81,7 @@ extension MainTabBarController {
         homeNavigationController.tabBarItem = UITabBarItem(
             title: "홈",
             image: .home,
-            tag: 0
+            tag: Constants.TabBarTags.home
         )
         return homeNavigationController
     }
@@ -94,7 +94,7 @@ extension MainTabBarController {
         tourNavigationController.tabBarItem = UITabBarItem(
             title: "지도",
             image: .markerIcon,
-            tag: 1
+            tag: Constants.TabBarTags.tour
         )
         return tourNavigationController
     }
@@ -110,7 +110,7 @@ extension MainTabBarController {
         diaryNavigationController.tabBarItem = UITabBarItem(
             title: "기록",
             image: .ticket,
-            tag: 2
+            tag: Constants.TabBarTags.diary
         )
         return diaryNavigationController
     }
@@ -121,19 +121,64 @@ extension MainTabBarController {
         let authUseCase = AuthUseCase(repository: authRepository)
         let myPageViewModel = MyPageViewModel(useCase: authUseCase)
         let myPageViewController = MyPageViewController(viewModel: myPageViewModel)
+        myPageViewController.delegate = self
         let myPageNavigationController = UINavigationController(rootViewController: myPageViewController)
         myPageNavigationController.configureBarAppearnace()
         myPageNavigationController.tabBarItem = UITabBarItem(
             title: "마이",
             image: .userIcon,
-            tag: 1
+            tag: Constants.TabBarTags.myPage
         )
         return myPageNavigationController
+    }
+    
+    /// 회원가입 화면을 생성합니다.
+    private func createSignInNavigationController() -> UINavigationController {
+        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let authUseCase = AuthUseCase(repository: authRepository)
+        let signIngViewModel = SignInViewModel(useCase: authUseCase)
+        let signInViewController = SignInViewController(viewModel: signIngViewModel)
+        signInViewController.delegate = self
+        let navigationController = UINavigationController(rootViewController: signInViewController)
+        navigationController.configureBarAppearnace()
+        return navigationController
     }
 }
 
 extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         HapticFeedbackManager.shared.light()
+    }
+    
+    ///
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        let tag = viewController.tabBarItem.tag
+        switch tag {
+        case Constants.TabBarTags.myPage:
+            if AppState.shared.isGuestMode {
+                let signInNavigationController = createSignInNavigationController()
+                signInNavigationController.modalPresentationStyle = .overFullScreen
+                self.present(signInNavigationController, animated: true)
+                return false
+            } else {
+                return true
+            }
+        default:
+            return true
+        }
+    }
+}
+
+extension MainTabBarController: SignInDelegate, SignOutDelegate {
+    /// 정상적으로 로그인이 수행된 후 호출됩니다.
+    func signInDidComplete() {
+        // 현재 화면을 마이페이지 탭으로 전환합니다.
+        self.selectedIndex = 3
+    }
+    
+    /// 정상적으로 로그아웃이 수행된 후 호출됩니다.
+    func signOutDidComplete() {
+        // 현재 화면을 홈 탭으로 전환합니다.
+        self.selectedIndex = 0
     }
 }

@@ -39,10 +39,9 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     }
     
     private let blurEffectView = UIVisualEffectView().then {
-//        let blurEffect = UIBlurEffect(style: .dark)
         $0.effect =  UIBlurEffect(style: .systemThickMaterialDark)
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.alpha = 0.7
+        $0.alpha = 0.75
     }
     
     private lazy var labelsStackView = UIStackView(arrangedSubviews: [
@@ -52,7 +51,6 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
         $0.axis = .vertical
         $0.distribution = .equalSpacing
         $0.alignment = .leading
-        $0.distribution = .fill
      }
     
     private let matchScoreLabel = UILabel().then {
@@ -61,6 +59,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
         $0.textColor = .white
         $0.textAlignment = .left
         $0.clipsToBounds = true
+        $0.setContentHuggingPriority(.required, for: .vertical)
     }
 
     private let ballparkLabel = UILabel().then {
@@ -69,6 +68,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
         $0.textColor = .white
         $0.textAlignment = .left
         $0.clipsToBounds = true
+        $0.setContentHuggingPriority(.required, for: .vertical)
     }
     
     override init(frame: CGRect) {
@@ -132,7 +132,7 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
             make.leading.trailing.bottom
                 .equalToSuperview()
             make.height
-                .equalTo(80)
+                .equalTo(70)
         }
         
         labelsStackView.snp.makeConstraints { make in

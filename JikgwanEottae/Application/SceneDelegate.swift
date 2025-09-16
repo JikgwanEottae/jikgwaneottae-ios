@@ -85,13 +85,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             )
         }
     }
-    
-    /// 로그인 화면으로 루트 뷰 컨트롤러를 재설정합니다.
-    func resetToLoginScreen() {
-        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
-        let authUseCase = AuthUseCase(repository: authRepository)
-        let signIngViewModel = SignInViewModel(useCase: authUseCase)
-        let signInViewController = SignInViewController(viewModel: signIngViewModel)
-        changeRootViewController(to: signInViewController)
-    }
 }

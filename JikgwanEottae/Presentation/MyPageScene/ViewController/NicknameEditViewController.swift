@@ -13,7 +13,7 @@ import RxCocoa
 final class NicknameEditViewController: UIViewController {
     private let nicknameEditView = NicknameEditView()
     private let viewModel: NicknameEditViewModel
-    public var onNicknameUpdated: ((String) -> Void)?
+    public var onNicknameUpdated: (() -> Void)?
     private let isInitialEdit: Bool
     private let disposeBag = DisposeBag()
     
@@ -67,7 +67,7 @@ final class NicknameEditViewController: UIViewController {
                     owner.transitionRoot(to: mainTabBarController)
                 } else {
                     guard let nickname = UserDefaultsManager.shared.nickname else { return }
-                    owner.onNicknameUpdated?(nickname)
+                    owner.onNicknameUpdated?()
                     owner.navigationController?.popViewController(animated: true)
                 }
             })

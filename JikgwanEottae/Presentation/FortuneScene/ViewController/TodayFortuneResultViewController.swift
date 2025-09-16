@@ -10,6 +10,8 @@ import UIKit
 import RxSwift
 import RxCocoa
 
+// MARK: - 오늘의 직관 운세 결과 뷰 컨트롤러입니다.
+
 final class TodayFortuneResultViewController: UIViewController {
     private lazy var todayFortuneResultView = TodayFortuneResultView()
     private let fortuneData: Fortune

@@ -46,6 +46,10 @@ final class UnderlinedInputField: UIView {
         setupLayout()
     }
     
+    convenience init(title: String, placeholder: String, customView: UIView) {
+        self.init(title: title, placeholder: placeholder)
+    }
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)

@@ -15,7 +15,6 @@ final class UserDefaultsManager {
     private enum Keys {
         static let nickname = "nickname"
         static let profileImageURL = "profileImageURL"
-        static let isProfileCompleted = "isProfileCompleted"
         static let hasLaunchedBefore = "hasLaunchedBefore"
     }
     
@@ -27,11 +26,6 @@ final class UserDefaultsManager {
     var profileImageURL: String? {
         get { UserDefaults.standard.string(forKey: Keys.profileImageURL) }
         set { UserDefaults.standard.set(newValue, forKey: Keys.profileImageURL) }
-    }
-    
-    var isProfileCompleted: Bool {
-        get { UserDefaults.standard.bool(forKey: Keys.isProfileCompleted) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.isProfileCompleted) }
     }
     
     var hasLaunchedBefore: Bool {
@@ -47,14 +41,8 @@ final class UserDefaultsManager {
         UserDefaults.standard.removeObject(forKey: Keys.profileImageURL)
     }
     
-    public func clearIsProfileCompletedKey() {
-        UserDefaults.standard.removeObject(forKey: Keys.isProfileCompleted)
-    }
-    
     public func clearAllKeys() {
         UserDefaults.standard.removeObject(forKey: Keys.nickname)
         UserDefaults.standard.removeObject(forKey: Keys.profileImageURL)
-        UserDefaults.standard.removeObject(forKey: Keys.isProfileCompleted)
-        UserDefaults.standard.removeObject(forKey: Keys.hasLaunchedBefore)
     }
 }

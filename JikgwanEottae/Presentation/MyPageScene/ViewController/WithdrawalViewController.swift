@@ -15,6 +15,7 @@ import RxCocoa
 final class WithdrawalViewController: UIViewController {
     private let withdrawalView = WithdrawalView()
     private let viewModel: WithdrawalViewModel
+    weak var delegate: SignOutDelegate?
     private let withdrawButtonRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     
@@ -52,7 +53,7 @@ final class WithdrawalViewController: UIViewController {
         output.withdrawalSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                owner.navigateToLoginScreen()
+                owner.handleSignOutComplete()
             })
             .disposed(by: disposeBag)
     }
@@ -90,10 +91,9 @@ final class WithdrawalViewController: UIViewController {
         popupViewController.updateActivityIndicatorState(isLoading)
     }
     
-    /// 루트 뷰 컨트롤러를 로그인 화면으로 전환합니다.
-    private func navigateToLoginScreen() {
-        guard let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = scene.delegate as? SceneDelegate else { return }
-        sceneDelegate.resetToLoginScreen()
+    /// 게스트 모드로 전환합니다.
+    private func handleSignOutComplete() {
+        self.delegate?.signOutDidComplete()
+        self.navigationController?.popViewController(animated: true)
     }
 }

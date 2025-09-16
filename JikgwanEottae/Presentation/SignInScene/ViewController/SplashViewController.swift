@@ -20,7 +20,6 @@ final class SplashViewController: UIViewController {
         $0.contentMode = .scaleAspectFit
         $0.clipsToBounds = true
     }
-    
     private let viewModel: SplahViewModel
     private let viewDidLoadRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -59,24 +58,12 @@ final class SplashViewController: UIViewController {
         let input = SplahViewModel.Input(viewDidLoad: viewDidLoadRelay.asObservable())
         let output = viewModel.transform(input: input)
         
-        // 리프레쉬 토큰이 유효하여 메인 화면으로 이동합니다.
+        // 메인 화면으로 이동합니다.
         output.navigateToMain
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
                 let mainTabBarController = MainTabBarController()
                 owner.transitionRoot(to: mainTabBarController)
-            })
-            .disposed(by: disposeBag)
-        
-        // 리프레쉬 토큰이 유효하지 않아 로그인 화면으로 이동합니다.
-        output.navigateToSignIn
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
-                let authUseCase = AuthUseCase(repository: authRepository)
-                let signIngViewModel = SignInViewModel(useCase: authUseCase)
-                let signInViewController = SignInViewController(viewModel: signIngViewModel)
-                owner.transitionRoot(to: signInViewController)
             })
             .disposed(by: disposeBag)
     }

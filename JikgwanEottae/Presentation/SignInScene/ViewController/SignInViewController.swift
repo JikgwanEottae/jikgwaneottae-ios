@@ -17,6 +17,7 @@ import KakaoSDKUser
 final class SignInViewController: UIViewController {
     private let signInView = SignInView()
     private let viewModel: SignInViewModel
+    weak var delegate: SignInDelegate?
     private let disposeBag = DisposeBag()
     private let kakaoLoginResultRelay = PublishRelay<String>()
     private let appleLoginResultRelay = PublishRelay<(String, String)>()
@@ -37,8 +38,19 @@ final class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureNavigationBarItem()
         setupButtonActions()
         bindViewModel()
+    }
+    
+    /// 네비게이션 바 버튼 아이템을 설정합니다.
+    private func configureNavigationBarItem() {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "xmark"),
+            style: .plain,
+            target: self,
+            action: #selector(closeButtonTapped)
+        )
     }
 
     /// 각 버튼의 addTarget을 설정합니다.
@@ -69,11 +81,8 @@ final class SignInViewController: UIViewController {
         output.loginSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                if UserDefaultsManager.shared.isProfileCompleted {
-                    let mainTabBarController = MainTabBarController()
-                    owner.transitionRoot(to: mainTabBarController)
-                } else {
-                    owner.presentNicknameEdit()
+                owner.dismiss(animated: true) { [weak self] in
+                    self?.delegate?.signInDidComplete()
                 }
             })
             .disposed(by: disposeBag)
@@ -101,6 +110,11 @@ extension SignInViewController {
     /// "카카오로 로그인" 버튼 클릭 이벤트입니다.
     @objc private func handleKakaoSignInButtonTap() {
         performKakaoSignIn()
+    }
+    
+    /// 현재 화면을 닫습니다.
+    @objc private func closeButtonTapped() {
+        self.dismiss(animated: true)
     }
 }
 
@@ -188,21 +202,4 @@ extension SignInViewController: ASAuthorizationControllerPresentationContextProv
     }
 }
 
-extension SignInViewController {
-    private func transitionRoot(to viewController: UIViewController) {
-        if let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let sceneDelate = scene.delegate as? SceneDelegate {
-            sceneDelate.changeRootViewController(to: viewController)
-        }
-    }
-    
-    private func presentNicknameEdit() {
-        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
-        let authUseCase = AuthUseCase(repository: authRepository)
-        let nicknameViewModel = NicknameEditViewModel(useCase: authUseCase)
-        let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameViewModel, isInitialEdit: true)
-        nicknameEditViewController.modalPresentationStyle = .fullScreen
-        self.present(nicknameEditViewController, animated: true)
-    }
-}
 
