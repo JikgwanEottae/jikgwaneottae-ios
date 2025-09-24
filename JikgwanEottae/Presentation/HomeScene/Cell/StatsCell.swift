@@ -17,7 +17,7 @@ final class StatsCell: UICollectionViewCell {
     
     private let titleLabel = UILabel().then {
         $0.text = "나의 직관 승률"
-        $0.font = UIFont.gMarketSans(size: 16, family: .medium)
+        $0.font = .paperlogy(size: 16, family: .semiBold)
         $0.textColor = .primaryTextColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
@@ -45,7 +45,7 @@ final class StatsCell: UICollectionViewCell {
     
     private let percentLabel = UILabel().then {
         $0.text = "0%"
-        $0.font = UIFont.gMarketSans(size: 14, family: .bold)
+        $0.font = .paperlogy(size: 18, family: .semiBold)
         $0.textColor = .primaryTextColor
         $0.textAlignment = .right
         $0.numberOfLines = 1
@@ -155,13 +155,13 @@ final class StatsCell: UICollectionViewCell {
 extension StatsCell {
     final class StatsItemView: UIView {
         private let titleLabel = UILabel().then {
-            $0.font = UIFont.gMarketSans(size: 16, family: .medium)
+            $0.font = .paperlogy(size: 16, family: .medium)
             $0.textColor = .primaryTextColor
             $0.textAlignment = .center
         }
         
         private let countLabel = UILabel().then {
-            $0.font = UIFont.gMarketSans(size: 18, family: .bold)
+            $0.font = .paperlogy(size: 18, family: .semiBold)
             $0.textColor = .primaryTextColor
             $0.textAlignment = .center
         }

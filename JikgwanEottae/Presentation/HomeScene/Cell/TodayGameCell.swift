@@ -34,7 +34,7 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let statusLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 11, family: .medium)
+        $0.font = .paperlogy(size: 11, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .white
         $0.clipsToBounds = true
@@ -51,14 +51,14 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let homeTeamNameLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 17, family: .bold)
+        $0.font = .paperlogy(size: 17, family: .bold)
         $0.numberOfLines = 1
         $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     private let homeTeamScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
+        $0.font = .paperlogy(size: 20, family: .bold)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
         $0.textAlignment = .right
@@ -75,14 +75,14 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let awayTeamNameLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 17, family: .bold)
+        $0.font = .paperlogy(size: 17, family: .bold)
         $0.numberOfLines = 1
         $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     private let awayTeamScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
+        $0.font = .paperlogy(size: 20, family: .bold)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
         $0.textAlignment = .right
@@ -90,7 +90,7 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let ballparkLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 12, family: .medium)
+        $0.font = .paperlogy(size: 12, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .primaryTextColor
         $0.clipsToBounds = true

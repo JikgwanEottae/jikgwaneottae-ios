@@ -302,7 +302,7 @@ extension TourMapViewController {
         let textStyle = TextStyle(
             fontSize: 21,
             fontColor: .primaryTextColor,
-            font: "GmarketSansMedium",
+            font: "PaperLogy-5Medium",
             charSpace: 2
         )
         // 폰트 스타일을 적용하여 PoiTextStyle을 설정합니다.

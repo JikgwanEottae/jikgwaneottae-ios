@@ -21,7 +21,7 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     
     private let statusLabel = UILabel().then {
         $0.text = "경기예정"
-        $0.font = .gMarketSans(size: 13, family: .medium)
+        $0.font = .paperlogy(size: 11, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .white
         $0.clipsToBounds = true
@@ -33,14 +33,14 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     
     private let versusLabel = UILabel().then {
         $0.text = "VS"
-        $0.font = .gMarketSans(size: 13, family: .bold)
+        $0.font = .paperlogy(size: 13, family: .semiBold)
         $0.numberOfLines = 1
         $0.textColor = .tertiaryTextColor
         $0.clipsToBounds = true
     }
     
     private let ballparkAndGameTimeLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 13, family: .bold)
+        $0.font = .paperlogy(size: 13, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .secondaryTextColor
         $0.clipsToBounds = true

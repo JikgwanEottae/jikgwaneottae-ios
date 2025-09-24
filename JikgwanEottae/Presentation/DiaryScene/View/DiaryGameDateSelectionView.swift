@@ -51,7 +51,7 @@ final class DiaryGameDateSelectionView: UIView {
     private let titleLabel = UILabel().then {
         $0.text = "직관한 날짜를 선택해주세요"
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 20, family: .medium)
+        $0.font = .paperlogy(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
     }
     
@@ -59,7 +59,7 @@ final class DiaryGameDateSelectionView: UIView {
     private let subtitleLabel = UILabel().then {
         $0.text = "날짜에 맞춰 경기 일정을 가져올게요"
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 14, family: .medium)
+        $0.font = .paperlogy(size: 14, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
     

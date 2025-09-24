@@ -95,7 +95,7 @@ final class horizontalChipBar: UIView {
     private func createButton(title: String, isSelected: Bool, index: Int) -> UIButton {
         return UIButton(type: .custom).then {
             var titleAttributes = AttributeContainer()
-            titleAttributes.font = UIFont(name: "GmarketSansMedium", size: 16)
+            titleAttributes.font = UIFont.paperlogy(size: 16, family: .medium)
             titleAttributes.foregroundColor = isSelected ? .primaryTextColor : .secondaryTextColor
             var config = UIButton.Configuration.plain()
             config.attributedTitle = AttributedString(title, attributes: titleAttributes)
@@ -116,7 +116,7 @@ final class horizontalChipBar: UIView {
         let button = buttons[index]
         let title = buttonTitles[index]
         var titleAttri = AttributeContainer()
-        titleAttri.font = UIFont(name: "GmarketSansMedium", size: 16)
+        titleAttri.font = UIFont.paperlogy(size: 16, family: .medium)
         titleAttri.foregroundColor = isSelected ? .primaryTextColor : .secondaryTextColor
         var config = button.configuration ?? UIButton.Configuration.plain()
         config.attributedTitle = AttributedString(title, attributes: titleAttri)

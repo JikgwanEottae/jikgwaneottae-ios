@@ -59,14 +59,14 @@ final class PopupViewController: UIViewController {
     
     // 메인 타이틀 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .medium)
+        $0.font = .paperlogy(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }
     
     // 서브 타이틀 레이블입니다.
     private let subtitleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 16, family: .medium)
+        $0.font = .paperlogy(size: 16, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
     
@@ -82,7 +82,7 @@ final class PopupViewController: UIViewController {
     
     // 메인 버튼입니다.
     public let mainButton = UIButton(type: .custom).then {
-        $0.titleLabel?.font = .gMarketSans(size: 16, family: .medium)
+        $0.titleLabel?.font = .paperlogy(size: 16, family: .medium)
         $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 15
         $0.clipsToBounds = true
@@ -91,7 +91,7 @@ final class PopupViewController: UIViewController {
     
     // 서브 버튼입니다.
     public let subButton = UIButton(type: .custom).then {
-        $0.titleLabel?.font = .gMarketSans(size: 16, family: .medium)
+        $0.titleLabel?.font = .paperlogy(size: 16, family: .medium)
         $0.setTitleColor(.black, for: .normal)
         $0.backgroundColor = #colorLiteral(red: 0.9592481256, green: 0.9657639861, blue: 0.97197932, alpha: 1)
         $0.layer.cornerRadius = 15

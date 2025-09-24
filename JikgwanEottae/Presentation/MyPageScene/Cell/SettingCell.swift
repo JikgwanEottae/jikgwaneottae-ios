@@ -14,7 +14,7 @@ final class SettingCell: UITableViewCell {
     static let ID = "SettingCell"
     
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 13, family: .medium)
+        $0.font = .pretendard(size: 13, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
         $0.textAlignment = .left

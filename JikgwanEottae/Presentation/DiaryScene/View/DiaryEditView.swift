@@ -14,13 +14,13 @@ import Then
 final class DiaryEditView: UIView {
     private(set) var dismissButton = UIButton(type: .custom).then {
         $0.setTitle("닫기", for: .normal)
-        $0.titleLabel?.font = UIFont.gMarketSans(size: 16, family: .medium)
+        $0.titleLabel?.font = .paperlogy(size: 16, family: .medium)
         $0.setTitleColor(.primaryTextColor, for: .normal)
     }
     
     private(set) var deleteButton = UIButton(type: .custom).then {
         $0.setTitle("삭제", for: .normal)
-        $0.titleLabel?.font = UIFont.gMarketSans(size: 16, family: .medium)
+        $0.titleLabel?.font = .paperlogy(size: 16, family: .medium)
         $0.setTitleColor(.tossRedColor, for: .normal)
     }
     

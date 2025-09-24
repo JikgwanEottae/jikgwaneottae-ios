@@ -12,7 +12,7 @@ import Then
 
 final class UnderlinedInputField: UIView {
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 13, family: .medium)
+        $0.font = .paperlogy(size: 13, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
         $0.textAlignment = .left
@@ -22,7 +22,7 @@ final class UnderlinedInputField: UIView {
     
     private(set) var textField = UITextField().then {
         $0.setPlaceholder(color: .placeholderColor)
-        $0.font = .gMarketSans(size: 16, family: .medium)
+        $0.font = .paperlogy(size: 16, family: .medium)
         $0.textColor = .primaryTextColor
         $0.clearButtonMode = .always
         $0.autocapitalizationType = .none
@@ -68,14 +68,16 @@ final class UnderlinedInputField: UIView {
             make.top.leading.trailing
                 .equalToSuperview()
         }
+        
         containerView.snp.makeConstraints { make in
             make.top
                 .equalTo(titleLabel.snp.bottom)
             make.leading.trailing.bottom
                 .equalToSuperview()
             make.height
-                .equalTo(40)
+                .equalTo(35)
         }
+        
         textField.snp.makeConstraints { make in
             make.leading.trailing
                 .equalToSuperview()
@@ -83,6 +85,7 @@ final class UnderlinedInputField: UIView {
                 .equalToSuperview()
                 .inset(5)
         }
+        
         underlineView.snp.makeConstraints { make in
             make.height
                 .equalTo(2)
