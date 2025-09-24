@@ -58,21 +58,21 @@ final class TourPlaceDetailView: UIView {
     
     // 제목 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 20, family: .medium)
+        $0.font = UIFont.paperlogy(size: 20, family: .medium)
         $0.numberOfLines = 0
         $0.textColor = .primaryTextColor
     }
     
     // 주소 레이블입니다.
     private let addressLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 14, family: .medium)
+        $0.font = UIFont.paperlogy(size: 14, family: .medium)
         $0.numberOfLines = 0
         $0.textColor = .secondaryTextColor
     }
     
     // 상세 정보 레이블입니다.
     private let overviewLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 14, family: .medium)
+        $0.font = UIFont.paperlogy(size: 14, family: .medium)
         $0.numberOfLines = 0
         $0.textColor = .secondaryTextColor
     }
@@ -147,7 +147,7 @@ final class TourPlaceDetailView: UIView {
     /// 이미지를 업데이트합니다.
     private func updateImage(with urlString: String) {
         guard !urlString.isEmpty, let url = URL(string: urlString) else {
-            imageView.image = UIImage(named: "imagePlaceholder")
+            imageView.image = UIImage(named: "placeholder")
             return
         }
         imageView.kf.indicatorType = .activity

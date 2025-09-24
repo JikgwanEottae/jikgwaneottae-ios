@@ -109,7 +109,7 @@ final class TourMapView: UIView {
             attributedTitle = AttributedString("이 지역 검색하기")
             imageName = "arrow.clockwise"
         }
-        attributedTitle.font = UIFont.gMarketSans(size: 14, family: .medium)
+        attributedTitle.font = UIFont.paperlogy(size: 14, family: .medium)
         attributedTitle.foregroundColor = UIColor.mainCharcoalColor
         config.attributedTitle = attributedTitle
         config.image = UIImage(

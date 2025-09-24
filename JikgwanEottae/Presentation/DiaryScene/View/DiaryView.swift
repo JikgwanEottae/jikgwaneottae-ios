@@ -16,7 +16,7 @@ final class DiaryView: UIView {
     public let titleLabel = UILabel().then {
         $0.text = "기록"
         $0.numberOfLines = 1
-        $0.font = UIFont.gMarketSans(size: 24, family: .bold)
+        $0.font = .paperlogy(size: 22, family: .semiBold)
         $0.textColor = .black
     }
     
@@ -51,9 +51,9 @@ final class DiaryView: UIView {
         // 요일 텍스트 색상
         $0.appearance.weekdayTextColor = .tertiaryTextColor
         // 요일 폰트 설정
-        $0.appearance.weekdayFont = .gMarketSans(size: 14, family: .medium)
+        $0.appearance.weekdayFont = .pretendard(size: 14, family: .medium)
         // 날짜 폰트 설정
-        $0.appearance.titleFont = .gMarketSans(size: 14, family: .medium)
+        $0.appearance.titleFont = .pretendard(size: 14, family: .medium)
         // 해당 월이 아닌 날짜 표시 여부
         $0.placeholderType = .none
         // 해당 월의 날짜 색상
@@ -81,7 +81,7 @@ final class DiaryView: UIView {
     // 선택된 날짜 표시 레이블
     public let selectedDateLabel = UILabel().then {
         $0.text = Date().toFormattedString("d. E")
-        $0.font = .gMarketSans(size: 20, family: .medium)
+        $0.font = .paperlogy(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
         $0.numberOfLines = 1
     }

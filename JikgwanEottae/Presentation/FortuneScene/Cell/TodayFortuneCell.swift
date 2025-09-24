@@ -34,7 +34,7 @@ final class TodayFortuneCell: UICollectionViewCell {
     
     private let titleLabel = UILabel().then {
         $0.text = "혹시 내가 오늘의 승리 요정?"
-        $0.font = UIFont.gMarketSans(size: 16, family: .medium)
+        $0.font = .paperlogy(size: 16, family: .medium)
         $0.textColor = .primaryTextColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
@@ -42,7 +42,7 @@ final class TodayFortuneCell: UICollectionViewCell {
     
     private let subtitleLabel = UILabel().then {
         $0.text = "운세보기"
-        $0.font = UIFont.gMarketSans(size: 17, family: .bold)
+        $0.font = .paperlogy(size: 17, family: .semiBold)
         $0.textColor = .shamrockGreen
         $0.textAlignment = .left
         $0.numberOfLines = 1

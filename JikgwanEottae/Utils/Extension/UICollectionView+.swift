@@ -27,7 +27,7 @@ extension UICollectionView {
         
         let label = UILabel().then {
             $0.text = message
-            $0.font = .gMarketSans(size: 17, family: .medium)
+            $0.font = .paperlogy(size: 17, family: .medium)
             $0.textColor = .secondaryTextColor
             $0.textAlignment = .center
             $0.numberOfLines = 0

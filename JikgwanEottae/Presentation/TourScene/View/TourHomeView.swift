@@ -11,11 +11,10 @@ import SnapKit
 import Then
 
 final class TourHomeView: UIView {
-    // 왼쪽 바 버튼 아이템 타이틀 레이블입니다.
     public let leftBarButtonTitleLabel = UILabel().then {
         $0.text = "지도"
         $0.numberOfLines = 1
-        $0.font = UIFont.gMarketSans(size: 24, family: .bold)
+        $0.font = .paperlogy(size: 22, family: .semiBold)
         $0.textColor = .black
     }
     
@@ -44,7 +43,7 @@ final class TourHomeView: UIView {
     private let titleInfoLabel = UILabel().then {
         $0.text = "직관과 여행을 한번에"
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 20, family: .medium)
+        $0.font = .paperlogy(size: 20, family: .medium)
         $0.textColor = .primaryTextColor
     }
     
@@ -52,7 +51,7 @@ final class TourHomeView: UIView {
     private let subTitleInfoLabel = UILabel().then {
         $0.text = "구단 경기장 주변 관광 명소를 찾아드릴게요"
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 14, family: .medium)
+        $0.font = .paperlogy(size: 14, family: .medium)
         $0.textColor = .tertiaryTextColor
     }
     

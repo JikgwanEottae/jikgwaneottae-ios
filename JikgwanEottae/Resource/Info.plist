@@ -51,11 +51,14 @@
 	<string>$(TOUR_API_KEY)</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Paperlogy-7Bold.ttf</string>
+		<string>Paperlogy-6SemiBold.ttf</string>
+		<string>Paperlogy-5Medium.ttf</string>
+		<string>Paperlogy-4Regular.ttf</string>
+		<string>Paperlogy-3Light.ttf</string>
 		<string>GmarketSansLight.otf</string>
 		<string>GmarketSansMedium.otf</string>
 		<string>GmarketSansBold.otf</string>
-		<string>KBO Dia Gothic_medium.otf</string>
-		<string>KBO Dia Gothic_bold.otf</string>
 		<string>Pretendard-Regular.otf</string>
 		<string>Pretendard-Medium.otf</string>
 		<string>Pretendard-SemiBold.otf</string>

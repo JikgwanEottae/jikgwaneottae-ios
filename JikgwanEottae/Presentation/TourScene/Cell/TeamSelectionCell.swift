@@ -27,14 +27,14 @@ final class TeamSelectionCell: UICollectionViewCell {
     
     // 구단 이름 레이블입니다.
     private let teamNameLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
+        $0.font = .paperlogy(size: 20, family: .bold)
         $0.textColor = .secondaryTextColor
         $0.textAlignment = .left
     }
     
     // 구장 레이블입니다.
     private let ballparkLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 12, family: .medium)
+        $0.font = .paperlogy(size: 12, family: .medium)
         $0.textColor = .primaryTextColor
         $0.textAlignment = .left
     }

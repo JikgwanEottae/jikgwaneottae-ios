@@ -27,21 +27,21 @@ final class TourPlaceCell: UITableViewCell {
     
     // 장소 제목을 표시하기 위한 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 17, family: .medium)
+        $0.font = .paperlogy(size: 17, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .primaryTextColor
     }
     
     // 주소를 표시하기 위한 레이블입니다.
     private let addressLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 13, family: .medium)
+        $0.font = .paperlogy(size: 13, family: .medium)
         $0.numberOfLines = 2
         $0.textColor = .secondaryTextColor
     }
     
     // 거리를 표시하기 위한 레이블입니다.
     private let distanceLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 13, family: .medium)
+        $0.font = .paperlogy(size: 13, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .secondaryTextColor
     }
