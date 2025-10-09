@@ -12,8 +12,8 @@ import Then
 
 final class UnderlinedInputField: UIView {
     private let titleLabel = UILabel().then {
-        $0.font = .paperlogy(size: 13, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 13, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .left
     }
@@ -22,8 +22,8 @@ final class UnderlinedInputField: UIView {
     
     private(set) var textField = UITextField().then {
         $0.setPlaceholder(color: .placeholderColor)
-        $0.font = .paperlogy(size: 16, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 16, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.clearButtonMode = .always
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -88,7 +88,7 @@ final class UnderlinedInputField: UIView {
         
         underlineView.snp.makeConstraints { make in
             make.height
-                .equalTo(2)
+                .equalTo(1)
             make.leading.trailing.bottom
                 .equalToSuperview()
         }

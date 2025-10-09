@@ -87,8 +87,8 @@ final class WithdrawalViewController: UIViewController {
     
     /// 회원탈퇴 팝업 화면의 로딩 인디케이터 상태를 업데이트합니다.
     private func updateSignOutPopupLoadingState(isLoading: Bool) {
-        guard let popupViewController = self.presentedViewController as? PopupViewController else{ return }
-        popupViewController.updateActivityIndicatorState(isLoading)
+//        guard let popupViewController = self.presentedViewController as? PopupViewController else{ return }
+//        popupViewController.updateActivityIndicatorState(isLoading)
     }
     
     /// 게스트 모드로 전환합니다.

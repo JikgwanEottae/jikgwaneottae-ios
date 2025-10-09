@@ -28,7 +28,7 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let statusContainerView = UIView().then {
-        $0.backgroundColor = .tagBackgroundColor
+        $0.backgroundColor = UIColor.Background.badgeColor
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 7
     }

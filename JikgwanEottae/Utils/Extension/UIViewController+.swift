@@ -16,7 +16,7 @@ extension UIViewController {
             target: self,
             action: nil
         )
-        backBarButtonItem.tintColor = .black
+        backBarButtonItem.tintColor = UIColor.Text.secondaryColor
         self.navigationItem.backBarButtonItem = backBarButtonItem
     }
     
@@ -68,16 +68,16 @@ extension UIViewController {
         let alert = UIAlertController(title: "", message: "", preferredStyle: preferredStyle)
         // 타이틀의 폰트를 설정합니다.
         let titleAttributes = [
-            NSAttributedString.Key.font: UIFont.gMarketSans(size: 16, family: .medium),
-            NSAttributedString.Key.foregroundColor: UIColor.primaryTextColor
+            NSAttributedString.Key.font: UIFont.pretendard(size: 16, family: .semiBold),
+            NSAttributedString.Key.foregroundColor: UIColor.Text.primaryColor
         ]
         let attributedTitle = NSAttributedString(string: title, attributes: titleAttributes)
         alert.setValue(attributedTitle, forKey: "attributedTitle")
         // 메시지가 있을 경우 메시지의 폰트를 설정합니다.
         if let message = message {
             let messageAttributes = [
-                NSAttributedString.Key.font: UIFont.gMarketSans(size: 12, family: .medium),
-                NSAttributedString.Key.foregroundColor: UIColor.tertiaryTextColor
+                NSAttributedString.Key.font: UIFont.pretendard(size: 13, family: .medium),
+                NSAttributedString.Key.foregroundColor: UIColor.Text.tertiaryColor
             ]
             let attributedMessage = NSAttributedString(string: message, attributes: messageAttributes)
             alert.setValue(attributedMessage, forKey: "attributedMessage")

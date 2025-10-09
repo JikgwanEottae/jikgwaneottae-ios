@@ -34,12 +34,11 @@ final class DiaryGameDateSelectionView: UIView {
     private lazy var stackView = UIStackView(
         arrangedSubviews: [
             titleLabel,
-            subtitleLabel,
             datePicker,
             collectionView
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 12, bottom: 12, right: 12)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
@@ -47,20 +46,13 @@ final class DiaryGameDateSelectionView: UIView {
         $0.clipsToBounds = true
     }
     
-    // 타이틀 레이블
+    // 타이틀
     private let titleLabel = UILabel().then {
-        $0.text = "직관한 날짜를 선택해주세요"
-        $0.numberOfLines = 1
-        $0.font = .paperlogy(size: 20, family: .medium)
-        $0.textColor = .primaryTextColor
-    }
-    
-    // 서브 타이틀 레이블
-    private let subtitleLabel = UILabel().then {
-        $0.text = "날짜에 맞춰 경기 일정을 가져올게요"
-        $0.numberOfLines = 1
-        $0.font = .paperlogy(size: 14, family: .medium)
-        $0.textColor = .tertiaryTextColor
+        $0.text = "직관한 날짜를 선택하면\n그날의 경기 일정을 불러올게요"
+        $0.font = UIFont.pretendard(size: 20, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
+        $0.setLineSpacing(spacing: 5)
+        $0.numberOfLines = 0
     }
     
     // 경기 날짜 선택 데이트 피커
@@ -70,12 +62,15 @@ final class DiaryGameDateSelectionView: UIView {
         $0.locale = Locale(identifier: "ko_KR")
         $0.maximumDate = Date()
         $0.clipsToBounds = true
-        $0.backgroundColor = .secondaryBackgroundColor
+        $0.backgroundColor = UIColor.Background.secondaryColor
         $0.layer.cornerRadius = Constants.cornerRadius
     }
     
     // 경기 정보를 보여줄 컬렉션 뷰
-    public lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout()).then {
+    public lazy var collectionView = UICollectionView(
+        frame: .zero,
+        collectionViewLayout: makeLayout()
+    ).then {
         $0.register(KBOGameCollectionViewCell.self, forCellWithReuseIdentifier: KBOGameCollectionViewCell.ID)
         $0.showsHorizontalScrollIndicator = false
     }
@@ -108,25 +103,29 @@ final class DiaryGameDateSelectionView: UIView {
             make.edges
                 .equalToSuperview()
         }
+        
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
-        stackView.setCustomSpacing(12, after: titleLabel)
+        
         datePicker.snp.makeConstraints { make in
             make.height
                 .equalTo(250)
         }
+        
         collectionView.snp.makeConstraints { make in
             make.height
-                .equalTo(211)
+                .equalTo(180)
         }
+        
         activityIndicator.snp.makeConstraints { make in
             make.centerX.centerY
                 .equalToSuperview()
         }
+        
         interactionBlocker.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
@@ -149,7 +148,7 @@ extension DiaryGameDateSelectionView {
         )
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.interGroupSpacing = 20
+        section.interGroupSpacing = 12
         return UICollectionViewCompositionalLayout(section: section)
     }
 }
