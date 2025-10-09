@@ -145,7 +145,7 @@ extension DiaryCollectionViewCell {
         
         resultBadgeView.backgroundColor = .tossBlueColor
         resultLabel.text = "승리"
-        
+        	
         let titles = [
             "오늘의 승리요정",
             "야구장은 내 두 번째 집",
