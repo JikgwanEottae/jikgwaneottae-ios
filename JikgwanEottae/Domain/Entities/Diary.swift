@@ -26,3 +26,9 @@ struct Diary: Hashable, Identifiable {
     let imageURL: String?
 }
 
+
+struct DiaryTest: Hashable {
+    typealias Identifier = Int
+    let id: Identifier
+}
+

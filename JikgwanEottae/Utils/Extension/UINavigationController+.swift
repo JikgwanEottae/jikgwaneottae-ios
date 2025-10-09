@@ -17,11 +17,11 @@ extension UINavigationController {
         appearance.backgroundColor = .white
         // 네비게이션 바의 타이틀 폰트 및 색상 설정
         appearance.titleTextAttributes = [
-            .font: UIFont.paperlogy(size: 17, family: .medium),
-            .foregroundColor: UIColor.primaryTextColor
+            .font: UIFont.pretendard(size: 18, family: .semiBold),
+            .foregroundColor: UIColor.Text.secondaryColor
         ]
         // 네비게이션 바의 틴트 컬러(내부 요소들 색상)
-        navigationBar.tintColor = .black
+        navigationBar.tintColor = UIColor.Text.secondaryColor
         // 커스텀 appearance 적용
         navigationBar.standardAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance

@@ -16,9 +16,16 @@ enum Constants {
     static let buttonCornerRadius = CGFloat(12)
     
     enum Layout {
-        static let inset = CGFloat(11)
-        static let offset = CGFloat(11)
+        static let inset = CGFloat(12)
+        static let offset = CGFloat(12)
         static let cornerRadius = CGFloat(24)
+    }
+    
+    enum EdgeInset {
+        static let top = CGFloat(10)
+        static let left = CGFloat(12)
+        static let right = CGFloat(12)
+        static let bottom = CGFloat(10)
     }
     
     enum TabBarTags {

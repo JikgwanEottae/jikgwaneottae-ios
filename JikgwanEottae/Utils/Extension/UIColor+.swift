@@ -21,8 +21,20 @@ extension UIColor {
     static let shamrockGreen = #colorLiteral(red: 0.1333333333, green: 0.5450980392, blue: 0.1333333333, alpha: 1)
     static let borderColor = #colorLiteral(red: 0.9098039216, green: 0.9176470588, blue: 0.9254901961, alpha: 1)
     static let placeholderColor = #colorLiteral(red: 0.5490196078, green: 0.5882352941, blue: 0.6274509804, alpha: 1)
-    static let tagBackgroundColor = #colorLiteral(red: 0.2705882353, green: 0.2705882353, blue: 0.2705882353, alpha: 1)
     static let splashBackgroundColor = #colorLiteral(red: 0.05882352941, green: 0.05882352941, blue: 0.05882352941, alpha: 1)
+    
+    enum Background {
+        static let primaryColor = #colorLiteral(red: 0.9490196078, green: 0.9568627451, blue: 0.9647058824, alpha: 1)
+        static let secondaryColor = #colorLiteral(red: 0.9725490196, green: 0.9803921569, blue: 0.9843137255, alpha: 1)
+        static let badgeColor = #colorLiteral(red: 0.2705882353, green: 0.2705882353, blue: 0.2705882353, alpha: 1)
+        static let textField = #colorLiteral(red: 0.9803921569, green: 0.9803921569, blue: 0.9882352941, alpha: 1)
+    }
+    
+    enum Text {
+        static let primaryColor = #colorLiteral(red: 0.09803921569, green: 0.1215686275, blue: 0.1568627451, alpha: 1)
+        static let secondaryColor = #colorLiteral(red: 0.2, green: 0.2392156863, blue: 0.2941176471, alpha: 1)
+        static let tertiaryColor = #colorLiteral(red: 0.3764705882, green: 0.4156862745, blue: 0.4666666667, alpha: 1)
+    }
     
     enum Kakao {
         static let backgroundColor = #colorLiteral(red: 0.9960784314, green: 0.8980392157, blue: 0, alpha: 1)

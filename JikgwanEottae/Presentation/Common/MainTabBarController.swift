@@ -101,18 +101,16 @@ extension MainTabBarController {
     
     /// 직관일기 화면을 생성합니다.
     private func createDiary() -> UINavigationController {
-        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
-        let diartUseCase = DiaryUseCase(repository: diaryRepository)
-        let diaryViewModel = DiaryViewModel(useCase: diartUseCase)
-        let diaryViewController = DiaryViewController(viewModel: diaryViewModel)
-        let diaryNavigationController = UINavigationController(rootViewController: diaryViewController)
+        let diaryHomeViewController = DiaryHomeViewController()
+        let diaryNavigationController = UINavigationController(rootViewController: diaryHomeViewController)
         diaryNavigationController.configureBarAppearnace()
         diaryNavigationController.tabBarItem = UITabBarItem(
-            title: "기록",
+            title: "일기",
             image: .ticket,
             tag: Constants.TabBarTags.diary
         )
         return diaryNavigationController
+        
     }
     
     /// 마이 페이지 화면을 생성합니다.

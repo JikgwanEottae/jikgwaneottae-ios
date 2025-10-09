@@ -2,7 +2,7 @@
 //  DiaryCollectionViewCell.swift
 //  JikgwanEottae
 //
-//  Created by 7aeHoon on 8/11/25.
+//  Created by 7aeHoon on 9/27/25.
 //
 
 import UIKit
@@ -12,49 +12,46 @@ import SnapKit
 import Then
 
 final class DiaryCollectionViewCell: UICollectionViewCell {
+
     static let ID = "DiaryCollectionViewCell"
-    
-    public let containerView = UIView().then {
-        $0.backgroundColor = .white
-        $0.layer.cornerRadius = 25
-        $0.clipsToBounds = true
-    }
-    
-    public let backgroundImageView = UIImageView().then {
-        $0.image = UIImage(named: "placeholder")
+
+    // 썸네일 이미지
+    private let thumbnailImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
-    }
-    
-    private let resultContainerView = UIView().then {
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 7
     }
     
+    // 승패 결과 뱃지 컨테이너
+    private let resultBadgeView = UIView().then {
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 5
+    }
+
+    // 승패 결과 레이블
     private let resultLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 15, family: .medium)
+        $0.font = .pretendard(size: 14, family: .medium)
         $0.numberOfLines = 1
         $0.textColor = .white
         $0.clipsToBounds = true
         $0.setContentHuggingPriority(.required, for: .vertical)
     }
-    
+
     private let blurEffectView = UIVisualEffectView().then {
-        $0.effect =  UIBlurEffect(style: .systemThickMaterialDark)
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.alpha = 0.75
+        $0.effect =  UIBlurEffect(style: .systemThinMaterialDark)
     }
-    
-    private lazy var labelsStackView = UIStackView(arrangedSubviews: [
-        matchScoreLabel,
-        ballparkLabel
+
+    private lazy var infoStackView = UIStackView(arrangedSubviews: [
+        titleLabel,
+        dateLabel
     ]).then {
         $0.axis = .vertical
         $0.distribution = .equalSpacing
         $0.alignment = .leading
      }
-    
-    private let matchScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
+
+    // 일기 제목
+    private let titleLabel = UILabel().then {
+        $0.font = UIFont.pretendard(size: 14, family: .semiBold)
         $0.numberOfLines = 1
         $0.textColor = .white
         $0.textAlignment = .left
@@ -62,122 +59,106 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
         $0.setContentHuggingPriority(.required, for: .vertical)
     }
 
-    private let ballparkLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 14, family: .medium)
+    // 일기 작성 날짜
+    private let dateLabel = UILabel().then {
+        $0.font = UIFont.pretendard(size: 12, family: .regular)
         $0.numberOfLines = 1
-        $0.textColor = .white
+        $0.textColor = .white.withAlphaComponent(0.8)
         $0.textAlignment = .left
         $0.clipsToBounds = true
         $0.setContentHuggingPriority(.required, for: .vertical)
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
         setupLayout()
-        addShadow()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
-        backgroundImageView.image = UIImage(named: "placeholder")
-        matchScoreLabel.text = nil
-        ballparkLabel.text = nil
+        thumbnailImageView.image = UIImage(named: "placeholder")
+        resultBadgeView.backgroundColor = nil
+        resultLabel.text = nil
+        titleLabel.text = nil
+        dateLabel.text = nil
     }
-    
+
     private func setupUI() {
-        contentView.layer.cornerRadius = 30
-        contentView.backgroundColor = .white
-        contentView.addSubview(containerView)
-        containerView.addSubview(backgroundImageView)
-        containerView.addSubview(resultContainerView)
-        containerView.addSubview(blurEffectView)
-        resultContainerView.addSubview(resultLabel)
-        blurEffectView.contentView.addSubview(labelsStackView)
+        backgroundColor = .white
+        contentView.clipsToBounds = true
+        contentView.addSubview(thumbnailImageView)
+        thumbnailImageView.addSubview(resultBadgeView)
+        thumbnailImageView.addSubview(blurEffectView)
+        resultBadgeView.addSubview(resultLabel)
+        blurEffectView.contentView.addSubview(infoStackView)
     }
-    
+
     private func setupLayout() {
-        containerView.snp.makeConstraints { make in
-            make.edges
-                .equalToSuperview()
-                .inset(5)
-        }
-        
-        backgroundImageView.snp.makeConstraints { make in
+        thumbnailImageView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
         }
-        
-        resultContainerView.snp.makeConstraints { make in
+
+        resultBadgeView.snp.makeConstraints { make in
             make.top.leading
                 .equalToSuperview()
-                .inset(15)
+                .inset(8)
         }
-        
+
         resultLabel.snp.makeConstraints { make in
             make.leading.trailing
                 .equalToSuperview()
                 .inset(6)
             make.top.bottom
                 .equalToSuperview()
-                .inset(4)
+                .inset(3)
         }
-        
+
         blurEffectView.snp.makeConstraints { make in
             make.leading.trailing.bottom
                 .equalToSuperview()
             make.height
-                .equalTo(70)
+                .equalTo(55)
         }
-        
-        labelsStackView.snp.makeConstraints { make in
-            make.top.leading.bottom
+
+        infoStackView.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom
                 .equalToSuperview()
-                .inset(15)
+                .inset(10)
         }
     }
 }
 
+// MARK: - Extension
+
 extension DiaryCollectionViewCell {
-    private func addShadow() {
-        layer.masksToBounds = false
-        layer.shadowColor   = UIColor.black.cgColor
-        layer.shadowOffset  = CGSize(width: -2, height: 2)
-        layer.shadowOpacity = 0.3
-        layer.shadowRadius  = 5
-    }
-    
-    public func configure(diary: Diary) {
-        if let imageURLString = diary.imageURL, let imageURL = URL(string: imageURLString) {
-            backgroundImageView.kf.setImage(with: imageURL)
-        }
-        matchScoreLabel.text = "\(diary.homeTeam) \(diary.homeScore) vs \(diary.awayScore) \(diary.awayTeam)"
-        ballparkLabel.text = diary.ballpark
+    public func configure() {
+        let randomIndex = Int.random(in: 1...9)
+        let imageName = "test\(randomIndex)"
+        thumbnailImageView.image = UIImage(named: imageName)
         
-        switch diary.result {
-        case "WIN":
-            resultLabel.text = "승리"
-            resultContainerView.backgroundColor = .tossBlueColor
-        case "LOSS":
-            resultLabel.text = "패배"
-            resultContainerView.backgroundColor = .tossRedColor
-        case "DRAW":
-            resultLabel.text = "무승부"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        case "SCHEDULED":
-            resultLabel.text = "경기예정"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        case "CANCELED":
-            resultLabel.text = "경기취소"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        default:
-            resultLabel.text = "-"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        }
+        resultBadgeView.backgroundColor = .tossBlueColor
+        resultLabel.text = "승리"
+        	
+        let titles = [
+            "오늘의 승리요정",
+            "야구장은 내 두 번째 집",
+            "직관 운세 대폭발 🎉",
+            "응원봉 들고 직관!",
+            "비 오면 취소될까 걱정한 하루",
+            "치킨과 맥주와 승리",
+            "직관러의 하루 기록",
+            "끝내기 안타의 짜릿함 ⚾️",
+            "승리를 부르는 직관러"
+        ]
+        
+        titleLabel.text = titles.randomElement()
+        dateLabel.text = "2025년 11월 03일"
     }
 }
