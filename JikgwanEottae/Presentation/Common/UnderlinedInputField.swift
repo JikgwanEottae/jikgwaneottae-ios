@@ -21,7 +21,6 @@ final class UnderlinedInputField: UIView {
     private let containerView = UIView()
     
     private(set) var textField = UITextField().then {
-        $0.setPlaceholder(color: .placeholderColor)
         $0.font = UIFont.pretendard(size: 16, family: .medium)
         $0.textColor = UIColor.Text.primaryColor
         $0.clearButtonMode = .always
@@ -31,12 +30,13 @@ final class UnderlinedInputField: UIView {
     }
     
     private let underlineView = UIView().then {
-        $0.backgroundColor = .primaryBackgroundColor
+        $0.backgroundColor = UIColor.Background.primaryColor
     }
 
     init(title: String, placeholder: String, inputView: UIView? = nil) {
         titleLabel.text = title
         textField.placeholder = placeholder
+        textField.setPlaceholder(color: UIColor.Text.placeholderColor)
         if let inputView = inputView {
             textField.inputView = inputView
             textField.tintColor = .clear
@@ -44,6 +44,7 @@ final class UnderlinedInputField: UIView {
         super.init(frame: .zero)
         setupUI()
         setupLayout()
+        addTargets()
     }
     
     convenience init(title: String, placeholder: String, customView: UIView) {
@@ -53,7 +54,6 @@ final class UnderlinedInputField: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
     }
     
     private func setupUI() {
@@ -88,13 +88,30 @@ final class UnderlinedInputField: UIView {
         
         underlineView.snp.makeConstraints { make in
             make.height
-                .equalTo(1)
+                .equalTo(1.8)
             make.leading.trailing.bottom
                 .equalToSuperview()
         }
     }
     
+    private func addTargets() {
+        textField.addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
+        textField.addTarget(self, action: #selector(editingDidEnd), for: .editingDidEnd)
+    }
+    
     public func setUnderlineColor(_ color: UIColor) {
         underlineView.backgroundColor = color
+    }
+}
+
+extension UnderlinedInputField {
+    @objc
+    private func editingDidBegin() {
+        underlineView.backgroundColor = UIColor.Custom.orange
+    }
+
+    @objc
+    private func editingDidEnd() {
+        underlineView.backgroundColor = UIColor.Background.primaryColor
     }
 }

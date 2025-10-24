@@ -14,25 +14,40 @@ import RxCocoa
 
 protocol DiaryUseCaseProtocol {
     func fetchAllDiaries() -> Single<[Diary]>
+    
+    func fetchFilteredDiaries(
+        _ filterType: DiaryFilterType
+    ) -> Single<[Diary]>
 
-    func fetchDiaries(selectedMonth: Date) -> Single<[Diary]>
+    func fetchDiaries(
+        selectedMonth: Date
+    ) -> Single<[Diary]>
     
-    func fetchDailyDiaries(selectedDay: Date) -> [Diary]
+    func fetchDailyDiaries(
+        selectedDay: Date
+    ) -> [Diary]
     
-    func createDiary(gameID: Int, favoriteTeam: String, seat: String, memo: String, imageData: Data?) -> Completable
+    func createDiary(
+        gameID: Int,
+        title: String,
+        favoriteTeam: String,
+        seat: String,
+        content: String,
+        photoData: Data?
+    ) -> Completable
     
     func updateDiary(
         diaryId: Int,
+        title: String,
         favoriteTeam: String,
         seat: String,
-        memo: String,
-        imageData: Data?,
+        content: String,
+        photoData: Data?,
         isImageRemoved: Bool
     ) -> Completable
     
     func deleteDiary(
-        diaryID: Int,
-        gameDate: String
+        diaryId: Int,
     ) -> Completable
     
     func fetchDiaryStats() -> Single<DiaryStats>
@@ -48,44 +63,74 @@ final class DiaryUseCase: DiaryUseCaseProtocol {
     }
     
     public func fetchAllDiaries() -> Single<[Diary]> {
-        return self.repository.fetchAllDiaries()
+        return repository.fetchAllDiaries()
     }
     
-    public func fetchDiaries(selectedMonth: Date) -> Single<[Diary]> {
+    public func fetchFilteredDiaries(
+        _ filterType: DiaryFilterType
+    ) -> Single<[Diary]> {
+        return repository.fetchFilteredDiaries(filterType)
+    }
+    
+    public func fetchDiaries(
+        selectedMonth: Date
+    ) -> Single<[Diary]> {
         return repository.fetchDiaries(selectedMonth: selectedMonth)
     }
     
-    public func fetchDailyDiaries(selectedDay: Date) -> [Diary] {
+    public func fetchDailyDiaries(
+        selectedDay: Date
+    ) -> [Diary] {
         return repository.fetchDiaries(selectedDay: selectedDay)
     }
     
-    public func createDiary(gameID: Int, favoriteTeam: String, seat: String, memo: String, imageData: Data?) -> Completable {
-        return self.repository.createDiary(gameID: gameID, favoriteTeam: favoriteTeam, seat: seat, memo: memo, imageData: imageData)
+    public func createDiary(
+        gameID: Int,
+        title: String,
+        favoriteTeam: String,
+        seat: String,
+        content: String,
+        photoData: Data?
+    ) -> Completable {
+        return repository.createDiary(
+            gameID: gameID,
+            title: title,
+            favoriteTeam: favoriteTeam,
+            seat: seat,
+            content: content,
+            photoData: photoData
+        )
     }
     
     public func updateDiary(
         diaryId: Int,
+        title: String,
         favoriteTeam: String,
         seat: String,
-        memo: String,
-        imageData: Data?,
+        content: String,
+        photoData: Data?,
         isImageRemoved: Bool
     ) -> Completable {
-        return self.repository.updateDiary(
+        return repository.updateDiary(
             diaryId: diaryId,
+            title: title,
             favoriteTeam: favoriteTeam,
             seat: seat,
-            memo: memo,
-            imageData: imageData,
+            content: content,
+            photoData: photoData,
             isImageRemoved: isImageRemoved
         )
     }
     
-    public func deleteDiary(diaryID: Int, gameDate: String) -> Completable {
-        return self.repository.deleteDiary(diaryID: diaryID, gameDate: gameDate)
+    public func deleteDiary(
+        diaryId: Int
+    ) -> Completable {
+        return repository.deleteDiary(
+            diaryId: diaryId
+        )
     }
     
     public func fetchDiaryStats() -> Single<DiaryStats> {
-        return self.repository.fetchDiaryStats()
+        return repository.fetchDiaryStats()
     }
 }

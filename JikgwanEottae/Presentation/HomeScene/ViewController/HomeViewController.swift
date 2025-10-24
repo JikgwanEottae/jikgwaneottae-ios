@@ -92,12 +92,13 @@ final class HomeViewController: UIViewController {
                 let item = self.dataSource.itemIdentifier(for: indexPath)
                 switch item {
                 case .todayFortune:
-                    let todayFortuneRepository = TodayFortuneRepository(networkManager: TodayFortuneNetworkManager.shared)
-                    let todatFortuneUseCase = TodayFortuneUseCase(repository: todayFortuneRepository)
-                    let todayFortuneViewModel = TodayFortuneViewModel(useCase: todatFortuneUseCase)
-                    let todayFortuneViewController = TodayFortuneViewController(viewModel: todayFortuneViewModel)
-                    todayFortuneViewController.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(todayFortuneViewController, animated: true)
+//                    let todayFortuneRepository = TodayFortuneRepository(networkManager: TodayFortuneNetworkManager.shared)
+//                    let todatFortuneUseCase = TodayFortuneUseCase(repository: todayFortuneRepository)
+//                    let todayFortuneViewModel = TodayFortuneViewModel(useCase: todatFortuneUseCase)
+//                    let todayFortuneViewController = TodayFortuneViewController(viewModel: todayFortuneViewModel)
+                    let fortuneTeamSelectionViewController = FortuneTeamSelectionViewController()
+                    fortuneTeamSelectionViewController.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(fortuneTeamSelectionViewController, animated: true)
                 default:
                     break
                 }

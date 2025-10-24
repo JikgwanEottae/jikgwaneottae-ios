@@ -13,45 +13,127 @@ import RxCocoa
 // MARK: - 직관 일기 홈을 담당하는 뷰 컨트롤러입니다.
 
 final class DiaryHomeViewController: UIViewController {
+    
     private let diaryHomeView = DiaryHomeView()
-    private var dataSource: UICollectionViewDiffableDataSource<Section, DiaryTest>!
-    private enum Section: CaseIterable { case main }
+    private let viewModel: DiaryHomeViewModel
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Diary>!
+    private enum Section: CaseIterable {
+        case main
+    }
+    private var currentSortOrder = DiarySortOrder.latest
+    private let selectedFilterRelay = BehaviorRelay(value: DiaryFilterType.all)
+    private let refreshRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
+    
+    init(viewModel: DiaryHomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         self.view = diaryHomeView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         hideBackBarButtonItem()
         configureNavigationBarItem()
         setupCollectionViewDataSource()
-        applySnapshot(with: makeDummyData())
+        setupAddTargets()
+        bindNavigationButtons()
         bindCollectionView()
+        bindViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 게스트 모드일 경우 스냅샷 초기화
+        guard !AppState.shared.isGuestMode else {
+            applySnapshot(with: [])
+            return
+        }
+        // 일기 기록을 갱신해야할 경우
+        guard !AppState.shared.needsDiaryRefresh else {
+            refreshRelay.accept(())
+            return
+        }
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
     private func configureNavigationBarItem() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryHomeView.titleLabel)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "plus"),
-            style: .plain,
-            target: self,
-            action: #selector(plusButtonTapped)
+        self.navigationItem.rightBarButtonItems = [diaryHomeView.plusButton]
+        let latestAction = UIAction(title: "최신순", image: UIImage(systemName: "arrow.down")) { [weak self] _ in
+            
+        }
+        let oldestAction = UIAction(title: "오래된순", image: UIImage(systemName: "arrow.up")) { [weak self] _ in
+            
+        }
+        let sortMenu = UIMenu(
+            title: "정렬 기준",
+            options: [.displayInline],
+            children: [latestAction, oldestAction]
         )
+        diaryHomeView.sortButton.menu = sortMenu
+        diaryHomeView.sortButton.primaryAction = nil
+    }
+    
+    private func bindNavigationButtons() {
+        diaryHomeView.plusButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                if AppState.shared.isGuestMode {
+                    let repository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+                    let useCase = AuthUseCase(repository: repository)
+                    let viewModel = SignInViewModel(useCase: useCase)
+                    let viewController = SignInViewController(viewModel: viewModel)
+                    viewController.delegate = self
+                    let navigationController = UINavigationController(rootViewController: viewController)
+                    navigationController.configureBarAppearnace()
+                    navigationController.modalPresentationStyle = .overFullScreen
+                    owner.present(navigationController, animated: true)
+                } else {
+                    owner.naviagateToGameDateSelectionViewController()
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindViewModel() {
+        let input = DiaryHomeViewModel.Input(
+            selectedFilter: selectedFilterRelay.asObservable(),
+            refreshTrigger: refreshRelay.asObservable()
+        )
+        
+        let output = viewModel.transform(input: input)
+        
+        output.diaries
+            .drive(onNext: { [weak self] diaries in
+                guard let self = self else { return }
+                self.applySnapshot(with: diaries)
+            })
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(diaryHomeView.activityIndicator.rx.isAnimating)
+            .disposed(by: disposeBag)
     }
     
     /// 컬렉션뷰 데이터 소스를 설정합니다.
     private func setupCollectionViewDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, DiaryTest>(
+        dataSource = UICollectionViewDiffableDataSource<Section, Diary>(
             collectionView: diaryHomeView.collectionView,
-            cellProvider: { collectionView, indexPath, game in
+            cellProvider: { collectionView, indexPath, diary in
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: DiaryCollectionViewCell.ID,
                     for: indexPath
                 ) as? DiaryCollectionViewCell else { return UICollectionViewCell() }
-                cell.configure()
+                cell.configure(with: diary)
                 return cell
             }
         )
@@ -62,45 +144,78 @@ final class DiaryHomeViewController: UIViewController {
     private func bindCollectionView() {
         diaryHomeView.collectionView.rx.itemSelected
             .compactMap { [weak self] indexPath in
-                return self?.dataSource.itemIdentifier(for: indexPath)
+                self?.dataSource.itemIdentifier(for: indexPath)
             }
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] diary in
                 guard let self = self else { return }
-                let diaryDetailViewController = DiaryDetailViewController()
-                diaryDetailViewController.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(diaryDetailViewController, animated: true)
+                let repository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+                let useCase = DiaryUseCase(repository: repository)
+                let viewModel = DiaryDetailViewModel(
+                    useCase: useCase,
+                    diary: diary
+                )
+                let viewController = DiaryDetailViewController(viewModel: viewModel)
+                viewController.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(viewController, animated: true)
             })
             .disposed(by: disposeBag)
     }
     
     /// 스냅샷을 생성하고 적용합니다.
-    private func applySnapshot(with items: [DiaryTest]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, DiaryTest>()
+    private func applySnapshot(with items: [Diary]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Diary>()
         snapshot.appendSections([.main])
         snapshot.appendItems(items, toSection: .main)
         dataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    /// 임시 더미 데이터 생성
-    private func makeDummyData() -> [DiaryTest] {
-        return (1...19).map { DiaryTest(id: $0) }
-    }
-}
-
-extension DiaryHomeViewController {
-    @objc private func plusButtonTapped() {
-        naviagateToGameDateSelectionViewController()
+        if items.isEmpty {
+            diaryHomeView.collectionView.setEmptyView(
+                image: UIImage(systemName: "book.pages"),
+                message: "표시할 일기가 없어요"
+            )
+        } else {
+            diaryHomeView.collectionView.restore()
+        }
     }
 }
 
 extension DiaryHomeViewController {
     /// 경기 날짜 선택 화면으로 네비게이션 푸시합니다.
     private func naviagateToGameDateSelectionViewController() {
-        let KBOGameRepository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
-        let KBOGameUseCase = KBOGameUseCase(repository: KBOGameRepository)
-        let diaryGameDateSelectionViewModel = DiaryGameDateSelectionViewModel(useCase: KBOGameUseCase)
-        let diaryGameDateSelectionViewController = DiaryGameDateSelectionViewController(viewModel: diaryGameDateSelectionViewModel)
-        diaryGameDateSelectionViewController.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(diaryGameDateSelectionViewController, animated: true)
+        let repository = KBOGameRepository(networkManager: KBOGameNetworkManager.shared)
+        let useCase = KBOGameUseCase(repository: repository)
+        let viewModel = DiaryGameDateSelectionViewModel(useCase: useCase)
+        let viewController = DiaryGameDateSelectionViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
+extension DiaryHomeViewController: SignInDelegate {
+    public func signInDidComplete() {
+        naviagateToGameDateSelectionViewController()
+    }
+}
+
+extension DiaryHomeViewController {
+    private func setupAddTargets() {
+        [diaryHomeView.allButton,
+         diaryHomeView.winButton,
+         diaryHomeView.lossButton,
+         diaryHomeView.drawButton
+        ].forEach {
+            $0.addTarget(self, action: #selector(filterTapped(_:)), for: .touchUpInside)
+        }
+    }
+    
+    @objc
+    private func filterTapped(_ sender: UIButton) {
+        diaryHomeView.selectFilterButton(sender)
+        switch sender {
+        case diaryHomeView.allButton: selectedFilterRelay.accept(.all)
+        case diaryHomeView.winButton: selectedFilterRelay.accept(.win)
+        case diaryHomeView.lossButton: selectedFilterRelay.accept(.loss)
+        case diaryHomeView.drawButton: selectedFilterRelay.accept(.draw)
+        default: break
+        }
     }
 }

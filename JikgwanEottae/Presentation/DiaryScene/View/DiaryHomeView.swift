@@ -10,48 +10,162 @@ import UIKit
 import SnapKit
 import Then
 
-// MARK: - 직관 일기 홈 커스텀 뷰입니다.
+// MARK: - 직관 일기 홈 뷰입니다.
 
 final class DiaryHomeView: UIView {
-    // 네비게이션 타이틀 레이블
+    
     public let titleLabel = UILabel().then {
         $0.text = "일기"
+        $0.font = UIFont.pretendard(size: 22, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = UIFont.pretendard(size: 26, family: .bold)
-        $0.textColor = UIColor.Text.secondaryColor
     }
     
-    private(set) lazy var collectionView = UICollectionView(
+    private(set) var sortButton = UIBarButtonItem().then {
+        let config = UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+        $0.image = UIImage(systemName: "arrow.up.arrow.down", withConfiguration: config)
+        $0.style = .plain
+    }
+    
+    private(set) var plusButton = UIBarButtonItem().then {
+        let config = UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
+        $0.image = UIImage(systemName: "plus", withConfiguration: config)
+        $0.style = .plain
+    }
+
+    private(set) lazy var allButton = makeFilterButton(title: "전체")
+    private(set) lazy var winButton = makeFilterButton(title: "승리")
+    private(set) lazy var lossButton = makeFilterButton(title: "패배")
+    private(set) lazy var drawButton = makeFilterButton(title: "무승부")
+
+    // MARK: - UI Components
+    private let filterView = UIView().then {
+        $0.backgroundColor = .white
+        $0.clipsToBounds = true
+    }
+
+    // 컬렉션 뷰
+    public private(set) lazy var collectionView = UICollectionView(
         frame: .zero,
         collectionViewLayout: createLayout()
     ).then {
         $0.backgroundColor = .white
-        $0.register(
-            DiaryCollectionViewCell.self,
-            forCellWithReuseIdentifier: DiaryCollectionViewCell.ID
-        )
+        $0.register(DiaryCollectionViewCell.self,
+                    forCellWithReuseIdentifier: DiaryCollectionViewCell.ID)
     }
     
+    public let activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = UIColor.Custom.charcoal
+    }
+
+    // MARK: - 초기화
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
         setupLayout()
+        selectFilterButton(allButton)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
-        self.addSubview(collectionView)
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        filterView.layoutIfNeeded()
+        [allButton, winButton, lossButton, drawButton].forEach {
+            $0.layer.cornerRadius = $0.bounds.height / 2
+        }
+    }
 
+    private func setupUI() {
+        addSubview(filterView)
+        addSubview(activityIndicator)
+        addSubview(collectionView)
+        [allButton, winButton, lossButton, drawButton].forEach {
+            filterView.addSubview($0)
+        }
+    }
+
+    private func setupLayout() {
+        filterView.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(55)
+        }
+        
+        allButton.snp.makeConstraints { make in
+            make.centerY
+                .equalToSuperview()
+            make.leading
+                .equalToSuperview()
+                .offset(8)
+        }
+        
+        winButton.snp.makeConstraints { make in
+            make.centerY
+                .equalToSuperview()
+            make.leading
+                .equalTo(allButton.snp.trailing)
+                .offset(12)
+        }
+        
+        lossButton.snp.makeConstraints { make in
+            make.centerY
+                .equalToSuperview()
+            make.leading
+                .equalTo(winButton.snp.trailing)
+                .offset(12)
+        }
+        
+        drawButton.snp.makeConstraints { make in
+            make.centerY
+                .equalToSuperview()
+            make.leading
+                .equalTo(lossButton.snp.trailing)
+                .offset(12)
+        }
+
+        collectionView.snp.makeConstraints {
+            $0.top
+                .equalTo(filterView.snp.bottom)
+            $0.leading.trailing.bottom
+                .equalToSuperview()
+        }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
+        }
+    }
+}
+
+extension DiaryHomeView {
+    /// 필터 버튼을 생성합니다.
+    private func makeFilterButton(title: String) -> UIButton {
+        return UIButton(type: .custom).then {
+            $0.setTitle(title, for: .normal)
+            $0.setTitleColor(UIColor.Text.secondaryColor, for: .normal)
+            $0.titleLabel?.font = UIFont.pretendard(size: 12, family: .medium)
+            $0.contentEdgeInsets = UIEdgeInsets(top: 9, left: 13, bottom: 9, right: 13)
+            $0.backgroundColor = UIColor.white
+            $0.layer.borderColor = UIColor.Background.borderColor.cgColor
+            $0.layer.cornerRadius = 14
+            $0.layer.borderWidth = 1
+            $0.clipsToBounds = true
+        }
     }
     
-    private func setupLayout() {
-        collectionView.snp.makeConstraints { make in
-            make.edges
-                .equalToSuperview()
+    /// 필터 버튼을 선택으로 활성화합니다.
+    public func selectFilterButton(_ selectedButton: UIButton) {
+        [allButton, winButton, lossButton, drawButton].forEach { button in
+            let isSelected = (button == selectedButton)
+            button.backgroundColor = isSelected ? UIColor.Custom.charcoal : UIColor.white
+            button.setTitleColor(isSelected ? UIColor.white : UIColor.Text.secondaryColor, for: .normal)
+            button.layer.borderColor = isSelected ? UIColor.Custom.charcoal.cgColor : UIColor.Background.borderColor.cgColor
         }
     }
 }
@@ -59,7 +173,7 @@ final class DiaryHomeView: UIView {
 extension DiaryHomeView {
     private func createLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0 / 2.0),
+            widthDimension: .fractionalWidth(0.5),
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -72,17 +186,10 @@ extension DiaryHomeView {
             repeatingSubitem: item,
             count: 2
         )
-        // 그룹 내부 아이템 간 간격을 설정합니다.
-        group.interItemSpacing = NSCollectionLayoutSpacing.fixed(2)
+        group.interItemSpacing = .fixed(5)
         let section = NSCollectionLayoutSection(group: group)
-        // 섹션 내부 그룹 간 간격을 설정합니다.
-        section.interGroupSpacing = 2
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 10,
-            leading: 0,
-            bottom: 0,
-            trailing: 0
-        )
+        section.interGroupSpacing = 5
+        section.contentInsets = .init(top: 0, leading: 8, bottom: 8, trailing: 8)
         return UICollectionViewCompositionalLayout(section: section)
     }
 }

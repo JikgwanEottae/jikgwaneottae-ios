@@ -20,9 +20,17 @@ final class DiaryNetworkManager {
         self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
     }
     
-    /// 전체 직관 일기 조회를 요청합니다.
     public func fetchAllDiaries() -> Single<[Diary]> {
-        return self.provider.rx.request(.fetchAllDiaries)
+        return provider.rx.request(.fetchAllDiaries)
+            .map(DiaryResponseDTO.self)
+            .map { $0.toDomain() }
+    }
+    
+    /// 필터 타입에 따라 직관 일기 조회를 요청합니다.
+    public func fetchFilteredDiaries(
+        _ filterType: DiaryFilterType
+    ) -> Single<[Diary]> {
+        return provider.rx.request(.fetchFilteredDiaries(type: filterType.rawValue))
             .map(DiaryResponseDTO.self)
             .map { $0.toDomain() }
     }
@@ -51,23 +59,24 @@ final class DiaryNetworkManager {
     public func updateDiary(
         diaryId: Int,
         dto: DiaryUpdateRequestDTO,
-        imageData: Data?
+        photoData: Data?
     ) -> Single<[Diary]> {
-        return self.provider.rx.request(.updateDiary(diaryId: diaryId, dto: dto, imageData: imageData))
+        return provider.rx.request(.updateDiary(diaryId: diaryId, dto: dto, photoData: photoData))
             .map(DiaryResponseDTO.self)
             .map { $0.toDomain() }
     }
     
     /// 직관 일기 삭제를 요청합니다.
-    public func deleteDiary(diaryID: Int) -> Completable {
-        return self.provider.rx.request(.deleteDiary(DiaryID: diaryID))
-            .filterSuccessfulStatusCodes()
+    public func deleteDiary(
+        diaryId: Int
+    ) -> Completable {
+        return provider.rx.request(.deleteDiary(diaryId: diaryId))
             .asCompletable()
     }
     
     /// 직관 일기 승률을 조회합니다.
     public func fetchDiaryStats() -> Single<DiaryStats> {
-        return self.provider.rx.request(.fetchDiaryStats)
+        return provider.rx.request(.fetchDiaryStats)
             .map(DiaryStatsResponseDTO.self)
             .map { $0.toDomain() }
     }

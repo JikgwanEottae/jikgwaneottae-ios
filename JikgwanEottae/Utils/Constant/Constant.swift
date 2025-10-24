@@ -12,9 +12,7 @@ import Foundation
 enum Constants {
     static let cornerRadius = CGFloat(24)
     static let tableViewRowHeight = CGFloat(140)
-    static let buttonHeight = CGFloat(57)
-    static let buttonCornerRadius = CGFloat(12)
-    
+
     enum Layout {
         static let inset = CGFloat(12)
         static let offset = CGFloat(12)
@@ -33,5 +31,14 @@ enum Constants {
         static let tour = 1001
         static let diary = 1002
         static let myPage = 1003
+    }
+    
+    enum Button {
+        static let height = CGFloat(57)
+        static let cornerRadius = CGFloat(12)
+    }
+    
+    enum Text {
+        static let textViewPlaceholder = "내용을 입력해주세요"
     }
 }

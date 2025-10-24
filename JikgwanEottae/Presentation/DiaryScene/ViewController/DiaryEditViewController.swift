@@ -14,9 +14,8 @@ import RxCocoa
 final class DiaryEditViewController: UIViewController {
     private let diaryEditView = DiaryEditView()
     private let viewModel: DiaryEditViewModel
-    private let selectedPhotoDataRelay = PublishRelay<Data?>()
-    private let deleteButtonTappedRelay = PublishRelay<Void>()
-    private let photoChangedStateRelay = BehaviorRelay<Bool>(value: false)
+    private let photoRelay = PublishRelay<Data?>()
+    private var cachedTeams: [String] = []
     private let disposeBag = DisposeBag()
     
     init(viewModel: DiaryEditViewModel) {
@@ -36,194 +35,226 @@ final class DiaryEditViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTappedAround()
+        setupDelegates()
         configureNavigationBarItem()
+        configureButtonActions()
+        handleCloseBarButton()
         bindViewModel()
-        bindUnderlineColorToEditingState()
-        bindPhotoSelectionButton()
-        bindPhotoRemoveButton()
-        setupPickerView()
-        setupToolBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+            self.view.endEditing(true)
+    }
+    
+    private func setupDelegates() {
+        diaryEditView.contentTextView.delegate = self
+        diaryEditView.favoriteTeamTextField.textField.delegate = self
     }
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
     private func configureNavigationBarItem() {
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryEditView.dismissButton)
-        diaryEditView.dismissButton.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: diaryEditView.deleteButton)
-        diaryEditView.deleteButton.addTarget(self, action: #selector(deleteDiary), for: .touchUpInside)
+        self.navigationItem.rightBarButtonItem = diaryEditView.editBarButton
+        self.navigationItem.leftBarButtonItem = diaryEditView.closeBarButton
     }
     
-    /// 피커 뷰를 설정합니다.
-    private func setupPickerView() {
-        // 선택된 응원팀 아이템을 텍스트 필드와 바인드합니다.
-        diaryEditView.supportTeamPickerView.rx.modelSelected(String.self)
-            .compactMap { $0.first }
-            .bind(to: diaryEditView.supportTeamInputField.textField.rx.text)
-            .disposed(by: disposeBag)
+    private func configureButtonActions() {
+        diaryEditView.photoSelectionButton.addTarget(
+            self,
+            action: #selector(handlePhotoSelectionButtonTapped),
+            for: .touchUpInside
+        )
+        
+        diaryEditView.removePhotoButton.addTarget(
+            self,
+            action: #selector(handlePhotoRemoveButtonTapped),
+            for: .touchUpInside
+        )
     }
     
     private func bindViewModel() {
         let input = DiaryEditViewModel.Input(
-            selectedPhotoData: selectedPhotoDataRelay,
-            supportTeam: diaryEditView.supportTeamInputField.textField.rx.text.orEmpty.asObservable(),
-            seat: diaryEditView.seatInputField.textField.rx.text.orEmpty.asObservable(),
-            memo: diaryEditView.memoInputField.textField.rx.text.orEmpty.asObservable(),
-            isPhotoChanged: photoChangedStateRelay,
-            updateButtonTapped: diaryEditView.updateButton.rx.tap.asObservable(),
-            deleteButtonTapped: deleteButtonTappedRelay.asObservable()
+            title: diaryEditView.titleTextField.rx.text
+                .orEmpty
+                .skip(1)
+                .asObservable(),
+            content: diaryEditView.contentTextView.rx.text
+                .orEmpty
+                .skip(1)
+                .asObservable(),
+            photo: photoRelay
+                .asObservable(),
+            favoriteTeam: diaryEditView.favoriteTeamTextField.textField.rx.text
+                .orEmpty
+                .skip(1)
+                .asObservable(),
+            seat: diaryEditView.seatTextField.textField.rx.text
+                .orEmpty
+                .skip(1)
+                .asObservable(),
+            editButtonTapped: diaryEditView.editBarButton.rx.tap
+                .asObservable()
         )
         
         let output = viewModel.transform(input: input)
         
-        output.initialPhoto
-            .drive(onNext: { [weak self] photoURL in
-                self?.diaryEditView.configureImage(photoURL)
+        output.initialTitle
+            .drive(diaryEditView.titleTextField.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.initialContent
+            .drive(onNext: { [weak self] content in
+                guard let self = self else { return }
+                self.diaryEditView.updateContentText(content)
             })
             .disposed(by: disposeBag)
         
-        output.supportTeamPickerItems
-            .drive(diaryEditView.supportTeamPickerView.rx.itemTitles) { _, team in
-                return team
-            }
+        output.initialImageURL
+            .drive(onNext: { [weak self] imageUrl in
+                guard let self = self else { return }
+                self.diaryEditView.configureImage(with: imageUrl)
+            })
             .disposed(by: disposeBag)
         
-        output.initialSupportTeam
-            .drive(diaryEditView.supportTeamInputField.textField.rx.text)
+        output.initialFavoriteTeam
+            .drive(diaryEditView.favoriteTeamTextField.textField.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.initialTeams
+            .drive(onNext: { [weak self] teams in
+                guard let self = self else { return }
+                self.cachedTeams = teams
+            })
             .disposed(by: disposeBag)
         
         output.initialSeat
-            .drive(diaryEditView.seatInputField.textField.rx.text)
+            .drive(diaryEditView.seatTextField.textField.rx.text)
             .disposed(by: disposeBag)
         
-        output.initialMemo
-            .drive(diaryEditView.memoInputField.textField.rx.text)
+        output.showEmptyAlert
+            .withUnretained(self)
+            .emit(onNext: { owner, _ in
+                owner.showAlert(
+                    title: "알림",
+                    message: "제목을 필수로 입력해주세요",
+                    doneTitle: "닫기",
+                    doneStyle: .cancel
+                )
+            })
             .disposed(by: disposeBag)
         
         output.isLoading
             .drive(diaryEditView.activityIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
-        output.updateSuccess
+        output.editSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                owner.showAlert(title: "수정 완료", message: "직관 기록을 수정했어요", doneTitle: "확인", doneCompletion: { [weak self] in
-                    self?.view.endEditing(true)
-                    self?.dismiss(animated: true)
-                })
+                guard let tabBar = owner.presentingViewController as? UITabBarController,
+                      let navigation = tabBar.selectedViewController as? UINavigationController else { return }
+                owner.dismiss(animated: true) {
+                    navigation.popViewController(animated: true)
+                }
             })
             .disposed(by: disposeBag)
         
-        output.updateFailure
+        output.editFailure
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                owner.showAlert(title: "수정 실패", message: "잠시 후 다시 시도해주세요", doneTitle: "확인")
+                owner.showAlert(
+                    title: "알림",
+                    message: "일기를 수정하지 못했어요",
+                    doneTitle: "확인",
+                    doneStyle: .cancel
+                )
             })
             .disposed(by: disposeBag)
-        
-        output.deleteSuccess
-            .withUnretained(self)
-            .emit(onNext: { owner, _ in
-                owner.view.endEditing(true)
-                owner.dismiss(animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        output.deleteFailure
-            .withUnretained(self)
-            .emit(onNext: { owner, _ in
-                owner.showAlert(title: "삭제 실패", message: "잠시 후 다시 시도해주세요", doneTitle: "확인")
-            })
-            .disposed(by: disposeBag)
-        
-        output.formInputError
-            .withUnretained(self)
-            .emit(onNext: { owner, _ in
-                owner.showAlert(title: "안내", message: "응원팀은 필수로 선택해주세요", doneTitle: "확인")
-            })
-            .disposed(by: disposeBag)
-        
     }
     
-    /// 툴바를 설정합니다.
-    private func setupToolBar() {
-        diaryEditView.setupToolBar(target: self, action: #selector(dismissPicker))
+    private func handleCloseBarButton() {
+        diaryEditView.closeBarButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                self.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - @objc
+
+extension DiaryEditViewController {
+    @objc
+    private func handlePhotoSelectionButtonTapped() {
+        presentPhotoPicker()
     }
     
-    /// 언더라인을 편집 상태와 바인드하여 색상을 업데이트합니다.
-    private func bindUnderlineColorToEditingState() {
-        let textFields = [
-            diaryEditView.supportTeamInputField.textField,
-            diaryEditView.seatInputField.textField,
-            diaryEditView.memoInputField.textField
-        ]
-        
-        let inputFields = [
-            diaryEditView.supportTeamInputField,
-            diaryEditView.seatInputField,
-            diaryEditView.memoInputField
-        ]
-        
-        for (index, textField) in textFields.enumerated() {
-            let inputField = inputFields[index]
-            textField.rx.controlEvent(.editingDidBegin)
-                .subscribe(onNext: {
-                    UIView.animate(withDuration: 0.25) {
-                        inputField.setUnderlineColor(.mainCharcoalColor)
-                    }
-                })
-                .disposed(by: disposeBag)
-            
-            textField.rx.controlEvent(.editingDidEnd)
-                .subscribe(onNext: {
-                    UIView.animate(withDuration: 0.25) {
-                        inputField.setUnderlineColor(.primaryBackgroundColor)
-                    }
-                })
-                .disposed(by: disposeBag)
+    @objc
+    private func handlePhotoRemoveButtonTapped() {
+        diaryEditView.removePhoto()
+        photoRelay.accept(nil)
+    }
+}
+
+// MARK: - UITextViewDelegate
+
+extension DiaryEditViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.Text.placeholderColor {
+            textView.text = nil
+            textView.textColor = UIColor.Text.tertiaryColor
         }
     }
     
-    /// 사진을 업로드하는 이벤트입니다.
-    private func bindPhotoSelectionButton() {
-        diaryEditView.selectImageButton.rx.tap
-            .withUnretained(self)
-            .bind { owner, _ in
-                owner.presentPhotoPicker()
-            }
-            .disposed(by: disposeBag)
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = Constants.Text.textViewPlaceholder
+            textView.textColor = UIColor.Text.placeholderColor
+        }
     }
-    
-    /// 사진을 제거하는 이벤트입니다.
-    private func bindPhotoRemoveButton() {
-        diaryEditView.removePhotoButton.rx.tap
-            .withUnretained(self)
-            .bind { owner, _ in
-                owner.diaryEditView.removeImage()
-                owner.selectedPhotoDataRelay.accept(nil)
-                owner.photoChangedStateRelay.accept(true)
-            }
-            .disposed(by: disposeBag)
+}
+
+// MARK: - UITextFieldDelegate
+
+extension DiaryEditViewController: UITextFieldDelegate {
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        if textField == diaryEditView.favoriteTeamTextField.textField {
+            view.endEditing(true)
+            presentTeamPickerSheet(with: cachedTeams)
+            return false
+        }
+        return true
     }
 }
 
 extension DiaryEditViewController {
-    /// 툴바의 Done 버튼이 클릭됬을 때 툴바를 닫습니다.
-    @objc private func dismissPicker() {
-        view.endEditing(true)
-    }
-    
-    /// 뷰 컨트롤러를 닫습니다.
-    @objc private func dismissViewController() {
-        dismiss(animated: true)
-    }
-
-    /// 직관 일기를 삭제합니다.
-    @objc private func deleteDiary() {
-        self.showAlert(title: "기록 삭제", message: "정말로 직관 기록을 삭제할까요?", doneTitle: "삭제", doneStyle: .destructive, cancelTitle: "취소", cancelStyle: .cancel, doneCompletion: { [weak self] in
-            self?.deleteButtonTappedRelay.accept(())
-        })
+    /// 응원팀 선택 바텀 시트를 표시합니다.
+    private func presentTeamPickerSheet(with teams: [String]) {
+        let textField = diaryEditView.favoriteTeamTextField.textField
+        diaryEditView.highlightFavoriteTeamField(true)
+        let sheetViewCont = BottomTableSheetViewController(
+            title: "응원팀",
+            items: teams,
+            selectedItem: textField.text,
+            sheetHeight: 250
+        )
+        
+        sheetViewCont.onItemSelected = { [weak self, weak textField] selected in
+            textField?.text = selected
+            textField?.sendActions(for: .editingChanged)
+            self?.diaryEditView.highlightFavoriteTeamField(false)
+        }
+        
+        sheetViewCont.onDismiss = { [weak self] in
+            self?.diaryEditView.highlightFavoriteTeamField(false)
+        }
+        
+        sheetViewCont.modalPresentationStyle = .pageSheet
+        present(sheetViewCont, animated: true)
     }
 }
+
+// MARK: - PHPickerViewControllerDelegate
 
 extension DiaryEditViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -232,11 +263,9 @@ extension DiaryEditViewController: PHPickerViewControllerDelegate {
               result.itemProvider.canLoadObject(ofClass: UIImage.self) else { return }
         result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
             guard let self, let selectedImage = object as? UIImage else { return }
-            self.selectedPhotoDataRelay.accept(selectedImage.jpegData(compressionQuality: 0.8))
-            self.photoChangedStateRelay.accept(true)
+            photoRelay.accept(selectedImage.jpegData(compressionQuality: 0.8))
             DispatchQueue.main.async {
                 self.diaryEditView.didPickImage(selectedImage)
-                self.diaryEditView.removePhotoButton.isHidden = false
             }
         }
     }

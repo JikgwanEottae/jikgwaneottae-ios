@@ -14,14 +14,16 @@ import Moya
 enum DiaryAPIService {
     // 전체 직관 일기를 조회합니다.
     case fetchAllDiaries
+    // 필터 타입에 따른 직관 일기를 조회합니다.
+    case fetchFilteredDiaries(type: String)
     // 해당 연·월 직관 일기를 조회합니다.
     case fetchDiaries(year: String, month: String)
     // 직관 일기를 생성합니다.
     case createDiary(dto: DiaryCreationRequestDTO, imageData: Data?)
     // 직관 일기를 수정합니다.
-    case updateDiary(diaryId: Int, dto: DiaryUpdateRequestDTO, imageData: Data?)
+    case updateDiary(diaryId: Int, dto: DiaryUpdateRequestDTO, photoData: Data?)
     // 직관 일기를 삭제합니다.
-    case deleteDiary(DiaryID: Int)
+    case deleteDiary(diaryId: Int)
     // 직관 일기 통계를 조회합니다.
     case fetchDiaryStats
 }
@@ -37,14 +39,16 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
         switch self {
         case .fetchAllDiaries:
             return "/api/diaries"
+        case .fetchFilteredDiaries:
+            return "/api/diaries"
         case .fetchDiaries:
             return "/api/diaries/month"
         case .createDiary:
             return "/api/diaries"
         case .updateDiary(let diaryId, _, _):
             return "/api/diaries/\(diaryId)"
-        case .deleteDiary(let diaryID):
-            return "/api/diaries/\(diaryID)"
+        case .deleteDiary(let diaryId):
+            return "/api/diaries/\(diaryId)"
         case .fetchDiaryStats:
             return "/api/diaries/stats"
         }
@@ -53,7 +57,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
     // HTTP 메소드를 설정합니다.
     var method: Moya.Method {
         switch self {
-        case .fetchAllDiaries, .fetchDiaries, .fetchDiaryStats:
+        case .fetchAllDiaries, .fetchFilteredDiaries, .fetchDiaries, .fetchDiaryStats:
             return .get
         case .createDiary:
             return .post
@@ -69,6 +73,11 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
         switch self {
         case .fetchAllDiaries:
             return .requestPlain
+        case .fetchFilteredDiaries(let type):
+            return .requestParameters(
+                parameters: ["result": type],
+                encoding: URLEncoding.queryString
+            )
         case .fetchDiaries(let year, let month):
             let params = [
                 "year": year,
@@ -78,7 +87,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                 parameters: params,
                 encoding: URLEncoding.queryString
             )
-        case .createDiary(let dto, let imageData):
+        case .createDiary(let dto, let photoData):
             let json = try! JSONEncoder().encode(dto)
 
             var multipartFormData: [MultipartFormData] = []
@@ -90,7 +99,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                     mimeType: "application/json"
                 )
             )
-            if let data = imageData {
+            if let data = photoData {
                 multipartFormData.append(
                     MultipartFormData(
                         provider: .data(data),
@@ -102,7 +111,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
             }
             return .uploadMultipart(multipartFormData)
             
-        case .updateDiary(_, let dto, let imageData):
+        case .updateDiary(_, let dto, let photoData):
             var multipartFormData: [MultipartFormData] = []
             let json = try! JSONEncoder().encode(dto)
             multipartFormData.append(
@@ -113,7 +122,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
                     mimeType: "application/json"
                 )
             )
-            if let data = imageData {
+            if let data = photoData {
                 multipartFormData.append(
                     MultipartFormData(
                         provider: .data(data),
@@ -136,7 +145,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
     // 헤더를 설정합니다.
     var headers: [String : String]? {
         switch self {
-        case .fetchAllDiaries, .fetchDiaries, .deleteDiary, .fetchDiaryStats:
+        case .fetchAllDiaries, .fetchFilteredDiaries, .fetchDiaries, .deleteDiary, .fetchDiaryStats:
             return ["Content-Type": "application/json"]
         case .createDiary, .updateDiary:
             return ["Content-Type": "multipart/form-data"]
@@ -146,7 +155,7 @@ extension DiaryAPIService: TargetType, AccessTokenAuthorizable {
     // 토큰을 설정합니다.
     var authorizationType: Moya.AuthorizationType? {
         switch self {
-        case .fetchAllDiaries, .fetchDiaries, .createDiary, .updateDiary, .deleteDiary, .fetchDiaryStats:
+        case .fetchAllDiaries, .fetchFilteredDiaries, .fetchDiaries, .createDiary, .updateDiary, .deleteDiary, .fetchDiaryStats:
             return .bearer
         }
     }

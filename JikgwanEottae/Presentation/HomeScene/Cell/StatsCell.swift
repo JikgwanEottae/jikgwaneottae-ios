@@ -36,7 +36,7 @@ final class StatsCell: UICollectionViewCell {
     }
     
     private let progressView = UIProgressView(progressViewStyle: .default).then {
-        $0.progressTintColor = .mainCharcoalColor
+        $0.progressTintColor = UIColor.Custom.charcoal
         $0.trackTintColor = .primaryBackgroundColor
         $0.progress = 0.4
         $0.layer.cornerRadius = 4
@@ -64,9 +64,9 @@ final class StatsCell: UICollectionViewCell {
     }
     
     private let winStatsItem = StatsItemView(title: "승리", count: 6)
-    private let firstDivideView = UIView().then { $0.backgroundColor = .borderColor }
+    private let firstDivideView = UIView().then { $0.backgroundColor = UIColor.Background.borderColor }
     private let lossStatsItem = StatsItemView(title: "패배", count: 3)
-    private let secondDivideView = UIView().then { $0.backgroundColor = .borderColor }
+    private let secondDivideView = UIView().then { $0.backgroundColor = UIColor.Background.borderColor }
     private let drawStatsItem = StatsItemView(title: "무승부", count: 1)
     
     override init(frame: CGRect) {

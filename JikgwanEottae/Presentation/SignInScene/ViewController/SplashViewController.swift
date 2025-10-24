@@ -43,7 +43,7 @@ final class SplashViewController: UIViewController {
     }
     
     private func setupUI() {
-        self.view.backgroundColor = .splashBackgroundColor
+        self.view.backgroundColor = UIColor.black
         self.view.addSubview(splashImageView)
     }
     

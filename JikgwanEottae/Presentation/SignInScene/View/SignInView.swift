@@ -71,7 +71,7 @@ final class SignInView: UIView {
                 .equalTo(safeAreaLayoutGuide)
                 .inset(20)
             make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(Constants.Button.height)
             make.bottom
                 .equalTo(appleSignInButton.snp.top)
                 .offset(-20)
@@ -82,7 +82,7 @@ final class SignInView: UIView {
                 .equalTo(safeAreaLayoutGuide)
                 .inset(20)
             make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(Constants.Button.height)
         }
     }
 }

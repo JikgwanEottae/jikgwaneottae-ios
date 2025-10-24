@@ -45,8 +45,9 @@ final class SignInViewController: UIViewController {
     
     /// 네비게이션 바 버튼 아이템을 설정합니다.
     private func configureNavigationBarItem() {
+        let config = UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "xmark"),
+            image: UIImage(systemName: "xmark", withConfiguration: config),
             style: .plain,
             target: self,
             action: #selector(closeButtonTapped)

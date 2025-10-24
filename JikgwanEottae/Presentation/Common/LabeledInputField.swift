@@ -19,7 +19,7 @@ public final class LabeledInputField: UIView {
     
     private let containerView = UIView().then {
         $0.backgroundColor = UIColor.Background.textField
-        $0.layer.borderColor = UIColor.borderColor.cgColor
+        $0.layer.borderColor = UIColor.Background.borderColor.cgColor
         $0.layer.cornerRadius = 15
         $0.layer.borderWidth = 1
     }

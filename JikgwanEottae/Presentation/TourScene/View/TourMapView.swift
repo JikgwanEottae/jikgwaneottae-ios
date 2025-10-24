@@ -16,7 +16,7 @@ final class TourMapView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     // 관광 카테고리 선택을 위한 칩 바입니다.
@@ -31,7 +31,7 @@ final class TourMapView: UIView {
     public let centerActionButton = UIButton().then {
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .white
-        config.baseForegroundColor = .mainCharcoalColor
+        config.baseForegroundColor = UIColor.Custom.charcoal
         config.background.cornerRadius = 20
         config.imagePadding = 5
         config.imagePlacement = .leading
@@ -110,7 +110,7 @@ final class TourMapView: UIView {
             imageName = "arrow.clockwise"
         }
         attributedTitle.font = UIFont.paperlogy(size: 14, family: .medium)
-        attributedTitle.foregroundColor = UIColor.mainCharcoalColor
+        attributedTitle.foregroundColor = UIColor.Custom.charcoal
         config.attributedTitle = attributedTitle
         config.image = UIImage(
             systemName: imageName,

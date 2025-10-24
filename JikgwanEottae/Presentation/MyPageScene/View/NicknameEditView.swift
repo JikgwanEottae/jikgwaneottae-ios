@@ -16,7 +16,7 @@ final class NicknameEditView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     private(set) var titleLabel = UILabel().then {
@@ -35,7 +35,7 @@ final class NicknameEditView: UIView {
         $0.text = "한글, 영문, 숫자를 조합해서 입력해주세요. (2-10자)"
         $0.numberOfLines = 1
         $0.font = .gMarketSans(size: 11, family: .medium)
-        $0.textColor = .tossRedColor
+        $0.textColor = UIColor.Custom.red
         $0.isHidden = true
     }
     
@@ -43,7 +43,7 @@ final class NicknameEditView: UIView {
         $0.setTitle("확인", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .mainCharcoalColor.withAlphaComponent(0.3)
+        $0.backgroundColor = UIColor.Custom.charcoal.withAlphaComponent(0.3)
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
@@ -110,14 +110,14 @@ final class NicknameEditView: UIView {
                 .equalTo(keyboardLayoutGuide.snp.top)
                 .offset(-10)
             make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(Constants.Button.height)
         }
     }
 }
 
 extension NicknameEditView {
     public func setButtonState(_ isEnabled: Bool) {
-        completeButton.backgroundColor = (isEnabled ? .mainCharcoalColor : .mainCharcoalColor.withAlphaComponent(0.3))
+        completeButton.backgroundColor = (isEnabled ? UIColor.Custom.charcoal : UIColor.Custom.charcoal.withAlphaComponent(0.3))
         completeButton.isEnabled = isEnabled
     }
     

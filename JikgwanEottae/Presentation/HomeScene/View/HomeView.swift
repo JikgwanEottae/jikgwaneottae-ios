@@ -15,9 +15,9 @@ final class HomeView: UIView {
     // 현재 화면의 타이틀 레이블입니다.
     public let titleLabel = UILabel().then {
         $0.text = "직관어때"
+        $0.font = UIFont.pretendard(size: 22, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = .paperlogy(size: 22, family: .semiBold)
-        $0.textColor = .black
     }
     
     public lazy var collectionView = UICollectionView(

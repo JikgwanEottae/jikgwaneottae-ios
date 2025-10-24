@@ -92,7 +92,7 @@ extension MainTabBarController {
         let tourNavigationController = UINavigationController(rootViewController: tourHomeViewController)
         tourNavigationController.configureBarAppearnace()
         tourNavigationController.tabBarItem = UITabBarItem(
-            title: "지도",
+            title: "투어",
             image: .markerIcon,
             tag: Constants.TabBarTags.tour
         )
@@ -101,16 +101,18 @@ extension MainTabBarController {
     
     /// 직관일기 화면을 생성합니다.
     private func createDiary() -> UINavigationController {
-        let diaryHomeViewController = DiaryHomeViewController()
-        let diaryNavigationController = UINavigationController(rootViewController: diaryHomeViewController)
-        diaryNavigationController.configureBarAppearnace()
-        diaryNavigationController.tabBarItem = UITabBarItem(
+        let repository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
+        let useCase = DiaryUseCase(repository: repository)
+        let viewModel = DiaryHomeViewModel(useCase: useCase)
+        let viewCont = DiaryHomeViewController(viewModel: viewModel)
+        let naviCont = UINavigationController(rootViewController: viewCont)
+        naviCont.configureBarAppearnace()
+        naviCont.tabBarItem = UITabBarItem(
             title: "일기",
             image: .ticket,
             tag: Constants.TabBarTags.diary
         )
-        return diaryNavigationController
-        
+        return naviCont
     }
     
     /// 마이 페이지 화면을 생성합니다.
