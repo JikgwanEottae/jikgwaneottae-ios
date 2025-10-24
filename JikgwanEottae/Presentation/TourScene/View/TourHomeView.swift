@@ -11,11 +11,11 @@ import SnapKit
 import Then
 
 final class TourHomeView: UIView {
-    public let leftBarButtonTitleLabel = UILabel().then {
-        $0.text = "지도"
+    public let titleLabel = UILabel().then {
+        $0.text = "투어"
+        $0.font = UIFont.pretendard(size: 22, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = .paperlogy(size: 22, family: .semiBold)
-        $0.textColor = .black
     }
     
     private let scrollView = UIScrollView().then {

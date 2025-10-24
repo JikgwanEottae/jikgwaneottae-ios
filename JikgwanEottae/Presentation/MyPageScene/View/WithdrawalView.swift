@@ -14,7 +14,7 @@ final class WithdrawalView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     private let titleInfoLabel = UILabel().then {
@@ -36,7 +36,7 @@ final class WithdrawalView: UIView {
         $0.setTitle("탈퇴하기", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .mainCharcoalColor
+        $0.backgroundColor = UIColor.Custom.charcoal
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
@@ -91,7 +91,7 @@ final class WithdrawalView: UIView {
                 .equalTo(safeAreaLayoutGuide)
                 .inset(20)
             make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(Constants.Button.height)
         }
     }
 

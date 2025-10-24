@@ -213,9 +213,9 @@ extension MyPageViewController {
     /// 로그아웃 팝업을 표시합니다.
     private func presentSignOutConfirmationPopup(title: String) {
         self.showAlert(
-            title: title,
+            title: "알림",
             message: "정말 로그아웃할까요?",
-            doneTitle: "로그아웃",
+            doneTitle: title,
             doneStyle: .destructive,
             cancelTitle: "닫기",
             cancelStyle: .cancel,

@@ -22,7 +22,7 @@ final class MyPageView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     private(set) var tableView = UITableView(
@@ -60,7 +60,7 @@ final class MyPageView: UIView {
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "plus.circle.fill")
         config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 22)
-        config.baseForegroundColor = .mainCharcoalColor
+        config.baseForegroundColor = UIColor.Custom.charcoal
         config.background.backgroundColor = .white
         config.cornerStyle = .capsule
         $0.configuration = config

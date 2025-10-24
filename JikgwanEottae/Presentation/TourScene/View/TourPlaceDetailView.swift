@@ -18,7 +18,7 @@ final class TourPlaceDetailView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     // 관광 데이터 팝업 뷰입니다.

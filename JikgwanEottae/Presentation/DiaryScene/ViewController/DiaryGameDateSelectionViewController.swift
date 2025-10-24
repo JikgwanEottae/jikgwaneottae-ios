@@ -62,7 +62,6 @@ final class DiaryGameDateSelectionViewController: UIViewController {
         
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
-                self?.diaryGameDateSelectionView.interactionBlocker.isHidden = !isLoading
                 if isLoading {
                     self?.diaryGameDateSelectionView.activityIndicator.startAnimating()
                 } else {
@@ -73,7 +72,6 @@ final class DiaryGameDateSelectionViewController: UIViewController {
     }
     
     private func bindCollectionView() {
-        // 선택한 경기 아이템을 제공받고, 직관 일기 생성 화면으로 전환
         diaryGameDateSelectionView.collectionView.rx
             .itemSelected
             .compactMap { [weak self] indexPath in
@@ -136,8 +134,6 @@ final class DiaryGameDateSelectionViewController: UIViewController {
         return game.status == "PLAYED"
     }
     
-
-    
     /// 직관 일기 기록 불가 알림창을 표시합니다.
     private func showGameNotAvailableAlert() {
         showAlert(
@@ -149,15 +145,10 @@ final class DiaryGameDateSelectionViewController: UIViewController {
 }
 
 extension DiaryGameDateSelectionViewController {
-    /// 직관일기 게임 정보 입력 화면을 생성합니다.
-    private func makeDiaryGameInfoInputViewController(for game: KBOGame) -> DiaryGameInfoInputViewController {
-        let diaryGameInfoInputViewController = DiaryGameInfoInputViewController()
-        return diaryGameInfoInputViewController
-    }
-    
     /// 직관일기 게임 정보 입력 화면으로 이동합니다.
     private func navigateToDiaryGameInfoInput(for game: KBOGame) {
-         let diaryCreationViewController = makeDiaryGameInfoInputViewController(for: game)
-         navigationController?.pushViewController(diaryCreationViewController, animated: true)
+        let viewModel = DiaryGameInfoInputViewModel(game: game)
+        let viewCont = DiaryGameInfoInputViewController(viewModel: viewModel)
+        navigationController?.pushViewController(viewCont, animated: true)
      }
 }

@@ -18,7 +18,7 @@ final class TodayFortuneCell: UICollectionViewCell {
     
     private let imageView = UIImageView().then {
         $0.image = UIImage(named: "clover")?.withRenderingMode(.alwaysTemplate)
-        $0.tintColor = .shamrockGreen
+        $0.tintColor = UIColor.Custom.shamrockGreen
         $0.contentMode = .scaleAspectFit
         $0.clipsToBounds = true
     }
@@ -34,16 +34,16 @@ final class TodayFortuneCell: UICollectionViewCell {
     
     private let titleLabel = UILabel().then {
         $0.text = "혹시 내가 오늘의 승리 요정?"
-        $0.font = .paperlogy(size: 16, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 16, family: .semiBold)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
     }
     
     private let subtitleLabel = UILabel().then {
         $0.text = "운세보기"
-        $0.font = .paperlogy(size: 17, family: .semiBold)
-        $0.textColor = .shamrockGreen
+        $0.font = UIFont.pretendard(size: 17, family: .bold)
+        $0.textColor = UIColor.Custom.shamrockGreen
         $0.textAlignment = .left
         $0.numberOfLines = 1
     }
@@ -60,7 +60,7 @@ final class TodayFortuneCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        self.contentView.backgroundColor = .secondaryBackgroundColor
+        self.contentView.backgroundColor = UIColor.Background.secondaryColor
         self.contentView.layer.cornerRadius = Constants.cornerRadius
         self.contentView.addSubview(imageView)
         self.contentView.addSubview(stackView)

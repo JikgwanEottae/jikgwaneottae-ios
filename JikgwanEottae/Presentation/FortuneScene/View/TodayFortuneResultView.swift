@@ -84,7 +84,7 @@ final class TodayFortuneResultView: UIView {
         $0.setTitle("확인", for: .normal)
         $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
         $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .mainCharcoalColor
+        $0.backgroundColor = UIColor.Custom.charcoal
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
@@ -130,7 +130,7 @@ final class TodayFortuneResultView: UIView {
                 .equalTo(safeAreaLayoutGuide)
                 .inset(20)
             make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(Constants.Button.height)
         }
     }
     

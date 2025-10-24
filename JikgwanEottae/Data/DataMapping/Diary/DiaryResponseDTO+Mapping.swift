@@ -23,12 +23,14 @@ extension DiaryResponseDTO {
         let awayScore: Int
         let winTeam: String?
         let favoriteTeam: String
+        let title: String
         let homeTeam: String
         let awayTeam: String
         let result: String?
         let ballpark: String
         let seat: String
         let memo: String
+        let content: String
         let imageURL: String?
         
         private enum CodingKeys: String, CodingKey {
@@ -39,12 +41,14 @@ extension DiaryResponseDTO {
             case awayScore
             case winTeam
             case favoriteTeam
+            case title
             case homeTeam
             case awayTeam
             case result
             case ballpark = "stadium"
             case seat
             case memo
+            case content
             case imageURL = "photoUrl"
         }
     }
@@ -68,9 +72,11 @@ extension DiaryResponseDTO.DiaryDataDTO {
             homeScore: homeScore,
             awayScore: awayScore,
             favoriteTeam: favoriteTeam,
+            title: title,
             result: result,
             seat: seat,
             memo: memo,
+            content: content,
             imageURL: imageURL
         )
     }

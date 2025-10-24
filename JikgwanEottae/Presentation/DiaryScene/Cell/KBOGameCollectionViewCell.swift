@@ -28,10 +28,10 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
         $0.distribution = .equalSpacing
     }
     
-    private let statusContainerView = UIVisualEffectView().then {
-        $0.effect =  UIBlurEffect(style: .dark)
-        $0.layer.cornerRadius = 8
+    private let statusContainerView = UIView().then {
+        $0.backgroundColor = UIColor.Background.badgeColor
         $0.clipsToBounds = true
+        $0.layer.cornerRadius = 7
     }
     
     private let statusLabel = UILabel().then {
@@ -53,14 +53,14 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     }
     
     private let homeTeamNameLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 24, family: .semiBold)
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.numberOfLines = 1
         $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     private let homeTeamScoreLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 24, family: .semiBold)
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.numberOfLines = 1
         $0.textAlignment = .right
         $0.clipsToBounds = true
@@ -76,21 +76,21 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     }
     
     private let awayTeamNameLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 24, family: .semiBold)
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.numberOfLines = 1
         $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     private let awayTeamScoreLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 24, family: .semiBold)
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.numberOfLines = 1
         $0.textAlignment = .right
         $0.clipsToBounds = true
     }
     
     private let infoLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.font = UIFont.pretendard(size: 12, family: .medium)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 1
         $0.clipsToBounds = true
@@ -131,7 +131,7 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
     
     private func addSubviews() {
         contentView.addSubview(stackView)
-        statusContainerView.contentView.addSubview(statusLabel)
+        statusContainerView.addSubview(statusLabel)
     }
     
     private func setupUI() {
@@ -192,7 +192,7 @@ final class KBOGameCollectionViewCell: UICollectionViewCell {
             awayTeamScoreLabel.textColor =  KBOTeam(rawValue: game.awayTeam)?.color
         }
         
-        infoLabel.text = "\(game.ballpark) | \(game.gameTime)"
+        infoLabel.text = "\(game.ballpark) \(game.gameTime)"
     }
     
 }

@@ -11,16 +11,18 @@ import Foundation
 
 struct DiaryCreationRequestDTO: Encodable {
     let gameId: Int
+    let title: String
     let favoriteTeam: String
     let seat: String
-    let memo: String
+    let content: String
 }
 
 // MARK: - 직관 일기 수정 요청 DTO입니다.
 
 struct DiaryUpdateRequestDTO: Encodable {
+    let title: String
     let favoriteTeam: String
     let seat: String
-    let memo: String
+    let content: String
     let isImageRemoved: Bool
 }

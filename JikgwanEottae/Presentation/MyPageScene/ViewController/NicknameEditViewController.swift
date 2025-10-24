@@ -94,7 +94,7 @@ final class NicknameEditViewController: UIViewController {
             .withUnretained(self)
             .subscribe(onNext: { owner, _ in
                 UIView.animate(withDuration: 0.25) {
-                    owner.nicknameEditView.nicknameInputField.setUnderlineColor(.mainCharcoalColor)
+                    owner.nicknameEditView.nicknameInputField.setUnderlineColor(UIColor.Custom.charcoal)
                 }
             })
             .disposed(by: disposeBag)

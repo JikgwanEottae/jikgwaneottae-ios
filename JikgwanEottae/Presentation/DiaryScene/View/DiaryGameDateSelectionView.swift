@@ -15,12 +15,7 @@ final class DiaryGameDateSelectionView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
-    }
-    
-    // 사용자의 상호작용 블로커
-    public let interactionBlocker = UIControl().then {
-        $0.isHidden = true
+        $0.color = UIColor.Custom.charcoal
     }
     
     // 스크롤 뷰
@@ -89,8 +84,7 @@ final class DiaryGameDateSelectionView: UIView {
     
     private func addSubviews() {
         addSubview(scrollView)
-        addSubview(interactionBlocker)
-        interactionBlocker.addSubview(activityIndicator)
+        addSubview(activityIndicator)
         scrollView.addSubview(stackView)
     }
     
@@ -118,16 +112,11 @@ final class DiaryGameDateSelectionView: UIView {
         
         collectionView.snp.makeConstraints { make in
             make.height
-                .equalTo(180)
+                .equalTo(160)
         }
         
         activityIndicator.snp.makeConstraints { make in
             make.centerX.centerY
-                .equalToSuperview()
-        }
-        
-        interactionBlocker.snp.makeConstraints { make in
-            make.edges
                 .equalToSuperview()
         }
     }
