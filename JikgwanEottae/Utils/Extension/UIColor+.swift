@@ -21,6 +21,8 @@ extension UIColor {
         static let borderColor = #colorLiteral(red: 0.9098039216, green: 0.9176470588, blue: 0.9254901961, alpha: 1)
         static let textField = #colorLiteral(red: 0.9803921569, green: 0.9803921569, blue: 0.9882352941, alpha: 1)
         static let splashColor = #colorLiteral(red: 0.05882352941, green: 0.05882352941, blue: 0.05882352941, alpha: 1)
+        static let tabBarNormal = #colorLiteral(red: 0.8196078431, green: 0.8392156863, blue: 0.8549019608, alpha: 1)
+        static let tabBarSelected = #colorLiteral(red: 0.2, green: 0.2549019608, blue: 0.2941176471, alpha: 1)
     }
     
     enum Text {
