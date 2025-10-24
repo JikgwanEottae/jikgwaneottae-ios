@@ -28,16 +28,16 @@ final class MainTabBarController: UITabBarController {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         // 일반 상태 탭 바
-        appearance.stackedLayoutAppearance.normal.iconColor = .tertiaryTextColor
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.Background.tabBarNormal
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
             .font: UIFont.pretendard(size: 10, family: .semiBold),
-            .foregroundColor: UIColor.tertiaryTextColor
+            .foregroundColor: UIColor.Background.tabBarNormal
         ]
         // 선택 상태 탭 바
-        appearance.stackedLayoutAppearance.selected.iconColor = .black
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor.Background.tabBarSelected
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
             .font: UIFont.pretendard(size: 10, family: .semiBold),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor.Background.tabBarSelected
         ]
         appearance.backgroundColor = .white
         appearance.shadowColor = nil
