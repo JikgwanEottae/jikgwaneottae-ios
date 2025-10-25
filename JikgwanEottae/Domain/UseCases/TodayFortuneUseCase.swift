@@ -12,10 +12,10 @@ import RxCocoa
 
 protocol TodayFortuneUseCaseProtocol {
     func fetchTodayFortune(
-        dateOfBirth: String,
-        timeOfBirth: String,
+        date: String,
+        time: Int?,
         gender: String,
-        favoriteKBOTeam: String
+        favoriteTeam: String
     ) -> Single<Fortune>
 }
 
@@ -27,16 +27,16 @@ final class TodayFortuneUseCase: TodayFortuneUseCaseProtocol {
     }
     
     public func fetchTodayFortune(
-        dateOfBirth: String,
-        timeOfBirth: String,
+        date: String,
+        time: Int?,
         gender: String,
-        favoriteKBOTeam: String
+        favoriteTeam: String
     ) -> Single<Fortune> {
         self.repository.fetchTodayFortune(
-            dateOfBirth: dateOfBirth,
-            timeOfBirth: timeOfBirth,
+            date: date,
+            time: time,
             gender: gender,
-            favoriteKBOTeam: favoriteKBOTeam
+            favoriteTeam: favoriteTeam
         )
     }
 }

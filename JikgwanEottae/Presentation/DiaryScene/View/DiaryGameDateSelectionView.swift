@@ -33,7 +33,7 @@ final class DiaryGameDateSelectionView: UIView {
             collectionView
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 20, left: 12, bottom: 12, right: 12)
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 15, right: 15)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
@@ -137,7 +137,7 @@ extension DiaryGameDateSelectionView {
         )
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.interGroupSpacing = 12
+        section.interGroupSpacing = 15
         return UICollectionViewCompositionalLayout(section: section)
     }
 }

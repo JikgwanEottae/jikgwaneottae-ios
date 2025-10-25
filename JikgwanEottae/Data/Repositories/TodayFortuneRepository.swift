@@ -17,18 +17,16 @@ final class TodayFortuneRepository: TodayFortuneRepositoryProtocol {
     }
     
     public func fetchTodayFortune(
-        dateOfBirth: String,
-        timeOfBirth: String,
+        date: String,
+        time: Int?,
         gender: String,
-        favoriteKBOTeam: String
+        favoriteTeam: String
     ) -> Single<Fortune> {
-        let _time = timeOfBirth.isEmpty ? nil : Int(timeOfBirth)
-        let _gender = (gender == "남자") ? "M" : "F"
         let todayFortuneRequestDTO = TodayFortuneRequestDTO(
-            birth_date: dateOfBirth,
-            time: _time,
-            gender: _gender,
-            team_name: favoriteKBOTeam
+            date: date,
+            time: time,
+            gender: gender,
+            favoriteTeam: favoriteTeam
         )
         return self.networkManager.fetchTodayFortune(params: todayFortuneRequestDTO)
     }

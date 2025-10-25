@@ -48,7 +48,7 @@ final class TeamTableViewCell: UITableViewCell {
             make.leading.trailing
                 .equalToSuperview()
                 .inset(20)
-            make.top
+            make.centerY
                 .equalToSuperview()
         }
     }
