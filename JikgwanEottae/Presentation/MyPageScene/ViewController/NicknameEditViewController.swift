@@ -37,7 +37,6 @@ final class NicknameEditViewController: UIViewController {
         hideBackBarButtonItem()
         hideKeyboardWhenTappedAround()
         bindViewModel()
-        bindUnderlineColorToEditingState()
     }
     
     private func bindViewModel() {
@@ -47,13 +46,6 @@ final class NicknameEditViewController: UIViewController {
         )
         
         let output = viewModel.transform(input: input)
-        
-        output.isButtonEnabled
-            .withUnretained(self)
-            .subscribe(onNext: { owner, isEnabled in
-                owner.nicknameEditView.setButtonState(isEnabled)
-            })
-            .disposed(by: disposeBag)
         
         output.isLoading
             .drive(nicknameEditView.activityIndicator.rx.isAnimating)
@@ -86,26 +78,6 @@ final class NicknameEditViewController: UIViewController {
         
         output.validation
             .drive(nicknameEditView.noticeLabel.rx.isHidden)
-            .disposed(by: disposeBag)
-    }
-    
-    private func bindUnderlineColorToEditingState() {
-        nicknameEditView.nicknameInputField.textField.rx.controlEvent(.editingDidBegin)
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                UIView.animate(withDuration: 0.25) {
-                    owner.nicknameEditView.nicknameInputField.setUnderlineColor(UIColor.Custom.charcoal)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        nicknameEditView.nicknameInputField.textField.rx.controlEvent(.editingDidEnd)
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                UIView.animate(withDuration: 0.25) {
-                    owner.nicknameEditView.nicknameInputField.setUnderlineColor(.primaryBackgroundColor)
-                }
-            })
             .disposed(by: disposeBag)
     }
 }

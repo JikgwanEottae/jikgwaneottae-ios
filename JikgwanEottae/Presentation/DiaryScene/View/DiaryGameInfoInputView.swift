@@ -88,12 +88,12 @@ final class DiaryGameInfoInputView: UIView {
     }
     
     public func highlightFavoriteTeamField(_ isActive: Bool) {
-        let color: UIColor = isActive ? UIColor.Custom.orange : UIColor.Background.primaryColor
+        let color: UIColor = isActive ? UIColor.Custom.blue : UIColor.Background.primaryColor
         favoriteTeamTextField.setUnderlineColor(color)
     }
     
     public func highlightSeatField(_ isActive: Bool) {
-        let color: UIColor = isActive ? UIColor.Custom.orange : UIColor.Background.primaryColor
+        let color: UIColor = isActive ? UIColor.Custom.blue : UIColor.Background.primaryColor
         seatTextField.setUnderlineColor(color)
     }
 }

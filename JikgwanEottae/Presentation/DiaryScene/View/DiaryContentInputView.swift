@@ -101,7 +101,7 @@ final class DiaryContentInputView: UIView {
     private(set) var removePhotoButton = UIButton(configuration: .plain()).then {
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "xmark.circle.fill")
-        config.baseForegroundColor = UIColor.Custom.orange
+        config.baseForegroundColor = UIColor.Custom.blue
         config.contentInsets = .zero
         config.preferredSymbolConfigurationForImage = .init(pointSize: 20, weight: .semibold)
         $0.configuration = config
@@ -116,7 +116,7 @@ final class DiaryContentInputView: UIView {
         $0.setTitle("작성하기", for: .normal)
         $0.titleLabel?.font = UIFont.pretendard(size: 18, family: .medium)
         $0.setTitleColor(UIColor.white, for: .normal)
-        $0.backgroundColor = UIColor.Custom.orange
+        $0.backgroundColor = UIColor.Custom.blue
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }

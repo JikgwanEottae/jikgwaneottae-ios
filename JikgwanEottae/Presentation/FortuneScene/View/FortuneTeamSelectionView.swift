@@ -15,7 +15,7 @@ import Then
 final class FortuneTeamSelectionView: UIView {
     // 진행 상태 프로그레스 뷰
     private(set) var progressView = UIProgressView(progressViewStyle: .default).then {
-        $0.progressTintColor = UIColor.Custom.orange
+        $0.progressTintColor = UIColor.Custom.blue
         $0.trackTintColor = UIColor.Background.primaryColor
         $0.layer.cornerRadius = 3
         $0.clipsToBounds = true

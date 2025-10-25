@@ -13,7 +13,7 @@ import Then
 final class TourHomeView: UIView {
     public let titleLabel = UILabel().then {
         $0.text = "투어"
-        $0.font = UIFont.pretendard(size: 22, family: .bold)
+        $0.font = UIFont.pretendard(size: 24, family: .bold)
         $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
     }

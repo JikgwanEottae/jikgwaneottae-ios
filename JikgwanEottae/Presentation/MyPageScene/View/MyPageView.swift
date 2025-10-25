@@ -14,9 +14,9 @@ import Then
 final class MyPageView: UIView {
     public let titleLabel = UILabel().then {
         $0.text = "마이"
+        $0.font = UIFont.pretendard(size: 24, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = UIFont.gMarketSans(size: 24, family: .bold)
-        $0.textColor = .black
     }
     
     public let activityIndicator = UIActivityIndicatorView().then {
@@ -60,8 +60,8 @@ final class MyPageView: UIView {
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "plus.circle.fill")
         config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 22)
-        config.baseForegroundColor = UIColor.Custom.charcoal
-        config.background.backgroundColor = .white
+        config.baseForegroundColor = UIColor.Custom.blue
+        config.background.backgroundColor = UIColor.white
         config.cornerStyle = .capsule
         $0.configuration = config
         $0.clipsToBounds = true
@@ -70,8 +70,8 @@ final class MyPageView: UIView {
     public let nicknameLabel = UILabel().then {
         $0.text = UserDefaultsManager.shared.nickname
         $0.numberOfLines = 1
-        $0.font = UIFont.gMarketSans(size: 17, family: .bold)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 17, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.textAlignment = .center
     }
     
@@ -88,7 +88,7 @@ final class MyPageView: UIView {
     }
     
     private func setupUI() {
-        self.backgroundColor = .white
+        self.backgroundColor = UIColor.white
         self.addSubview(tableView)
         self.addSubview(activityIndicator)
         headerView.addSubview(profileImageContainerView)

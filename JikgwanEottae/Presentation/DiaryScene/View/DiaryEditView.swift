@@ -19,11 +19,11 @@ final class DiaryEditView: UIView {
     }
     
     private(set) var editBarButton = UIBarButtonItem().then {
-        $0.title = "수정하기"
+        $0.title = "수정"
         $0.style = .plain
         $0.setTitleTextAttributes([
             .font: UIFont.pretendard(size: 16, family: .semiBold),
-            .foregroundColor: UIColor.Custom.orange
+            .foregroundColor: UIColor.Custom.blue
         ], for: .normal)
     }
     
@@ -133,7 +133,7 @@ final class DiaryEditView: UIView {
     private(set) var removePhotoButton = UIButton(configuration: .plain()).then {
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "xmark.circle.fill")
-        config.baseForegroundColor = UIColor.Custom.orange
+        config.baseForegroundColor = UIColor.Custom.blue
         config.contentInsets = .zero
         config.preferredSymbolConfigurationForImage = .init(pointSize: 20, weight: .semibold)
         $0.configuration = config
@@ -272,12 +272,12 @@ extension DiaryEditView {
     }
     
     public func highlightFavoriteTeamField(_ isActive: Bool) {
-        let color: UIColor = isActive ? UIColor.Custom.orange : UIColor.Background.primaryColor
+        let color: UIColor = isActive ? UIColor.Custom.blue : UIColor.Background.primaryColor
         favoriteTeamTextField.setUnderlineColor(color)
     }
     
     public func highlightSeatField(_ isActive: Bool) {
-        let color: UIColor = isActive ? UIColor.Custom.orange : UIColor.Background.primaryColor
+        let color: UIColor = isActive ? UIColor.Custom.blue : UIColor.Background.primaryColor
         seatTextField.setUnderlineColor(color)
     }
 }
