@@ -67,7 +67,7 @@ final class DiaryGameInfoInputView: UIView {
                 .offset(20)
             make.leading.trailing
                 .equalToSuperview()
-                .inset(12)
+                .inset(15)
         }
         
         favoriteTeamTextField.snp.makeConstraints { make in
@@ -75,7 +75,7 @@ final class DiaryGameInfoInputView: UIView {
                 .offset(40)
             make.leading.trailing
                 .equalToSuperview()
-                .inset(12)
+                .inset(15)
         }
         
         seatTextField.snp.makeConstraints { make in
@@ -83,7 +83,7 @@ final class DiaryGameInfoInputView: UIView {
                 .offset(40)
             make.leading.trailing
                 .equalToSuperview()
-                .inset(12)
+                .inset(15)
         }
     }
     

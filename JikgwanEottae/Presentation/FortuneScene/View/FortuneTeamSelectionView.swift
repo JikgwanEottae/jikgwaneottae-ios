@@ -81,7 +81,7 @@ final class FortuneTeamSelectionView: UIView {
         teamTableView.snp.makeConstraints { make in
             make.top
                 .equalTo(titleLabel.snp.bottom)
-                .offset(40)
+                .offset(20)
             make.leading.trailing.bottom
                 .equalToSuperview()
         }

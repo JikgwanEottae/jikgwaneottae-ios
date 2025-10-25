@@ -13,9 +13,9 @@ import RxCocoa
 protocol TodayFortuneRepositoryProtocol {
     /// 오늘의 직관 운세를 조회합니다.
     func fetchTodayFortune(
-        dateOfBirth: String,
-        timeOfBirth: String,
+        date: String,
+        time: Int?,
         gender: String,
-        favoriteKBOTeam: String
+        favoriteTeam: String
     ) -> Single<Fortune>
 }

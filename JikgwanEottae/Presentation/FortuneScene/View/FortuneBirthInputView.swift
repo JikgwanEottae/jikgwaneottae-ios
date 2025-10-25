@@ -11,6 +11,12 @@ import SnapKit
 import Then
 
 final class FortuneBirthInputView: UIView {
+    private(set) var activityIndicator = UIActivityIndicatorView().then {
+        $0.style = .medium
+        $0.hidesWhenStopped = true
+        $0.color = UIColor.Custom.charcoal
+    }
+    
     // 진행 상태 프로그레스 뷰입니다.
     public var progressView = UIProgressView(progressViewStyle: .default).then {
         $0.progressTintColor = UIColor.Custom.blue
@@ -22,7 +28,7 @@ final class FortuneBirthInputView: UIView {
     
     // 타이틀 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.text = "생년월일 입력해주세요"
+        $0.text = "생년월일을 알려주세요"
         $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.textColor = UIColor.Text.primaryColor
         $0.textAlignment = .left
@@ -31,8 +37,8 @@ final class FortuneBirthInputView: UIView {
     
     // 서브 타이틀입니다.
     private let subtitleLabel = UILabel().then {
-        $0.text = "출생 시는 선택이지만, 운세가 더 정확해져요"
-        $0.font = UIFont.pretendard(size: 16, family: .medium)
+        $0.text = "출생 시는 선택이지만 운세가 더 정확해져요"
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
@@ -41,7 +47,7 @@ final class FortuneBirthInputView: UIView {
     // 생년월일 텍스트 필드입니다.
     public lazy var birthInputField = UnderlinedInputField(
         title: "생년월일",
-        placeholder: "20250101",
+        placeholder: "생년월일을 선택해주세요",
         inputView: datePicker
     )
     
@@ -52,19 +58,19 @@ final class FortuneBirthInputView: UIView {
         $0.locale = Locale(identifier: "ko_KR")
         $0.maximumDate = Date()
         $0.clipsToBounds = true
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor.Background.primaryColor
     }
     
     // 출생 시 텍스트 필드입니다.
-    public lazy var timeInputField = UnderlinedInputField(
+    private(set) lazy var timeInputField = UnderlinedInputField(
         title: "출생 시(선택사항)",
-        placeholder: "15",
+        placeholder: "출생 시를 선택해주세요",
         inputView: timePickerView
     )
     
     // 출생 시를 선택하는 피커 뷰입니다.
     public let timePickerView = UIPickerView().then {
-        $0.backgroundColor = .white
+        $0.backgroundColor = UIColor.Background.primaryColor
     }
     
     // 오늘의 직관 운세 결과보기 버튼입니다.
@@ -96,6 +102,7 @@ final class FortuneBirthInputView: UIView {
         self.addSubview(birthInputField)
         self.addSubview(timeInputField)
         self.addSubview(completeButton)
+        self.addSubview(activityIndicator)
     }
     
     private func setupLayout() {
@@ -146,6 +153,11 @@ final class FortuneBirthInputView: UIView {
                 .inset(20)
         }
         
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
+        }
+        
         completeButton.snp.makeConstraints { make in
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
@@ -157,5 +169,18 @@ final class FortuneBirthInputView: UIView {
                 .equalTo(Constants.Button.height)
         }
     }
+}
 
+extension FortuneBirthInputView {
+    /// 생년월일 텍스트 필드를 업데이트합니다.
+    public func updateBirth(_ text: String) {
+        birthInputField.textField.text = text
+        birthInputField.textField.sendActions(for: .valueChanged)
+    }
+    
+    /// 출생 시 텍스트 필드를 업데이트합니다.
+    public func updateTime(_ text: String) {
+        timeInputField.textField.text = text
+        timeInputField.textField.sendActions(for: .valueChanged)
+    }
 }

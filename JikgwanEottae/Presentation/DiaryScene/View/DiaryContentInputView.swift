@@ -33,7 +33,7 @@ final class DiaryContentInputView: UIView {
             photoContainerView
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 20, left: 14, bottom: 0, right: 14)
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 15, right: 15)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
@@ -207,7 +207,7 @@ final class DiaryContentInputView: UIView {
         completeButton.snp.makeConstraints { make in
             make.leading.trailing
                 .equalToSuperview()
-                .inset(14)
+                .inset(15)
             make.bottom
                 .equalTo(keyboardLayoutGuide.snp.top)
                 .offset(-10)

@@ -83,7 +83,8 @@ final class DiaryContentInputViewController: UIViewController {
             .withUnretained(self)
             .emit(onNext: { owner, _ in
                 owner.showAlert(
-                    title: "일기를 작성하지 못했어요",
+                    title: "알림",
+                    message: "일기를 작성하지 못했어요",
                     doneTitle: "확인",
                     doneStyle: .cancel
                 )

@@ -49,18 +49,16 @@ final class FortuneTeamSelectionViewController: UIViewController {
         tableView.rx.modelSelected(Team.self)
             .withUnretained(self)
             .subscribe(onNext: { owner, team in
-                print("선택된 구단: \(team.rawValue)")
-                owner.navigateToGenderSelection()
+                owner.navigateToGenderSelection(team.rawValue)
             })
             .disposed(by: disposeBag)
     }
-    
-    
 }
 
 extension FortuneTeamSelectionViewController {
-    private func navigateToGenderSelection() {
-        let fortuneGenderSelectionViewController = FortuneGenderSelectionViewController()
-        self.navigationController?.pushViewController(fortuneGenderSelectionViewController, animated: false)
+    private func navigateToGenderSelection(_ favoriteTeam: String) {
+        let viewModel = FortuneGenderSelectionViewModel(favoriteTeam: favoriteTeam)
+        let viewController = FortuneGenderSelectionViewController(viewModel: viewModel)
+        self.navigationController?.pushViewController(viewController, animated: false)
     }
 }
