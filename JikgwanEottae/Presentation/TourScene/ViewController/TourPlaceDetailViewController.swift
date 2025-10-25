@@ -35,7 +35,6 @@ final class TourPlaceDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindViewModel()
-        setupTapGesture()
         viewDidLoadTrigger.accept(())
     }
     
@@ -59,14 +58,4 @@ final class TourPlaceDetailViewController: UIViewController {
             .disposed(by: disposeBag)
         
     }
-    
-    private func setupTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func backgroundTapped() {
-        dismiss(animated: true)
-    }
-
 }

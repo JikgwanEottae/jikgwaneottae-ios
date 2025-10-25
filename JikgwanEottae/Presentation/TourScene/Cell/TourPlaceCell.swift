@@ -19,7 +19,7 @@ final class TourPlaceCell: UITableViewCell {
     
     // 썸네일을 보여주기 위한 이미지 뷰입니다.
     private let thumbnailImageView = UIImageView().then {
-        $0.image = UIImage(named: "imagePlaceholder")
+        $0.image = UIImage(named: "placeholder")
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 17
@@ -27,23 +27,23 @@ final class TourPlaceCell: UITableViewCell {
     
     // 장소 제목을 표시하기 위한 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = .paperlogy(size: 17, family: .medium)
+        $0.font = UIFont.pretendard(size: 18, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.textColor = .primaryTextColor
     }
     
     // 주소를 표시하기 위한 레이블입니다.
     private let addressLabel = UILabel().then {
-        $0.font = .paperlogy(size: 13, family: .medium)
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.numberOfLines = 2
-        $0.textColor = .secondaryTextColor
     }
     
     // 거리를 표시하기 위한 레이블입니다.
     private let distanceLabel = UILabel().then {
-        $0.font = .paperlogy(size: 13, family: .medium)
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.numberOfLines = 1
-        $0.textColor = .secondaryTextColor
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -60,7 +60,7 @@ final class TourPlaceCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         thumbnailImageView.kf.cancelDownloadTask()
-        thumbnailImageView.image = UIImage(named: "imagePlaceholder")
+        thumbnailImageView.image = UIImage(named: "placeholder")
         titleLabel.text = nil
         addressLabel.text = nil
         distanceLabel.text = nil

@@ -301,8 +301,8 @@ extension TourMapViewController {
         // 폰트 스타일을 설정합니다.
         let textStyle = TextStyle(
             fontSize: 21,
-            fontColor: .primaryTextColor,
-            font: "PaperLogy-5Medium",
+            fontColor: UIColor.Text.primaryColor,
+            font: "Pretendard-Medium",
             charSpace: 2
         )
         // 폰트 스타일을 적용하여 PoiTextStyle을 설정합니다.
@@ -443,14 +443,16 @@ extension TourMapViewController {
     private func poiDidTappedHandler(_ param: PoiInteractionEventParam) {
         // Poi에 저장된 아이템 객체를 가져오기
         guard let tourPlaces = param.poiItem.userObject as? [TourPlace] else { return }
-        let tourListViewController = TourListViewController(tourPlaces: tourPlaces)
-        if let sheet = tourListViewController.sheetPresentationController {
+        let viewController = TourListViewController(tourPlaces: tourPlaces)
+        let naviController = UINavigationController(rootViewController: viewController)
+        naviController.configureBarAppearnace()
+        if let sheet = naviController.sheetPresentationController {
             sheet.selectedDetentIdentifier = .medium
-            sheet.detents = [.medium()]
+            sheet.detents = [.medium(), .large()]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 20
         }
-        self.present(tourListViewController, animated: true)
+        self.present(naviController, animated: true)
     }
 }

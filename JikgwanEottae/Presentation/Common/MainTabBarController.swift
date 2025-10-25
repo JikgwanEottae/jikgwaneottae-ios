@@ -19,7 +19,7 @@ final class MainTabBarController: UITabBarController {
         setupViewControllers()
         configureTabBarApperance()
         addTopLine(
-            color: .primaryBackgroundColor,
+            color: UIColor.Background.primaryColor,
             height: 0.5
         )
     }
@@ -75,28 +75,28 @@ extension MainTabBarController {
         let kboGameUseCase = KBOGameUseCase(repository: kboGameRepository)
         let diaryUseCase = DiaryUseCase(repository: diaryRepository)
         let viewModel = HomeViewModel(diaryUseCase: diaryUseCase, kboGameUseCase: kboGameUseCase)
-        let homeViewController = HomeViewController(viewModel: viewModel)
-        let homeNavigationController = UINavigationController(rootViewController: homeViewController)
-        homeNavigationController.configureBarAppearnace()
-        homeNavigationController.tabBarItem = UITabBarItem(
+        let viewController = HomeViewController(viewModel: viewModel)
+        let naviController = UINavigationController(rootViewController: viewController)
+        naviController.configureBarAppearnace()
+        naviController.tabBarItem = UITabBarItem(
             title: "홈",
-            image: .home,
+            image: .homeIcon,
             tag: Constants.TabBarTags.home
         )
-        return homeNavigationController
+        return naviController
     }
     
     /// 관광 화면을 생성합니다.
     private func createTour() -> UINavigationController {
-        let tourHomeViewController = TourHomeViewController()
-        let tourNavigationController = UINavigationController(rootViewController: tourHomeViewController)
-        tourNavigationController.configureBarAppearnace()
-        tourNavigationController.tabBarItem = UITabBarItem(
+        let viewController = TourHomeViewController()
+        let naviController = UINavigationController(rootViewController: viewController)
+        naviController.configureBarAppearnace()
+        naviController.tabBarItem = UITabBarItem(
             title: "투어",
             image: .markerIcon,
             tag: Constants.TabBarTags.tour
         )
-        return tourNavigationController
+        return naviController
     }
     
     /// 직관일기 화면을 생성합니다.
@@ -104,44 +104,44 @@ extension MainTabBarController {
         let repository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
         let useCase = DiaryUseCase(repository: repository)
         let viewModel = DiaryHomeViewModel(useCase: useCase)
-        let viewCont = DiaryHomeViewController(viewModel: viewModel)
-        let naviCont = UINavigationController(rootViewController: viewCont)
-        naviCont.configureBarAppearnace()
-        naviCont.tabBarItem = UITabBarItem(
+        let viewController = DiaryHomeViewController(viewModel: viewModel)
+        let naviController = UINavigationController(rootViewController: viewController)
+        naviController.configureBarAppearnace()
+        naviController.tabBarItem = UITabBarItem(
             title: "일기",
-            image: .ticket,
+            image: .gridIcon,
             tag: Constants.TabBarTags.diary
         )
-        return naviCont
+        return naviController
     }
     
     /// 마이 페이지 화면을 생성합니다.
     private func createMyPage() -> UINavigationController {
-        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
-        let authUseCase = AuthUseCase(repository: authRepository)
-        let myPageViewModel = MyPageViewModel(useCase: authUseCase)
-        let myPageViewController = MyPageViewController(viewModel: myPageViewModel)
-        myPageViewController.delegate = self
-        let myPageNavigationController = UINavigationController(rootViewController: myPageViewController)
-        myPageNavigationController.configureBarAppearnace()
-        myPageNavigationController.tabBarItem = UITabBarItem(
+        let repository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let useCase = AuthUseCase(repository: repository)
+        let viewModel = MyPageViewModel(useCase: useCase)
+        let viewController = MyPageViewController(viewModel: viewModel)
+        viewController.delegate = self
+        let naviController = UINavigationController(rootViewController: viewController)
+        naviController.configureBarAppearnace()
+        naviController.tabBarItem = UITabBarItem(
             title: "마이",
             image: .userIcon,
             tag: Constants.TabBarTags.myPage
         )
-        return myPageNavigationController
+        return naviController
     }
     
     /// 회원가입 화면을 생성합니다.
     private func createSignInNavigationController() -> UINavigationController {
-        let authRepository = AuthRepository(networkManaer: AuthNetworkManager.shared)
-        let authUseCase = AuthUseCase(repository: authRepository)
-        let signIngViewModel = SignInViewModel(useCase: authUseCase)
-        let signInViewController = SignInViewController(viewModel: signIngViewModel)
-        signInViewController.delegate = self
-        let navigationController = UINavigationController(rootViewController: signInViewController)
-        navigationController.configureBarAppearnace()
-        return navigationController
+        let repository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let useCase = AuthUseCase(repository: repository)
+        let viewModel = SignInViewModel(useCase: useCase)
+        let viewController = SignInViewController(viewModel: viewModel)
+        viewController.delegate = self
+        let naviController = UINavigationController(rootViewController: viewController)
+        naviController.configureBarAppearnace()
+        return naviController
     }
 }
 
@@ -156,9 +156,9 @@ extension MainTabBarController: UITabBarControllerDelegate {
         switch tag {
         case Constants.TabBarTags.myPage:
             if AppState.shared.isGuestMode {
-                let signInNavigationController = createSignInNavigationController()
-                signInNavigationController.modalPresentationStyle = .overFullScreen
-                self.present(signInNavigationController, animated: true)
+                let naviController = createSignInNavigationController()
+                naviController.modalPresentationStyle = .overFullScreen
+                self.present(naviController, animated: true)
                 return false
             } else {
                 return true

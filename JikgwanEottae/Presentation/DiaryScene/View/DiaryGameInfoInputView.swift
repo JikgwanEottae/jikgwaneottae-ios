@@ -21,7 +21,7 @@ final class DiaryGameInfoInputView: UIView {
     
     private let titleLabel = UILabel().then {
         $0.text = "응원팀과 좌석을 알려주세요"
-        $0.font = UIFont.pretendard(size: 20, family: .semiBold)
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.textColor = UIColor.Text.primaryColor
         $0.setLineSpacing(spacing: 5)
         $0.numberOfLines = 0

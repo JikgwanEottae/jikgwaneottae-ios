@@ -31,7 +31,7 @@ final class TourHomeView: UIView {
             collectionView
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 15, right: 15)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
@@ -42,17 +42,17 @@ final class TourHomeView: UIView {
     // 타이틀 인포 레이블입니다.
     private let titleInfoLabel = UILabel().then {
         $0.text = "직관과 여행을 한번에"
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = .paperlogy(size: 20, family: .medium)
-        $0.textColor = .primaryTextColor
     }
     
     // 서브타이틀 인포 레이블입니다.
     private let subTitleInfoLabel = UILabel().then {
-        $0.text = "구단 경기장 주변 관광 명소를 찾아드릴게요"
+        $0.text = "경기장 주변 관광 명소를 찾아드릴게요"
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 1
-        $0.font = .paperlogy(size: 14, family: .medium)
-        $0.textColor = .tertiaryTextColor
     }
     
     // 구단을 보여줄 컬렉션 뷰입니다.
@@ -89,13 +89,16 @@ final class TourHomeView: UIView {
             make.edges
                 .equalToSuperview()
         }
+        
         stackView.snp.makeConstraints { make in
             make.edges
                 .equalTo(scrollView.contentLayoutGuide)
             make.width
                 .equalTo(scrollView.frameLayoutGuide)
         }
+        
         stackView.setCustomSpacing(12, after: titleInfoLabel)
+        
         collectionView.snp.makeConstraints { make in
             make.height
                 .equalTo(560)
