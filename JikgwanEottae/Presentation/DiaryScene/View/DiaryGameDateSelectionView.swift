@@ -43,8 +43,8 @@ final class DiaryGameDateSelectionView: UIView {
     
     // 타이틀
     private let titleLabel = UILabel().then {
-        $0.text = "직관한 날짜를 선택하면\n그날의 경기 일정을 불러올게요"
-        $0.font = UIFont.pretendard(size: 20, family: .semiBold)
+        $0.text = "직관한 날짜를 선택하면\n경기 일정을 가져와요"
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
         $0.textColor = UIColor.Text.primaryColor
         $0.setLineSpacing(spacing: 5)
         $0.numberOfLines = 0

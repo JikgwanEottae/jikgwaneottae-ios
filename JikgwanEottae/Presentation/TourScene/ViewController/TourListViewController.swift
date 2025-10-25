@@ -34,6 +34,7 @@ final class TourListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideBackBarButtonItem()
         bindTableView()
     }
     
@@ -60,13 +61,11 @@ final class TourListViewController: UIViewController {
     
     /// 관광 장소 상세보기 화면으로 전환합니다.
     private func presentTourPlaceDetail(contentID: String) {
-        let tourRepository = TourRepository(manager: TourNetworkManager.shared)
-        let tourUseCase = TourUseCase(repository: tourRepository)
-        let tourPlaceDetailViewModel = TourPlaceDetailViewModel(useCase: tourUseCase, contentID: contentID)
-        let tourPlaceDetailViewController = TourPlaceDetailViewController(viewModel: tourPlaceDetailViewModel)
-        tourPlaceDetailViewController.modalPresentationStyle = .overFullScreen
-        tourPlaceDetailViewController.modalTransitionStyle = .crossDissolve
-        self.present(tourPlaceDetailViewController, animated: true)
+        let repository = TourRepository(manager: TourNetworkManager.shared)
+        let useCase = TourUseCase(repository: repository)
+        let viewModel = TourPlaceDetailViewModel(useCase: useCase, contentID: contentID)
+        let viewController = TourPlaceDetailViewController(viewModel: viewModel)
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

@@ -45,7 +45,6 @@ final class TourListView: UIView {
         tableView.snp.makeConstraints { make in
             make.top
                 .equalTo(safeAreaLayoutGuide)
-                .inset(20)
             make.leading.trailing.bottom
                 .equalToSuperview()
         }

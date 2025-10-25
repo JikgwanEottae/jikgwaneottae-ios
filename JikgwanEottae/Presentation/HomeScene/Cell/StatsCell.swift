@@ -17,8 +17,8 @@ final class StatsCell: UICollectionViewCell {
     
     private let titleLabel = UILabel().then {
         $0.text = "나의 직관 승률"
-        $0.font = .paperlogy(size: 16, family: .semiBold)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 16, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
         $0.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -37,7 +37,7 @@ final class StatsCell: UICollectionViewCell {
     
     private let progressView = UIProgressView(progressViewStyle: .default).then {
         $0.progressTintColor = UIColor.Custom.charcoal
-        $0.trackTintColor = .primaryBackgroundColor
+        $0.trackTintColor = UIColor.Background.primaryColor
         $0.progress = 0.4
         $0.layer.cornerRadius = 4
         $0.clipsToBounds = true
@@ -45,8 +45,8 @@ final class StatsCell: UICollectionViewCell {
     
     private let percentLabel = UILabel().then {
         $0.text = "0%"
-        $0.font = .paperlogy(size: 18, family: .semiBold)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 18, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.textAlignment = .right
         $0.numberOfLines = 1
         $0.setContentHuggingPriority(.required, for: .horizontal)
@@ -155,14 +155,14 @@ final class StatsCell: UICollectionViewCell {
 extension StatsCell {
     final class StatsItemView: UIView {
         private let titleLabel = UILabel().then {
-            $0.font = .paperlogy(size: 16, family: .medium)
-            $0.textColor = .primaryTextColor
+            $0.font = UIFont.pretendard(size: 16, family: .medium)
+            $0.textColor = UIColor.Text.primaryColor
             $0.textAlignment = .center
         }
         
         private let countLabel = UILabel().then {
-            $0.font = .paperlogy(size: 18, family: .semiBold)
-            $0.textColor = .primaryTextColor
+            $0.font = UIFont.pretendard(size: 18, family: .semiBold)
+            $0.textColor = UIColor.Text.primaryColor
             $0.textAlignment = .center
         }
         

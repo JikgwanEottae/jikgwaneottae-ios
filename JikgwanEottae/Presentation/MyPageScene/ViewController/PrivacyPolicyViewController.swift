@@ -18,9 +18,6 @@ final class PrivacyPolicyViewController: UIViewController {
         $0.isEditable = false
         $0.isSelectable = true
         $0.showsVerticalScrollIndicator = true
-        $0.backgroundColor = .white
-        $0.textColor = .primaryTextColor
-        $0.font = .gMarketSans(size: 14, family: .medium)
         $0.textAlignment = .left
         $0.contentInset = UIEdgeInsets(top: 25, left: 15, bottom: 15, right: 15)
     }
@@ -33,7 +30,7 @@ final class PrivacyPolicyViewController: UIViewController {
     }
     
     private func setupUI() {
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = UIColor.white
         self.view.addSubview(textView)
     }
     

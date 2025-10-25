@@ -30,7 +30,7 @@ final class TourMapView: UIView {
     // 상태에 따라 기능이 변경되는 중앙 액션 버튼입니다.
     public let centerActionButton = UIButton().then {
         var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .white
+        config.baseBackgroundColor = UIColor.white
         config.baseForegroundColor = UIColor.Custom.charcoal
         config.background.cornerRadius = 20
         config.imagePadding = 5
@@ -109,7 +109,7 @@ final class TourMapView: UIView {
             attributedTitle = AttributedString("이 지역 검색하기")
             imageName = "arrow.clockwise"
         }
-        attributedTitle.font = UIFont.paperlogy(size: 14, family: .medium)
+        attributedTitle.font = UIFont.pretendard(size: 14, family: .medium)
         attributedTitle.foregroundColor = UIColor.Custom.charcoal
         config.attributedTitle = attributedTitle
         config.image = UIImage(

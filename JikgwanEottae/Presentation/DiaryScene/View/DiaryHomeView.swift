@@ -37,6 +37,8 @@ final class DiaryHomeView: UIView {
     private(set) lazy var winButton = makeFilterButton(title: "승리")
     private(set) lazy var lossButton = makeFilterButton(title: "패배")
     private(set) lazy var drawButton = makeFilterButton(title: "무승부")
+    
+    private let selectionFeedback = UISelectionFeedbackGenerator()
 
     // MARK: - UI Components
     private let filterView = UIView().then {
@@ -66,6 +68,7 @@ final class DiaryHomeView: UIView {
         setupUI()
         setupLayout()
         selectFilterButton(allButton)
+        selectionFeedback.prepare()
     }
 
     @available(*, unavailable)
@@ -171,6 +174,7 @@ extension DiaryHomeView {
             button.setTitleColor(isSelected ? UIColor.Text.primaryColor : UIColor.Text.secondaryColor, for: .normal)
             button.layer.borderColor = isSelected ? UIColor.Background.primaryColor.cgColor : UIColor.white.cgColor
         }
+        selectionFeedback.selectionChanged()
     }
 }
 
