@@ -283,8 +283,8 @@ extension MyPageViewController: UITableViewDelegate {
         let headerView = UITableViewHeaderFooterView()
         var config = UIListContentConfiguration.groupedHeader()
         config.text = sectionTitles[section]
-        config.textProperties.font = .gMarketSans(size: 11, family: .medium)
-        config.textProperties.color = .tertiaryTextColor
+        config.textProperties.font = UIFont.pretendard(size: 11, family: .medium)
+        config.textProperties.color = UIColor.Text.tertiaryColor
         headerView.contentConfiguration = config
         return headerView
     }

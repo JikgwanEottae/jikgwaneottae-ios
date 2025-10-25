@@ -13,7 +13,7 @@ import Then
 final class FortuneBirthInputView: UIView {
     // 진행 상태 프로그레스 뷰입니다.
     public var progressView = UIProgressView(progressViewStyle: .default).then {
-        $0.progressTintColor = UIColor.Custom.orange
+        $0.progressTintColor = UIColor.Custom.blue
         $0.trackTintColor = UIColor.Background.primaryColor
         $0.layer.cornerRadius = 3
         $0.clipsToBounds = true
@@ -70,9 +70,9 @@ final class FortuneBirthInputView: UIView {
     // 오늘의 직관 운세 결과보기 버튼입니다.
     private(set) var completeButton = UIButton(type: .custom).then {
         $0.setTitle("결과보기", for: .normal)
-        $0.titleLabel?.font = UIFont.pretendard(size: 18, family: .medium)
+        $0.titleLabel?.font = UIFont.pretendard(size: 18, family: .semiBold)
         $0.setTitleColor(UIColor.white, for: .normal)
-        $0.backgroundColor = UIColor.Custom.orange
+        $0.backgroundColor = UIColor.Custom.blue
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }

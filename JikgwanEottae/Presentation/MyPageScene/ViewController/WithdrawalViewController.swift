@@ -73,7 +73,7 @@ final class WithdrawalViewController: UIViewController {
     private func presentWithdrawAlert() {
         HapticFeedbackManager.shared.light()
         self.showAlert(
-            title: "회원탈퇴",
+            title: "알림",
             message: "정말 회원을 탈퇴할까요?",
             doneTitle: "탈퇴",
             doneStyle: .destructive,
@@ -83,12 +83,6 @@ final class WithdrawalViewController: UIViewController {
                 self?.withdrawButtonRelay.accept(())
             }
         )
-    }
-    
-    /// 회원탈퇴 팝업 화면의 로딩 인디케이터 상태를 업데이트합니다.
-    private func updateSignOutPopupLoadingState(isLoading: Bool) {
-//        guard let popupViewController = self.presentedViewController as? PopupViewController else{ return }
-//        popupViewController.updateActivityIndicatorState(isLoading)
     }
     
     /// 게스트 모드로 전환합니다.

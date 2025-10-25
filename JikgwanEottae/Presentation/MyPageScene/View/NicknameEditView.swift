@@ -21,29 +21,29 @@ final class NicknameEditView: UIView {
     
     private(set) var titleLabel = UILabel().then {
         $0.text = "닉네임을 입력해주세요"
-        $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 20, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.numberOfLines = 0
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
     }
     
     private(set) var nicknameInputField = UnderlinedInputField(
         title: "닉네임",
-        placeholder: "입력해주세요"
+        placeholder: "닉네임을 입력해주세요"
     )
     
     private(set) var noticeLabel = UILabel().then {
         $0.text = "한글, 영문, 숫자를 조합해서 입력해주세요. (2-10자)"
-        $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 11, family: .medium)
+        $0.font = UIFont.pretendard(size: 11, family: .medium)
         $0.textColor = UIColor.Custom.red
+        $0.numberOfLines = 1
         $0.isHidden = true
     }
     
     private(set) var completeButton = UIButton(type: .custom).then {
-        $0.setTitle("확인", for: .normal)
-        $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
+        $0.setTitle("수정하기", for: .normal)
+        $0.titleLabel?.font = UIFont.pretendard(size: 18, family: .semiBold)
         $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = UIColor.Custom.charcoal.withAlphaComponent(0.3)
+        $0.backgroundColor = UIColor.Custom.blue
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
@@ -78,7 +78,7 @@ final class NicknameEditView: UIView {
         titleLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(safeAreaLayoutGuide)
-                .offset(30)
+                .offset(20)
             make.leading.trailing
                 .equalToSuperview()
                 .inset(20)
@@ -116,11 +116,6 @@ final class NicknameEditView: UIView {
 }
 
 extension NicknameEditView {
-    public func setButtonState(_ isEnabled: Bool) {
-        completeButton.backgroundColor = (isEnabled ? UIColor.Custom.charcoal : UIColor.Custom.charcoal.withAlphaComponent(0.3))
-        completeButton.isEnabled = isEnabled
-    }
-    
     private func setupNicknameTextField() {
         nicknameInputField.textField.text = UserDefaultsManager.shared.nickname
     }

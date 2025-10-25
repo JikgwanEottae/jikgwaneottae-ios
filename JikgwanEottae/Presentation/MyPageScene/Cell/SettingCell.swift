@@ -14,8 +14,8 @@ final class SettingCell: UITableViewCell {
     static let ID = "SettingCell"
     
     private let titleLabel = UILabel().then {
-        $0.font = .pretendard(size: 13, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 13, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .left
     }
@@ -23,7 +23,7 @@ final class SettingCell: UITableViewCell {
     private let rightImageView = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
         $0.contentMode = .scaleAspectFit
-        $0.tintColor = .primaryTextColor
+        $0.tintColor = UIColor.Text.tertiaryColor
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -51,7 +51,7 @@ final class SettingCell: UITableViewCell {
     
     private func setupUI() {
         selectionStyle = .none
-        self.backgroundColor = .secondaryBackgroundColor
+        self.backgroundColor = UIColor.Background.secondaryColor
         self.contentView.addSubview(titleLabel)
         self.contentView.addSubview(rightImageView)
     }

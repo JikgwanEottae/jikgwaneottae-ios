@@ -107,7 +107,7 @@ final class UnderlinedInputField: UIView {
 extension UnderlinedInputField {
     @objc
     private func editingDidBegin() {
-        underlineView.backgroundColor = UIColor.Custom.orange
+        underlineView.backgroundColor = UIColor.Custom.blue
     }
 
     @objc

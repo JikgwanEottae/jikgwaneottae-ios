@@ -16,7 +16,7 @@ final class DiaryHomeView: UIView {
     
     public let titleLabel = UILabel().then {
         $0.text = "일기"
-        $0.font = UIFont.pretendard(size: 22, family: .bold)
+        $0.font = UIFont.pretendard(size: 24, family: .bold)
         $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
     }
@@ -72,14 +72,6 @@ final class DiaryHomeView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        filterView.layoutIfNeeded()
-        [allButton, winButton, lossButton, drawButton].forEach {
-            $0.layer.cornerRadius = $0.bounds.height / 2
-        }
-    }
 
     private func setupUI() {
         addSubview(filterView)
@@ -92,17 +84,20 @@ final class DiaryHomeView: UIView {
 
     private func setupLayout() {
         filterView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(55)
+            $0.top
+                .equalTo(safeAreaLayoutGuide)
+            $0.leading.trailing
+                .equalToSuperview()
+            $0.height
+                .equalTo(55)
         }
         
         allButton.snp.makeConstraints { make in
             make.centerY
                 .equalToSuperview()
-            make.leading
+            make.leading.top.bottom
                 .equalToSuperview()
-                .offset(8)
+                .inset(8)
         }
         
         winButton.snp.makeConstraints { make in
@@ -110,7 +105,10 @@ final class DiaryHomeView: UIView {
                 .equalToSuperview()
             make.leading
                 .equalTo(allButton.snp.trailing)
-                .offset(12)
+                .offset(5)
+            make.top.bottom
+                .equalToSuperview()
+                .inset(8)
         }
         
         lossButton.snp.makeConstraints { make in
@@ -118,7 +116,10 @@ final class DiaryHomeView: UIView {
                 .equalToSuperview()
             make.leading
                 .equalTo(winButton.snp.trailing)
-                .offset(12)
+                .offset(5)
+            make.top.bottom
+                .equalToSuperview()
+                .inset(8)
         }
         
         drawButton.snp.makeConstraints { make in
@@ -126,7 +127,10 @@ final class DiaryHomeView: UIView {
                 .equalToSuperview()
             make.leading
                 .equalTo(lossButton.snp.trailing)
-                .offset(12)
+                .offset(5)
+            make.top.bottom
+                .equalToSuperview()
+                .inset(8)
         }
 
         collectionView.snp.makeConstraints {
@@ -148,12 +152,12 @@ extension DiaryHomeView {
     private func makeFilterButton(title: String) -> UIButton {
         return UIButton(type: .custom).then {
             $0.setTitle(title, for: .normal)
-            $0.setTitleColor(UIColor.Text.secondaryColor, for: .normal)
-            $0.titleLabel?.font = UIFont.pretendard(size: 12, family: .medium)
-            $0.contentEdgeInsets = UIEdgeInsets(top: 9, left: 13, bottom: 9, right: 13)
-            $0.backgroundColor = UIColor.white
+            $0.setTitleColor(UIColor.Text.primaryColor, for: .normal)
+            $0.titleLabel?.font = UIFont.pretendard(size: 16, family: .medium)
+            $0.contentEdgeInsets = UIEdgeInsets(top: 12, left: 14, bottom: 12, right: 14)
+            $0.backgroundColor = UIColor.Background.primaryColor
             $0.layer.borderColor = UIColor.Background.borderColor.cgColor
-            $0.layer.cornerRadius = 14
+            $0.layer.cornerRadius = 12
             $0.layer.borderWidth = 1
             $0.clipsToBounds = true
         }
@@ -163,9 +167,9 @@ extension DiaryHomeView {
     public func selectFilterButton(_ selectedButton: UIButton) {
         [allButton, winButton, lossButton, drawButton].forEach { button in
             let isSelected = (button == selectedButton)
-            button.backgroundColor = isSelected ? UIColor.Custom.charcoal : UIColor.white
-            button.setTitleColor(isSelected ? UIColor.white : UIColor.Text.secondaryColor, for: .normal)
-            button.layer.borderColor = isSelected ? UIColor.Custom.charcoal.cgColor : UIColor.Background.borderColor.cgColor
+            button.backgroundColor = isSelected ? UIColor.Background.primaryColor : UIColor.white
+            button.setTitleColor(isSelected ? UIColor.Text.primaryColor : UIColor.Text.secondaryColor, for: .normal)
+            button.layer.borderColor = isSelected ? UIColor.Background.primaryColor.cgColor : UIColor.white.cgColor
         }
     }
 }
