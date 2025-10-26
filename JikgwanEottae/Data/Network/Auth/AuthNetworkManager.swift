@@ -46,6 +46,12 @@ final class AuthNetworkManager {
             .map(AuthResponseDTO.self)
     }
     
+    public func updateFavoriteTeam(team: String) -> Completable {
+        return provider.rx.request(.updateFavoriteTeam(team: team))
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
+    }
+    
     public func validateRefreshToken(_ refreshToken: String) -> Single<AuthResponseDTO> {
         return provider.rx.request(.validateRefreshToken(refreshToken))
             .map(AuthResponseDTO.self)

@@ -16,7 +16,6 @@ final class FortuneResultViewModel: ViewModelType {
     
     init(fortune: Fortune) {
         self.fortune = fortune
-        print(fortune)
     }
     
     struct Input {

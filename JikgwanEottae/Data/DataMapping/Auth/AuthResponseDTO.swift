@@ -18,7 +18,7 @@ extension AuthResponseDTO {
     struct AuthDataDTO: Decodable {
         let nickname: String?
         let profileImageURL: String?
-        let favoriteTeam: String
+        let favoriteTeam: String?
         let accessToken: String?
         let refreshToken: String?
         

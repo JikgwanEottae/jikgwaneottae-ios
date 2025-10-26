@@ -54,7 +54,10 @@ final class AuthRepository: AuthRepositoryProtocol {
             })
     }
     
-    public func updateProfileImage(isImageRemoved: Bool, imageData: Data?) -> Completable {
+    public func updateProfileImage(
+        isImageRemoved: Bool,
+        imageData: Data?
+    ) -> Completable {
         return networkManager.updateProfileImage(
             isImageRemoved: isImageRemoved,
             imageData: imageData
@@ -63,6 +66,15 @@ final class AuthRepository: AuthRepositoryProtocol {
             self?.saveProfileImageURL(from: responseDTO)
         })
         .asCompletable()
+    }
+    
+    public func updateFavoriteTeam(
+        team: String
+    ) -> Completable {
+        return networkManager.updateFavoriteTeam(team: team)
+            .do(onCompleted: { [weak self]  in
+                self?.saveFavoriteTeam(with: team)
+            })
     }
     
     public func signOut() -> Completable {

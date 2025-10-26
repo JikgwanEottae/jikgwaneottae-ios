@@ -53,8 +53,7 @@ final class DiaryGameInfoInputViewController: UIViewController {
                 .asObservable(),
             seat: diaryGameInfoInputView.seatTextField.textField.rx.text
                 .orEmpty
-                .asObservable()
-            ,
+                .asObservable(),
             nextButtonTapped: diaryGameInfoInputView.nextButton.rx.tap
                 .asObservable()
         )

@@ -35,18 +35,15 @@ final class SplahViewModel: ViewModelType {
                 // 리프레쉬 토큰을 가지고 있는지 체크합니다.
                 guard let refreshToken = KeychainManager.shared.readRefreshToken() else {
                     // 게스트입니다.
-                    print("게스트 입니다.")
                     navigateToMainRelay.accept(())
                     return
                 }
                 owner.useCase.validateRefreshToken(refreshToken)
                     .subscribe(onCompleted: {
                         // 회원입니다.
-                        print("토큰 인증: 회원 입니다.")
                         navigateToMainRelay.accept(())
                     }, onError: { error in
                         // 게스트입니다.
-                        print("토큰 만료: 게스트 입니다.")
                         navigateToMainRelay.accept(())
                     })
                     .disposed(by: owner.disposeBag)
