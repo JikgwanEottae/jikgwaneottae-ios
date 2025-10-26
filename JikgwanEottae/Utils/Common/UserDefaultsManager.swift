@@ -31,7 +31,10 @@ final class UserDefaultsManager {
     
     var favoriteTeam: String? {
         get { UserDefaults.standard.string(forKey: Keys.favoriteTeam) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.favoriteTeam) }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.favoriteTeam)
+            NotificationCenter.default.post(name: .favoriteTeamDidChange, object: nil)
+        }
     }
     
     var hasLaunchedBefore: Bool {

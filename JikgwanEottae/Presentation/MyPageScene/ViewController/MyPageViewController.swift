@@ -20,7 +20,7 @@ final class MyPageViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let sectionTitles = ["내 정보", "기타"]
     private let items = [
-        ["닉네임 설정"],
+        ["닉네임 설정", "응원팀 설정"],
         ["이용약관", "개인정보 처리방침", "로그아웃", "회원탈퇴"]
     ]
     
@@ -127,6 +127,8 @@ final class MyPageViewController: UIViewController {
         switch title {
         case "닉네임 설정":
             navigateToProfileNicknameEdit()
+        case "응원팀 설정":
+            navigateToFavoriteTeamEdit()
         case "이용약관":
             navigateToTermsOfService(title: title)
         case "개인정보 처리방침":
@@ -173,6 +175,16 @@ extension MyPageViewController {
         }
         nicknameEditViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(nicknameEditViewController, animated: true)
+    }
+    
+    /// 응원구단 설정 화면으로 이동합니다.
+    private func navigateToFavoriteTeamEdit() {
+        let repository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let useCase = AuthUseCase(repository: repository)
+        let viewModel = FavoriteTeamEditViewModel(useCase: useCase)
+        let viewController = FavoriteTeamEditViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     /// 개인정보 처리방침 화면으로 이동합니다.

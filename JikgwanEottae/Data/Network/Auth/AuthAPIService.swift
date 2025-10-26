@@ -14,6 +14,7 @@ enum AuthAPIService {
     case authenticateWithApple(identityToken: String, authorizationCode: String)
     case setProfileNickname(nickname: String)
     case updateProfileImage(isRemoveImage: Bool, imageData: Data?)
+    case updateFavoriteTeam(team: String)
     case validateRefreshToken(_ refreshToken: String)
     case signOut
     case withdrawAccount
@@ -34,6 +35,8 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
             return "/api/auth/profile"
         case .updateProfileImage:
             return "/api/images/user/profile"
+        case .updateFavoriteTeam:
+            return "/api/auth/profile/favoriteteam"
         case .validateRefreshToken:
             return "/api/auth/refresh"
         case .signOut:
@@ -93,6 +96,11 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
                 )
             }
             return .uploadMultipart(multipartFormData)
+        case .updateFavoriteTeam(let team):
+            return .requestParameters(
+                parameters: ["favoriteTeam": team],
+                encoding: JSONEncoding.default
+            )
         case .validateRefreshToken(let refreshToken):
             return .requestParameters(
                 parameters: ["refreshToken": refreshToken],
@@ -116,7 +124,7 @@ extension AuthAPIService: TargetType, AccessTokenAuthorizable {
     
     var authorizationType: Moya.AuthorizationType? {
         switch self {
-        case .setProfileNickname, .signOut, .withdrawAccount, .updateProfileImage:
+        case .setProfileNickname, .signOut, .withdrawAccount, .updateProfileImage, .updateFavoriteTeam:
             return .bearer
         default:
             return nil

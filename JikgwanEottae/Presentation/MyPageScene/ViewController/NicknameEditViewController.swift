@@ -58,7 +58,6 @@ final class NicknameEditViewController: UIViewController {
                     let mainTabBarController = MainTabBarController()
                     owner.transitionRoot(to: mainTabBarController)
                 } else {
-                    guard let nickname = UserDefaultsManager.shared.nickname else { return }
                     owner.onNicknameUpdated?()
                     owner.navigationController?.popViewController(animated: true)
                 }
@@ -69,8 +68,8 @@ final class NicknameEditViewController: UIViewController {
             .withUnretained(self)
             .emit(onNext: { owner, error in
                 owner.showAlert(
-                    title: "변경 실패",
-                    message: "이미 다른 사용자가 사용하고 있어요",
+                    title: "알림",
+                    message: "사용 중이거나 잘못된 닉네임 형식이에요",
                     doneTitle: "확인"
                 )
             })

@@ -70,7 +70,7 @@ final class BottomTableSheetViewController: UIViewController {
 
 private extension BottomTableSheetViewController {
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = UIColor.white
         [titleLabel, tableView].forEach { view.addSubview($0) }
     }
     
