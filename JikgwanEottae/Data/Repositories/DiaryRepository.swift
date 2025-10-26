@@ -22,6 +22,7 @@ final class DiaryRepository: DiaryRepositoryProtocol {
     public func fetchAllDiaries() -> Single<[Diary]> {
         return networkManger.fetchAllDiaries()
     }
+
     
     public func fetchFilteredDiaries(
         _ filterType: DiaryFilterType

@@ -17,7 +17,9 @@ final class AuthRepository: AuthRepositoryProtocol {
         self.networkManager = networkManaer
     }
     
-    public func authenticateWithKakao(accessToken: String) -> Completable {
+    public func authenticateWithKakao(
+        accessToken: String
+    ) -> Completable {
         return networkManager.authenticateWithKakao(accessToken: accessToken)
             .do(onSuccess: { [weak self] responseDTO in
                 try self?.saveAuthenticationData(from: responseDTO)

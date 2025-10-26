@@ -19,7 +19,9 @@ final class AuthNetworkManager {
         self.provider = MoyaProvider<AuthAPIService>(session: session)
     }
     
-    public func authenticateWithKakao(accessToken: String) -> Single<AuthResponseDTO> {
+    public func authenticateWithKakao(
+        accessToken: String
+    ) -> Single<AuthResponseDTO> {
         return provider.rx.request(.authenticateWithKakao(accessToken: accessToken))
             .map(AuthResponseDTO.self)
     }
