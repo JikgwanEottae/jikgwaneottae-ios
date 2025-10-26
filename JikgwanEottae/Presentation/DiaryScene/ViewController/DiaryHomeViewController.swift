@@ -68,19 +68,6 @@ final class DiaryHomeViewController: UIViewController {
     private func configureNavigationBarItem() {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: diaryHomeView.titleLabel)
         self.navigationItem.rightBarButtonItems = [diaryHomeView.plusButton]
-        let latestAction = UIAction(title: "최신순", image: UIImage(systemName: "arrow.down")) { [weak self] _ in
-            
-        }
-        let oldestAction = UIAction(title: "오래된순", image: UIImage(systemName: "arrow.up")) { [weak self] _ in
-            
-        }
-        let sortMenu = UIMenu(
-            title: "정렬 기준",
-            options: [.displayInline],
-            children: [latestAction, oldestAction]
-        )
-        diaryHomeView.sortButton.menu = sortMenu
-        diaryHomeView.sortButton.primaryAction = nil
     }
     
     private func bindNavigationButtons() {
@@ -106,8 +93,10 @@ final class DiaryHomeViewController: UIViewController {
     
     private func bindViewModel() {
         let input = DiaryHomeViewModel.Input(
-            selectedFilter: selectedFilterRelay.asObservable(),
-            refreshTrigger: refreshRelay.asObservable()
+            selectedFilter: selectedFilterRelay
+                .asObservable(),
+            refreshTrigger: refreshRelay
+                .asObservable()
         )
         
         let output = viewModel.transform(input: input)
