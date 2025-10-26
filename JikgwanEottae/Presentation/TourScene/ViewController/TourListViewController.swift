@@ -13,7 +13,6 @@ import RxCocoa
 // MARK: - 관광 데이터를 리스트로 보여주기 위한 뷰 컨트롤러입니다.
 
 final class TourListViewController: UIViewController {
-    
     private let tourListView = TourListView()
     private let tourPlaces: [TourPlace]
     private let disposeBag = DisposeBag()

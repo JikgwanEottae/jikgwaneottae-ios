@@ -26,11 +26,14 @@ final class HomeView: UIView {
     ).then {
         $0.register(StatsCell.self, forCellWithReuseIdentifier: StatsCell.ID)
         $0.register(TodayGameCell.self, forCellWithReuseIdentifier: TodayGameCell.ID)
+        $0.register(MascotCell.self, forCellWithReuseIdentifier: MascotCell.ID)
         $0.register(TodayFortuneCell.self, forCellWithReuseIdentifier: TodayFortuneCell.ID)
+        $0.register(NearbyTourPlaceCell.self, forCellWithReuseIdentifier: NearbyTourPlaceCell.ID)
         $0.backgroundColor = .clear
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = true
-        $0.contentInset = .init(top: 20, left: 0, bottom: 0, right: 0)
+        $0.alwaysBounceHorizontal = false
+        $0.contentInset = .init(top: 15, left: 0, bottom: 15, right: 0)
     }
     
     override init(frame: CGRect) {
@@ -51,11 +54,8 @@ final class HomeView: UIView {
     
     private func setupLayout() {
         collectionView.snp.makeConstraints { make in
-            make.top.bottom
-                .equalToSuperview()
-            make.leading.trailing
-                .equalToSuperview()
-                .inset(15)
+            make.edges
+                .equalTo(safeAreaLayoutGuide)
         }
     }
 }
@@ -68,10 +68,14 @@ extension HomeView {
             switch section {
             case .stats:
                 return self?.createStatsSection()
+            case .mascot:
+                return self?.createMascotSection()
             case .todayGames:
                 return self?.createTodayGamesSection()
             case .todayFortune:
                 return self?.createTodayFortuneSection()
+            case .nearbyTourPlace:
+                return self?.createNearbyTourPlaceSection()
             }
         }
         let config = UICollectionViewCompositionalLayoutConfiguration()
@@ -90,12 +94,32 @@ extension HomeView {
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(200)
+            heightDimension: .absolute(150)
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
             subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
+        return section
+    }
+    
+    /// 마스코트 섹션의 레이아웃을 생성합니다.
+    private func createMascotSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(220)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
         return section
     }
     
@@ -117,6 +141,7 @@ extension HomeView {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 15
         section.orthogonalScrollingBehavior = .groupPaging
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
         return section
     }
     
@@ -129,12 +154,32 @@ extension HomeView {
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(100)
+            heightDimension: .absolute(70)
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
             subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
+        return section
+    }
+    
+    /// 구장 주변 인기 연관 관광지 랭킹 조회 섹션의 레이아웃을 생성합니다.
+    private func createNearbyTourPlaceSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(70)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
         return section
     }
 }

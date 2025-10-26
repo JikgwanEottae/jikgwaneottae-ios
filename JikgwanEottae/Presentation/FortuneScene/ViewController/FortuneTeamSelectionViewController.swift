@@ -17,7 +17,6 @@ final class FortuneTeamSelectionViewController: UIViewController {
     private let teams = Observable.just(Team.allCases)
     private let disposeBag = DisposeBag()
     
-    
     override func loadView() {
         self.view = fortuneTeamSelectionView
     }
@@ -49,7 +48,7 @@ final class FortuneTeamSelectionViewController: UIViewController {
         tableView.rx.modelSelected(Team.self)
             .withUnretained(self)
             .subscribe(onNext: { owner, team in
-                owner.navigateToGenderSelection(team.rawValue)
+                owner.navigateToGenderSelection("\(team)")
             })
             .disposed(by: disposeBag)
     }

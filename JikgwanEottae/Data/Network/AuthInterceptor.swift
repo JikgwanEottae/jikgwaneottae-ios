@@ -37,7 +37,6 @@ final class AuthInterceptor: RequestInterceptor {
         }
         
         AuthNetworkManager.shared.validateRefreshToken(refreshToken)
-            .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
             .subscribe(onSuccess: { responseDTO in
                 guard let accessToken = responseDTO.data?.accessToken else {
                     completion(.doNotRetry)

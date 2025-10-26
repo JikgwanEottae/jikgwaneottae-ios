@@ -21,6 +21,7 @@ extension TodayFortuneResponseDTO {
         let compatibilityType: String
         let todayFortune: String
         let timeNote: String
+        let favoriteTeam: String
         
         private enum CodingKeys: String, CodingKey {
             case score
@@ -28,6 +29,7 @@ extension TodayFortuneResponseDTO {
             case compatibilityType = "compatibility_type"
             case todayFortune = "today_fortune"
             case timeNote = "time_note"
+            case favoriteTeam
         }
     }
 }
@@ -45,7 +47,8 @@ extension TodayFortuneResponseDTO.TodayFortuneDataDTO {
             recommendation: recommendation,
             compatibility: compatibilityType,
             description: todayFortune,
-            note: timeNote
+            note: timeNote,
+            favoriteTeam: favoriteTeam
         )
     }
 }

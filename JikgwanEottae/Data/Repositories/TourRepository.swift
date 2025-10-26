@@ -12,6 +12,7 @@ import RxSwift
 // MARK: - 국문관광정보 TourAPI 리포지토리입니다.
 
 final class TourRepository: TourRepositoryProtocol {
+    
     private let manager: TourNetworkManager
     
     init(manager: TourNetworkManager) {
@@ -33,17 +34,26 @@ final class TourRepository: TourRepositoryProtocol {
             radius: radius,
             contentTypeId: toContentTypeID(from: tourType)
         )
-        return self.manager.fetchTourPlacesByLocation(params: locationBasedRequestDTO)
+        return manager.fetchTourPlacesByLocation(params: locationBasedRequestDTO)
     }
     
-    public func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage> {
+    public func fetchTourPlaceCommonDetail(
+        contentID: String
+    ) -> Single<TourPlacePage> {
         let tourApiKey = Bundle.main.object(forInfoDictionaryKey: "TourApiKey") as! String
         let commonDetailRequestDTO = CommonDetailRequestDTO(
             serviceKey: tourApiKey,
             contentID: contentID
         )
-        return self.manager.fetchTourPlaceCommonDetail(params: commonDetailRequestDTO)
+        return manager.fetchTourPlaceCommonDetail(params: commonDetailRequestDTO)
     }
+    
+    public func fetchNearbyTourPlace(
+        team: String
+    ) -> Single<NearbyTourPlace> {
+        return manager.fetchNearbyTourPlace(team: team)
+    }
+    
 }
 
 extension TourRepository {

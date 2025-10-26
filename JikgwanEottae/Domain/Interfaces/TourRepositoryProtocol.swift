@@ -21,5 +21,12 @@ protocol TourRepositoryProtocol {
     ) -> Single<TourPlacePage>
     
     /// 공통 관광정보를 조회합니다.
-    func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage>
+    func fetchTourPlaceCommonDetail(
+        contentID: String
+    ) -> Single<TourPlacePage>
+    
+    /// 구단 주변 인기 연관 관광지 TOP 50을 조회합니다.
+    func fetchNearbyTourPlace(
+        team: String
+    ) -> Single<NearbyTourPlace>
 }
