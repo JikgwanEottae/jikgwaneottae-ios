@@ -261,7 +261,7 @@ final class FortuneResultView: UIView {
 
 extension FortuneResultView {
     public func configure(with fortune: Fortune) {
-        configureImage()
+        configureImage(fortune.favoriteTeam)
         configureRecommendation(fortune.recommendation)
         configureScore(fortune.score)
         configureCompatibility(fortune.compatibility)
@@ -272,9 +272,9 @@ extension FortuneResultView {
 
 private extension FortuneResultView {
     /// 점수 / 운세 테마 캐릭터 이미지를 랜덤 선택
-    private func configureImage() {
-        let images = ["bear", "bunny", "cat"]
-        imageView.image = UIImage(named: images.randomElement() ?? "bear")
+    private func configureImage(_ team: String) {
+        let images = ["\(team)_cat", "\(team)_bunny", "\(team)_bear"]
+        imageView.image = UIImage(named: images.randomElement()!)
     }
     
     /// 추천 응원 문구

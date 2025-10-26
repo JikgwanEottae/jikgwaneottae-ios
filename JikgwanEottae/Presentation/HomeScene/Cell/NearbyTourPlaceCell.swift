@@ -1,8 +1,8 @@
 //
-//  TodayFortuneCell.swift
+//  NearbyTourPlaceCell.swift
 //  JikgwanEottae
 //
-//  Created by 7aeHoon on 9/1/25.
+//  Created by 7aeHoon on 10/26/25.
 //
 
 import UIKit
@@ -12,13 +12,13 @@ import SnapKit
 
 // MARK: - 오늘의 직관 운세를 보여주기 위한 커스텀 컬렉션 뷰 셀입니다.
 
-final class TodayFortuneCell: UICollectionViewCell {
+final class NearbyTourPlaceCell: UICollectionViewCell {
     
-    static let ID = "TodayFortuneCell"
+    static let ID = "NearbyTourPlaceCell"
     
     private let imageView = UIImageView().then {
-        $0.image = UIImage(named: "clover")?.withRenderingMode(.alwaysTemplate)
-        $0.tintColor = UIColor.Custom.shamrockGreen
+        $0.image = UIImage(named: "star")?.withRenderingMode(.alwaysTemplate)
+        $0.tintColor = UIColor.Custom.yellow
         $0.contentMode = .scaleAspectFit
         $0.clipsToBounds = true
     }
@@ -33,7 +33,7 @@ final class TodayFortuneCell: UICollectionViewCell {
     }
     
     private let titleLabel = UILabel().then {
-        $0.text = "혹시 내가 오늘의 승리 요정"
+        $0.text = "지금 구장 주변 핫플은"
         $0.font = UIFont.pretendard(size: 16, family: .semiBold)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .left

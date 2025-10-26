@@ -18,12 +18,14 @@ extension AuthResponseDTO {
     struct AuthDataDTO: Decodable {
         let nickname: String?
         let profileImageURL: String?
+        let favoriteTeam: String
         let accessToken: String?
         let refreshToken: String?
         
         private enum CodingKeys: String, CodingKey {
             case nickname
             case profileImageURL = "profileImageUrl"
+            case favoriteTeam
             case accessToken
             case refreshToken
         }

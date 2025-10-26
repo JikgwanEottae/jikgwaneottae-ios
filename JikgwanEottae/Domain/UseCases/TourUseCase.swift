@@ -20,7 +20,14 @@ protocol TourUseCaseProtocol {
     ) -> Single<TourPlacePage>
     
     /// 컨텐츠 아이디를 기반으로 공통 관광 정보를 조회합니다.
-    func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage>
+    func fetchTourPlaceCommonDetail(
+        contentID: String
+    ) -> Single<TourPlacePage>
+    
+    /// 구단 주변 인기 연관 관광지 TOP 50을 조회합니다.
+    func fetchNearbyTourPlace(
+        team: String
+    ) -> Single<NearbyTourPlace>
 }
 
 
@@ -39,7 +46,7 @@ final class TourUseCase: TourUseCaseProtocol {
         tourType: TourType
     ) -> Single<TourPlacePage> {
         let radius: Int = 3000
-        return self.repository.fetchTourPlacesByLocation(
+        return repository.fetchTourPlacesByLocation(
             pageNo: pageNo,
             coordinate: coordinate,
             radius: radius,
@@ -47,8 +54,16 @@ final class TourUseCase: TourUseCaseProtocol {
         )
     }
     
-    public func fetchTourPlaceCommonDetail(contentID: String) -> Single<TourPlacePage> {
-        return self.repository.fetchTourPlaceCommonDetail(contentID: contentID)
+    public func fetchTourPlaceCommonDetail(
+        contentID: String
+    ) -> Single<TourPlacePage> {
+        return repository.fetchTourPlaceCommonDetail(contentID: contentID)
+    }
+    
+    public func fetchNearbyTourPlace(
+        team: String
+    ) -> Single<NearbyTourPlace> {
+        return repository.fetchNearbyTourPlace(team: team)
     }
     
 }

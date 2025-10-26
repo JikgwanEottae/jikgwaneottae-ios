@@ -99,6 +99,7 @@ extension AuthRepository {
         try KeychainManager.shared.saveAccessToken(accessToken)
         try KeychainManager.shared.saveRefreshToken(refreshToken)
         UserDefaultsManager.shared.nickname = data.nickname
+        UserDefaultsManager.shared.favoriteTeam = data.favoriteTeam
         UserDefaultsManager.shared.profileImageURL = data.profileImageURL
     }
     
@@ -110,6 +111,11 @@ extension AuthRepository {
     /// 사용자 닉네임 상태를 저장합니다.
     private func saveProfileNickname(with nickname: String) {
         UserDefaultsManager.shared.nickname = nickname
+    }
+    
+    /// 사용자의 응원 구단을 저장합니다.
+    private func saveFavoriteTeam(with favoriteTeam: String) {
+        UserDefaultsManager.shared.favoriteTeam = favoriteTeam
     }
     
     /// 사용자의 모든 토큰과 데이터를 제거하고 상태를 초기화합니다.

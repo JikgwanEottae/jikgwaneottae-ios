@@ -58,11 +58,11 @@ extension FortuneBirthInputViewModel {
                     showEmptyAlert.accept(())
                     return .empty()
                 }
-                let time = time.isEmpty ? nil : Int(time)
+                let parsedTime = parseTime(time)
                 isLoading.accept(true)
                 return useCase.fetchTodayFortune(
                     date: date,
-                    time: time,
+                    time: parsedTime,
                     gender: gender,
                     favoriteTeam: favoriteTeam
                 )
@@ -85,3 +85,12 @@ extension FortuneBirthInputViewModel {
         )
     }
 }
+extension FortuneBirthInputViewModel {
+    private func parseTime(_ timeString: String) -> Int? {
+        let trimmed = timeString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let numericPart = trimmed.replacingOccurrences(of: "시", with: "")
+        return Int(numericPart)
+    }
+}
+
