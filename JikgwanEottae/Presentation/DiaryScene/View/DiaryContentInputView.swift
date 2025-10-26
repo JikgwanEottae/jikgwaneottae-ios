@@ -140,6 +140,7 @@ final class DiaryContentInputView: UIView {
         photoContainerView.addSubview(photoSelectionButton)
         photoContainerView.addSubview(imageView)
         imageView.addSubview(removePhotoButton)
+        bringSubviewToFront(activityIndicator)
     }
     
     private func setupUI() {
