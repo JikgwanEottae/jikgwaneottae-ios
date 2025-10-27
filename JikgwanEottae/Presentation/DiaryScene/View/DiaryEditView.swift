@@ -243,12 +243,12 @@ extension DiaryEditView {
     }
     
     public func updateContentText(_ text: String) {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty || trimmed == Constants.Text.textViewPlaceholder {
+        if text.isEmpty || text == Constants.Text.textViewPlaceholder {
             contentTextView.textColor = UIColor.Text.placeholderColor
+            contentTextView.text = Constants.Text.textViewPlaceholder
         } else {
-            contentTextView.text = trimmed
             contentTextView.textColor = UIColor.Text.tertiaryColor
+            contentTextView.text = text
         }
     }
     
