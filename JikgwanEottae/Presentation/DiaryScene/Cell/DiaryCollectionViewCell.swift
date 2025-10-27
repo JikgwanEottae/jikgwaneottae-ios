@@ -84,7 +84,6 @@ final class DiaryCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupUI() {
-        backgroundColor = UIColor.white
         contentView.layer.cornerRadius = 14
         contentView.clipsToBounds = true
     }

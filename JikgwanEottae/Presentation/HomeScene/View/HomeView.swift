@@ -24,9 +24,10 @@ final class HomeView: UIView {
         frame: .zero,
         collectionViewLayout: makeLayout()
     ).then {
-        $0.register(StatsCell.self, forCellWithReuseIdentifier: StatsCell.ID)
         $0.register(TodayGameCell.self, forCellWithReuseIdentifier: TodayGameCell.ID)
+        $0.register(EmptyGameCell.self, forCellWithReuseIdentifier: EmptyGameCell.ID)
         $0.register(MascotCell.self, forCellWithReuseIdentifier: MascotCell.ID)
+        $0.register(StatsCell.self, forCellWithReuseIdentifier: StatsCell.ID)
         $0.register(TodayFortuneCell.self, forCellWithReuseIdentifier: TodayFortuneCell.ID)
         $0.register(NearbyTourPlaceCell.self, forCellWithReuseIdentifier: NearbyTourPlaceCell.ID)
         $0.backgroundColor = .clear
@@ -66,12 +67,12 @@ extension HomeView {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, layoutEnvironment in
             let section = HomeSection.allCases[sectionIndex]
             switch section {
-            case .stats:
-                return self?.createStatsSection()
-            case .mascot:
-                return self?.createMascotSection()
             case .todayGames:
                 return self?.createTodayGamesSection()
+            case .mascot:
+                return self?.createMascotSection()
+            case .stats:
+                return self?.createStatsSection()
             case .todayFortune:
                 return self?.createTodayFortuneSection()
             case .nearbyTourPlace:
@@ -85,21 +86,25 @@ extension HomeView {
         layout.register(SectionBackgroundDecorationView.self, forDecorationViewOfKind: SectionBackgroundDecorationView.kind)
         return layout
     }
-    /// 직관 승률을 보여주기 위한 통계 섹션의 레이아웃을 생성합니다.
-    private func createStatsSection() -> NSCollectionLayoutSection {
+    
+    /// 오늘의 야구 경기 일정보기 섹션의 레이아웃을 생성합니다.
+    private func createTodayGamesSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
+            widthDimension: .fractionalWidth(0.6),
             heightDimension: .absolute(150)
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
-            subitems: [item])
+            subitems: [item]
+        )
         let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 15
+        section.orthogonalScrollingBehavior = .groupPaging
         section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
         return section
     }
@@ -123,24 +128,21 @@ extension HomeView {
         return section
     }
     
-    /// 오늘의 야구 경기 일정보기 섹션의 레이아웃을 생성합니다.
-    private func createTodayGamesSection() -> NSCollectionLayoutSection {
+    /// 직관 승률을 보여주기 위한 통계 섹션의 레이아웃을 생성합니다.
+    private func createStatsSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.6),
+            widthDimension: .fractionalWidth(1.0),
             heightDimension: .absolute(150)
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
-            subitems: [item]
-        )
+            subitems: [item])
         let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 15
-        section.orthogonalScrollingBehavior = .groupPaging
         section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 15)
         return section
     }

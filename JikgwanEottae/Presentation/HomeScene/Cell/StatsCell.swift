@@ -16,8 +16,8 @@ final class StatsCell: UICollectionViewCell {
     static let ID = "StatsCell"
     
     private let titleLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 16, family: .semiBold)
-        $0.textColor = UIColor.Text.primaryColor
+        $0.font = UIFont.pretendard(size: 14, family: .semiBold)
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .center
         $0.numberOfLines = 1
         $0.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -58,11 +58,11 @@ final class StatsCell: UICollectionViewCell {
     
     private func setupUI() {
         self.layer.cornerRadius = Constants.cornerRadius
-        self.backgroundColor = .secondaryBackgroundColor
-        self.contentView.addSubview(titleLabel)
-        self.contentView.addSubview(statsStackView)
-        self.contentView.addSubview(firstDivideView)
-        self.contentView.addSubview(secondDivideView)
+        self.backgroundColor = UIColor.Background.secondaryColor
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(statsStackView)
+        contentView.addSubview(firstDivideView)
+        contentView.addSubview(secondDivideView)
     }
     
     private func setupLayout() {
@@ -99,7 +99,7 @@ final class StatsCell: UICollectionViewCell {
     }
     
     public func configure(stats: DiaryStats) {
-        titleLabel.text = "나의 직관 승률 \(Int(stats.winRate))%"
+        titleLabel.text = "직관 승률 \(Int(stats.winRate))%"
         winStatsItem.configure(count: stats.wins)
         lossStatsItem.configure(count: stats.losses)
         drawStatsItem.configure(count: stats.draws)
@@ -109,14 +109,14 @@ final class StatsCell: UICollectionViewCell {
 extension StatsCell {
     final class StatsItemView: UIView {
         private let titleLabel = UILabel().then {
-            $0.font = UIFont.pretendard(size: 16, family: .medium)
-            $0.textColor = UIColor.Text.primaryColor
+            $0.font = UIFont.pretendard(size: 14, family: .semiBold)
+            $0.textColor = UIColor.Text.tertiaryColor
             $0.textAlignment = .center
         }
         
         private let countLabel = UILabel().then {
             $0.font = UIFont.pretendard(size: 18, family: .semiBold)
-            $0.textColor = UIColor.Text.primaryColor
+            $0.textColor = UIColor.Text.tertiaryColor
             $0.textAlignment = .center
         }
         

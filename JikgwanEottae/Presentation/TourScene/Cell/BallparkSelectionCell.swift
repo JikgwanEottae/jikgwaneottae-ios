@@ -16,7 +16,7 @@ final class BallparkSelectionCell: UITableViewCell {
     static let ID = "BallparkSelectionCell"
     
     private let ballparkTitleLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 18, family: .medium)
+        $0.font = UIFont.pretendard(size: 16, family: .medium)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
