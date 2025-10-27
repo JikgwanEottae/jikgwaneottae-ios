@@ -93,6 +93,8 @@ final class DiaryEditViewController: UIViewController {
                 .skip(1)
                 .asObservable(),
             editButtonTapped: diaryEditView.editBarButton.rx.tap
+                .asObservable(),
+            removePhotoTapped: diaryEditView.removePhotoButton.rx.tap
                 .asObservable()
         )
         

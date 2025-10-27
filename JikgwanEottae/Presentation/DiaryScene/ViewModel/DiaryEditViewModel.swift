@@ -24,6 +24,7 @@ final class DiaryEditViewModel: ViewModelType {
         let favoriteTeam: Observable<String>
         let seat: Observable<String>
         let editButtonTapped: Observable<Void>
+        let removePhotoTapped: Observable<Void>
     }
     
     struct Output {
@@ -33,6 +34,7 @@ final class DiaryEditViewModel: ViewModelType {
         let initialTeams: Driver<[String]>
         let initialFavoriteTeam: Driver<String>
         let initialSeat: Driver<String>
+        
         let showEmptyAlert: Signal<Void>
         let isLoading: Driver<Bool>
         let editSuccess: Signal<Void>
@@ -47,50 +49,44 @@ final class DiaryEditViewModel: ViewModelType {
 
 extension DiaryEditViewModel {
     public func transform(input: Input) -> Output {
-        let titleRelay = BehaviorRelay(value: diary.title)
-        let contentRelay = BehaviorRelay(value: diary.content)
-        let imageUrlRelay = BehaviorRelay(value: diary.imageURL)
-        let teamsRelay = BehaviorRelay(value: [diary.homeTeam, diary.awayTeam])
-        let favoriteTeamRelay = BehaviorRelay(value: diary.favoriteTeam)
-        let seatRelay = BehaviorRelay(value: diary.seat)
         let showEmptyAlert = PublishRelay<Void>()
         let isLoading = BehaviorRelay<Bool>(value: false)
         let success = PublishRelay<Void>()
         let failure = PublishRelay<Void>()
+        let removeFlag = BehaviorRelay<Bool>(value: false)
         
-        input.title
-            .bind(to: titleRelay)
+        input.removePhotoTapped
+            .map { true }
+            .bind(to: removeFlag)
             .disposed(by: disposeBag)
-        
-        input.content
-            .bind(to: contentRelay)
-            .disposed(by: disposeBag)
-        
-        input.favoriteTeam
-            .bind(to: favoriteTeamRelay)
-            .disposed(by: disposeBag)
-        
-        input.seat
-            .bind(to: seatRelay)
+
+        input.photo
+            .map { _ in false }
+            .bind(to: removeFlag)
             .disposed(by: disposeBag)
         
         input.editButtonTapped
             .withLatestFrom(Observable.combineLatest(
-                titleRelay.asObservable(),
-                contentRelay.asObservable(),
+                input.title.startWith(diary.title),
+                input.content.startWith(diary.content),
                 input.photo.startWith(nil),
-                favoriteTeamRelay.asObservable(),
-                seatRelay.asObservable()
+                input.favoriteTeam.startWith(diary.favoriteTeam),
+                input.seat.startWith(diary.seat),
+                removeFlag.asObservable().startWith(false)
             ))
-            .flatMapLatest { [weak self] (title, content, photo, favoriteTeam, seat) -> Observable<Void> in
+            .flatMapLatest { [weak self] (title, content, photo, favoriteTeam, seat, shouldRemove) -> Observable<Void> in
                 guard let self = self else { return .empty() }
+                
                 let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
                 let cleanedContent = self.cleanContent(content)
                 if trimmedTitle.isEmpty {
                     showEmptyAlert.accept(())
                     return .empty()
                 }
-                let isImageRemoved = (photo == nil ? true : false )
+                let hadImageBefore = (self.diary.imageURL != nil)
+                let userSelectedNewImage = (photo != nil)
+                let isImageRemoved = (shouldRemove && hadImageBefore)
+                let photoDataToSend: Data? = userSelectedNewImage ? photo : nil
                 isLoading.accept(true)
                 return useCase.updateDiary(
                     diaryId: diary.id,
@@ -98,7 +94,7 @@ extension DiaryEditViewModel {
                     favoriteTeam: favoriteTeam,
                     seat: seat,
                     content: cleanedContent,
-                    photoData: photo,
+                    photoData: photoDataToSend,
                     isImageRemoved: isImageRemoved
                 )
                 .andThen(Observable.just(()))
@@ -113,12 +109,12 @@ extension DiaryEditViewModel {
             .disposed(by: disposeBag)
         
         return Output(
-            initialTitle: titleRelay.asDriver(),
-            initialContent: contentRelay.asDriver(),
-            initialImageURL: imageUrlRelay.asDriver(),
-            initialTeams: teamsRelay.asDriver(),
-            initialFavoriteTeam: favoriteTeamRelay.asDriver(),
-            initialSeat: seatRelay.asDriver(),
+            initialTitle: Driver.just(diary.title),
+            initialContent: Driver.just(diary.content),
+            initialImageURL: Driver.just(diary.imageURL),
+            initialTeams: Driver.just([diary.homeTeam, diary.awayTeam]),
+            initialFavoriteTeam: Driver.just(diary.favoriteTeam),
+            initialSeat: Driver.just(diary.seat),
             showEmptyAlert: showEmptyAlert.asSignal(),
             isLoading: isLoading.asDriver(),
             editSuccess: success.asSignal(),
