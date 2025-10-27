@@ -14,16 +14,23 @@ final class SettingCell: UITableViewCell {
     static let ID = "SettingCell"
     
     private let titleLabel = UILabel().then {
-        $0.font = UIFont.pretendard(size: 13, family: .medium)
-        $0.textColor = UIColor.Text.primaryColor
+        $0.font = UIFont.pretendard(size: 12, family: .semiBold)
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .left
     }
     
     private let rightImageView = UIImageView().then {
-        $0.image = UIImage(systemName: "chevron.right")
+        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        $0.image = UIImage(
+            systemName: "chevron.right",
+            withConfiguration: config)?.withTintColor(
+                UIColor.Text.tertiaryColor,
+                renderingMode: .alwaysOriginal
+            )
         $0.contentMode = .scaleAspectFit
-        $0.tintColor = UIColor.Text.tertiaryColor
+        $0.setContentHuggingPriority(.required, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

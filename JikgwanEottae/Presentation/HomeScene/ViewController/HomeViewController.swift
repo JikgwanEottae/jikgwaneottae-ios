@@ -11,17 +11,18 @@ import RxSwift
 import RxCocoa
 
 enum HomeSection: String, CaseIterable, Hashable {
-    case stats
-    case mascot
     case todayGames
+    case mascot
+    case stats
     case todayFortune
     case nearbyTourPlace
 }
 
 enum HomeItem: Hashable {
-    case stats(DiaryStats)
-    case mascot
     case todayGames(KBOGame)
+    case todayGamesEmpty
+    case mascot
+    case stats(DiaryStats)
     case todayFortune
     case nearbyTourPlace
 }
@@ -81,16 +82,20 @@ final class HomeViewController: UIViewController {
     private func updateSnapshot(diaryStats: DiaryStats, games: [KBOGame]) {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
         snapshot.appendSections([
-            .stats,
-            .mascot,
             .todayGames,
+            .mascot,
+            .stats,
             .todayFortune,
             .nearbyTourPlace
         ])
-        snapshot.appendItems([.stats(diaryStats)], toSection: .stats)
+        if games.isEmpty {
+            snapshot.appendItems([.todayGamesEmpty], toSection: .todayGames)
+        } else {
+            let gameItems = games.map { HomeItem.todayGames($0) }
+            snapshot.appendItems(gameItems, toSection: .todayGames)
+        }
         snapshot.appendItems([.mascot], toSection: .mascot)
-        let gameItems = games.map { HomeItem.todayGames($0) }
-        snapshot.appendItems(gameItems, toSection: .todayGames)
+        snapshot.appendItems([.stats(diaryStats)], toSection: .stats)
         snapshot.appendItems([.todayFortune], toSection: .todayFortune)
         snapshot.appendItems([.nearbyTourPlace], toSection: .nearbyTourPlace)
         dataSource.apply(snapshot, animatingDifferences: true)
@@ -130,6 +135,7 @@ final class HomeViewController: UIViewController {
             .withUnretained(self)
             .subscribe(onNext: { owner, data in
                 let (diaryStats, games) = data
+                print(games)
                 owner.updateSnapshot(diaryStats: diaryStats, games: games)
                 AppState.shared.needsStatisticsRefresh = false
             })
@@ -144,13 +150,6 @@ extension HomeViewController {
             collectionView: homeView.collectionView,
             cellProvider: { collectionView, indexPath, itemIdentifier in
                 switch itemIdentifier {
-                case .stats(let diaryStats):
-                    guard let cell = collectionView.dequeueReusableCell(
-                        withReuseIdentifier: StatsCell.ID,
-                        for: indexPath
-                    ) as? StatsCell else { return UICollectionViewCell() }
-                    cell.configure(stats: diaryStats)
-                    return cell
                 case .todayGames(let game):
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: TodayGameCell.ID,
@@ -158,11 +157,24 @@ extension HomeViewController {
                     ) as? TodayGameCell else { return UICollectionViewCell() }
                     cell.configure(game: game)
                     return cell
+                case .todayGamesEmpty:
+                    guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: EmptyGameCell.ID,
+                        for: indexPath
+                    ) as? EmptyGameCell else { return UICollectionViewCell() }
+                    return cell
                 case .mascot:
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: MascotCell.ID,
                         for: indexPath
                     ) as? MascotCell else { return UICollectionViewCell() }
+                    return cell
+                case .stats(let diaryStats):
+                    guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: StatsCell.ID,
+                        for: indexPath
+                    ) as? StatsCell else { return UICollectionViewCell() }
+                    cell.configure(stats: diaryStats)
                     return cell
                 case .todayFortune:
                     guard let cell = collectionView.dequeueReusableCell(

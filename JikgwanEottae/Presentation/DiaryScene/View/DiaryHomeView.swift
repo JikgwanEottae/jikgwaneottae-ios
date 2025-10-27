@@ -77,6 +77,7 @@ final class DiaryHomeView: UIView {
     }
 
     private func setupUI() {
+        self.backgroundColor = UIColor.white
         addSubview(filterView)
         addSubview(activityIndicator)
         addSubview(collectionView)

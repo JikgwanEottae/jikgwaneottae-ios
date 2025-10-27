@@ -129,7 +129,7 @@ final class TodayGameCell: UICollectionViewCell {
     
     private func setupUI() {
         self.layer.cornerRadius = Constants.cornerRadius
-        self.backgroundColor = .secondaryBackgroundColor
+        contentView.backgroundColor = UIColor.Background.secondaryColor
     }
     
     private func setupLayout() {

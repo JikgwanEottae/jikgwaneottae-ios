@@ -33,8 +33,8 @@ final class TodayFortuneCell: UICollectionViewCell {
     }
     
     private let titleLabel = UILabel().then {
-        $0.text = "혹시 내가 오늘의 승리 요정"
-        $0.font = UIFont.pretendard(size: 16, family: .semiBold)
+        $0.text = "운세로 보는 오늘의 승리요정"
+        $0.font = UIFont.pretendard(size: 14, family: .semiBold)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .left
         $0.numberOfLines = 1

@@ -33,8 +33,8 @@ final class NearbyTourPlaceCell: UICollectionViewCell {
     }
     
     private let titleLabel = UILabel().then {
-        $0.text = "지금 구장 주변 핫플은"
-        $0.font = UIFont.pretendard(size: 16, family: .semiBold)
+        $0.text = "구장 주변엔 이런 곳이 있어요"
+        $0.font = UIFont.pretendard(size: 14, family: .semiBold)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .left
         $0.numberOfLines = 1
@@ -67,10 +67,10 @@ final class NearbyTourPlaceCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        self.contentView.backgroundColor = UIColor.Background.secondaryColor
-        self.contentView.layer.cornerRadius = Constants.cornerRadius
-        self.contentView.addSubview(imageView)
-        self.contentView.addSubview(stackView)
+        contentView.backgroundColor = UIColor.Background.secondaryColor
+        contentView.layer.cornerRadius = Constants.cornerRadius
+        contentView.addSubview(imageView)
+        contentView.addSubview(stackView)
     }
     
     private func setupLayout() {
