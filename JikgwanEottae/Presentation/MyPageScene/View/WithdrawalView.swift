@@ -14,29 +14,29 @@ final class WithdrawalView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     private let titleInfoLabel = UILabel().then {
         $0.text = "잠깐! 그전에 확인해 주세요"
+        $0.font = UIFont.pretendard(size: 22, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = .gMarketSans(size: 20, family: .medium)
-        $0.textColor = .primaryTextColor
     }
     
     private let subTitleInfoLabel = UILabel().then {
         $0.text = "모든 활동 정보가 영구적으로 삭제되며\n다시 복구할 수 없어요"
-        $0.setLineSpacing(spacing: 7)
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 0
-        $0.font = .gMarketSans(size: 14, family: .medium)
-        $0.textColor = .tertiaryTextColor
+        $0.setLineSpacing(spacing: 5)
     }
     
     private(set) var withdrawButton = UIButton(type: .custom).then {
         $0.setTitle("탈퇴하기", for: .normal)
-        $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
+        $0.titleLabel?.font = UIFont.pretendard(size: 18, family: .semiBold)
         $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .mainCharcoalColor
+        $0.backgroundColor = UIColor.Custom.blue
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
     }
@@ -89,9 +89,9 @@ final class WithdrawalView: UIView {
                 .inset(20)
             make.bottom
                 .equalTo(safeAreaLayoutGuide)
-                .inset(20)
+                .inset(10)
             make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(Constants.Button.height)
         }
     }
 

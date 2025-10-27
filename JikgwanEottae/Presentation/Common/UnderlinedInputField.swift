@@ -12,8 +12,8 @@ import Then
 
 final class UnderlinedInputField: UIView {
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 13, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 13, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .left
     }
@@ -21,9 +21,8 @@ final class UnderlinedInputField: UIView {
     private let containerView = UIView()
     
     private(set) var textField = UITextField().then {
-        $0.setPlaceholder(color: .placeholderColor)
-        $0.font = .gMarketSans(size: 16, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 16, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.clearButtonMode = .always
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -31,12 +30,13 @@ final class UnderlinedInputField: UIView {
     }
     
     private let underlineView = UIView().then {
-        $0.backgroundColor = .primaryBackgroundColor
+        $0.backgroundColor = UIColor.Background.primaryColor
     }
 
     init(title: String, placeholder: String, inputView: UIView? = nil) {
         titleLabel.text = title
         textField.placeholder = placeholder
+        textField.setPlaceholder(color: UIColor.Text.placeholderColor)
         if let inputView = inputView {
             textField.inputView = inputView
             textField.tintColor = .clear
@@ -44,12 +44,16 @@ final class UnderlinedInputField: UIView {
         super.init(frame: .zero)
         setupUI()
         setupLayout()
+        addTargets()
+    }
+    
+    convenience init(title: String, placeholder: String, customView: UIView) {
+        self.init(title: title, placeholder: placeholder)
     }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
     }
     
     private func setupUI() {
@@ -64,14 +68,16 @@ final class UnderlinedInputField: UIView {
             make.top.leading.trailing
                 .equalToSuperview()
         }
+        
         containerView.snp.makeConstraints { make in
             make.top
                 .equalTo(titleLabel.snp.bottom)
             make.leading.trailing.bottom
                 .equalToSuperview()
             make.height
-                .equalTo(40)
+                .equalTo(35)
         }
+        
         textField.snp.makeConstraints { make in
             make.leading.trailing
                 .equalToSuperview()
@@ -79,15 +85,33 @@ final class UnderlinedInputField: UIView {
                 .equalToSuperview()
                 .inset(5)
         }
+        
         underlineView.snp.makeConstraints { make in
             make.height
-                .equalTo(2)
+                .equalTo(1.8)
             make.leading.trailing.bottom
                 .equalToSuperview()
         }
     }
     
+    private func addTargets() {
+        textField.addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
+        textField.addTarget(self, action: #selector(editingDidEnd), for: .editingDidEnd)
+    }
+    
     public func setUnderlineColor(_ color: UIColor) {
         underlineView.backgroundColor = color
+    }
+}
+
+extension UnderlinedInputField {
+    @objc
+    private func editingDidBegin() {
+        underlineView.backgroundColor = UIColor.Custom.blue
+    }
+
+    @objc
+    private func editingDidEnd() {
+        underlineView.backgroundColor = UIColor.Background.primaryColor
     }
 }

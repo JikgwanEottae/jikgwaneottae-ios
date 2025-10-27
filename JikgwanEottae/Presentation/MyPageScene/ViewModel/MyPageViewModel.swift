@@ -63,13 +63,11 @@ final class MyPageViewModel: ViewModelType {
                     imageData: imageData
                 )
                 .andThen(Observable.just(()))
-                .catch { error in
-                    updateProfileImageErrorRelay.accept(())
-                    return Observable.empty()
-                }
             }
             .subscribe(onNext: {
                 updateProfileImageSuccessRelay.accept(())
+            }, onError: { error in
+                updateProfileImageErrorRelay.accept(())
             })
             .disposed(by: disposeBag)
         

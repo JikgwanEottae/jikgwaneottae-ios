@@ -13,14 +13,14 @@ import Then
 final class CustomButton: UIButton {
     
     private let customTitleLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 18, family: .medium)
+        $0.font = UIFont.pretendard(size: 18, family: .medium)
         $0.textAlignment = .center
-        $0.textColor = .white
+        $0.textColor = UIColor.white
     }
     
     private let customImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
-        $0.tintColor = .white
+        $0.tintColor = UIColor.white
     }
     
     override init(frame: CGRect) {
@@ -35,8 +35,8 @@ final class CustomButton: UIButton {
     }
     
     private func setupUI() {
-        self.layer.cornerRadius = Constants.buttonCornerRadius
-        self.backgroundColor = .black
+        self.layer.cornerRadius = Constants.Button.cornerRadius
+        self.backgroundColor = UIColor.black
         self.addSubview(customTitleLabel)
         self.addSubview(customImageView)
     }

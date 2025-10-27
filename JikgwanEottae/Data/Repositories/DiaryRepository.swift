@@ -20,7 +20,14 @@ final class DiaryRepository: DiaryRepositoryProtocol {
     }
     
     public func fetchAllDiaries() -> Single<[Diary]> {
-        return self.networkManger.fetchAllDiaries()
+        return networkManger.fetchAllDiaries()
+    }
+
+    
+    public func fetchFilteredDiaries(
+        _ filterType: DiaryFilterType
+    ) -> Single<[Diary]> {
+        return networkManger.fetchFilteredDiaries(filterType)
     }
     
     public func fetchDiaries(selectedMonth: Date) -> Single<[Diary]> {
@@ -46,18 +53,20 @@ final class DiaryRepository: DiaryRepositoryProtocol {
     
     public func createDiary(
         gameID: Int,
+        title: String,
         favoriteTeam: String,
         seat: String,
-        memo: String,
-        imageData: Data?
+        content: String,
+        photoData: Data?
     ) -> Completable {
         let dto = DiaryCreationRequestDTO(
             gameId: gameID,
+            title: title,
             favoriteTeam: favoriteTeam,
             seat: seat,
-            memo: memo
+            content: content
         )
-        return networkManger.createDiary(dto: dto, imageData: imageData)
+        return networkManger.createDiary(dto: dto, imageData: photoData)
             .do(onSuccess: { [weak self] diary in
                 guard let self = self,
                       let diary = diary.first
@@ -72,29 +81,26 @@ final class DiaryRepository: DiaryRepositoryProtocol {
     
     public func updateDiary(
         diaryId: Int,
+        title: String,
         favoriteTeam: String,
         seat: String,
-        memo: String,
-        imageData: Data?,
+        content: String,
+        photoData: Data?,
         isImageRemoved: Bool
     ) -> Completable {
         let dto = DiaryUpdateRequestDTO(
+            title: title,
             favoriteTeam: favoriteTeam,
             seat: seat,
-            memo: memo,
+            content: content,
             isImageRemoved: isImageRemoved
         )
         return self.networkManger.updateDiary(
             diaryId: diaryId,
             dto: dto,
-            imageData: imageData
+            photoData: photoData
         )
-        .do(onSuccess: { [weak self] diary in
-            guard let self = self,
-                  let diary = diary.first
-            else { return }
-            let monthKey = String(diary.gameDate.prefix(7))
-            self.diaryCacheManager.updateDiary(diary, for: monthKey)
+        .do(onSuccess: { [weak self] _ in
             AppState.shared.needsDiaryRefresh = true
             AppState.shared.needsStatisticsRefresh = true
         })
@@ -102,13 +108,10 @@ final class DiaryRepository: DiaryRepositoryProtocol {
     }
     
     public func deleteDiary(
-        diaryID: Int,
-        gameDate: String
+        diaryId: Int
     ) -> Completable {
-        return self.networkManger.deleteDiary(diaryID: diaryID)
+        return self.networkManger.deleteDiary(diaryId: diaryId)
             .do(onCompleted: { [weak self] in
-                let monthKey = String(gameDate.prefix(7))
-                self?.diaryCacheManager.removeDiary(id: diaryID, for: monthKey)
                 AppState.shared.needsDiaryRefresh = true
                 AppState.shared.needsStatisticsRefresh = true
             })

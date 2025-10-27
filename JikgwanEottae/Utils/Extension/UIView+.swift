@@ -18,10 +18,10 @@ extension UIView {
             )
         )
         toastLabel.text = message
-        toastLabel.textColor = .white
+        toastLabel.textColor = UIColor.white
         toastLabel.textAlignment = .center
-        toastLabel.font = .gMarketSans(size: 14, family: .medium)
-        toastLabel.backgroundColor = .mainCharcoalColor.withAlphaComponent(0.9)
+        toastLabel.font = UIFont.pretendard(size: 14, family: .medium)
+        toastLabel.backgroundColor = UIColor.Custom.charcoal.withAlphaComponent(0.9)
         toastLabel.alpha = 1.0
         toastLabel.layer.cornerRadius = 14
         toastLabel.clipsToBounds  =  true

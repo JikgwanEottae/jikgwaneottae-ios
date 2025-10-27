@@ -22,14 +22,16 @@ extension UICollectionView {
         let imageView = UIImageView().then {
             $0.image = image?.withRenderingMode(.alwaysTemplate)
             $0.contentMode = .scaleAspectFit
-            $0.tintColor = .secondaryTextColor
+            $0.tintColor = UIColor.Text.tertiaryColor
         }
         
         let label = UILabel().then {
             $0.text = message
-            $0.font = .gMarketSans(size: 17, family: .medium)
-            $0.textColor = .secondaryTextColor
+            $0.font = UIFont.pretendard(size: 14, family: .medium)
+            $0.lineBreakStrategy = .hangulWordPriority
+            $0.textColor = UIColor.Text.tertiaryColor
             $0.textAlignment = .center
+            $0.setLineSpacing(spacing: 5)
             $0.numberOfLines = 0
         }
         

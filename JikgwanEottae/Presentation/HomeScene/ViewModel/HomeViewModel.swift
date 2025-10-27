@@ -31,17 +31,26 @@ final class HomeViewModel: ViewModelType {
     
     public func transform(input: Input) -> Output {
         let diaryStats = input.viewWillApper
-            .filter { AppState.shared.needsStatisticsRefresh }
             .flatMapLatest { [weak self]  _ -> Observable<DiaryStats> in
                 guard let self = self else { return .never() }
-                return self.diaryUseCase.fetchDiaryStats()
-                    .asObservable()
-                    .catch { error in
-                        return .empty()
-                    }
+                // 게스트 모드 확인
+                if AppState.shared.isGuestMode {
+                    // 기본 데이터를 전달합니다.
+                    let defaultDiaryStats = DiaryStats(wins: 0, losses: 0, draws: 0, winRate: 0)
+                    return Observable.just(defaultDiaryStats)
+                } else {
+                    return self.diaryUseCase.fetchDiaryStats()
+                        .asObservable()
+                        .catch { error in
+                            // 기본 데이터를 전달합니다.
+                            let defaultDiaryStats = DiaryStats(wins: 0, losses: 0, draws: 0, winRate: 0)
+                            return Observable.just(defaultDiaryStats)
+                        }
+                }
             }
         
         let todayGames = input.viewWillApper
+            .filter { AppState.shared.needsStatisticsRefresh }
             .flatMapLatest { [weak self] _ -> Observable<[KBOGame]> in
                 guard let self = self else { return .never()}
                 return self.kboGameUseCase.fetchDailyGames(date: Date())

@@ -8,10 +8,10 @@ target 'JikgwanEottae' do
   # Pods for JikgwanEottae
 	pod 'RxSwift', '6.9.0'
 	pod 'RxCocoa', '6.9.0'
+	pod 'Moya/RxSwift', '~> 15.0'
 	pod 'Then'
 	pod 'SnapKit', '~> 5.7.0'
         pod 'Tabman', '~> 3.2'
-        pod 'Moya/RxSwift', '~> 15.0'
 	pod 'FSCalendar'
 	pod 'KeychainAccess'
 	pod 'Kingfisher', '~> 8.0'
@@ -20,6 +20,7 @@ target 'JikgwanEottae' do
         pod 'KakaoSDKAuth'
         pod 'KakaoSDKUser'
 	pod 'MarkdownKit'
+
 
   target 'JikgwanEottaeTests' do
     inherit! :search_paths

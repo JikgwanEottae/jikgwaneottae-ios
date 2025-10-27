@@ -27,7 +27,7 @@ final class TourHomeViewController: UIViewController {
     
     /// 네비게이션 왼쪽 바 버튼 아이템에 타이틀을 설정합니다.
     private func configureNaviBarButtonItem() {
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: tourHomeView.leftBarButtonTitleLabel)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: tourHomeView.titleLabel)
     }
     
     /// 컬렉션 뷰를 바인드합니다.

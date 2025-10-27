@@ -2,7 +2,7 @@
 //  DiaryCollectionViewCell.swift
 //  JikgwanEottae
 //
-//  Created by 7aeHoon on 8/11/25.
+//  Created by 7aeHoon on 9/27/25.
 //
 
 import UIKit
@@ -12,172 +12,121 @@ import SnapKit
 import Then
 
 final class DiaryCollectionViewCell: UICollectionViewCell {
+
     static let ID = "DiaryCollectionViewCell"
-    
-    public let containerView = UIView().then {
-        $0.backgroundColor = .white
-        $0.layer.cornerRadius = 25
-        $0.clipsToBounds = true
-    }
-    
-    public let backgroundImageView = UIImageView().then {
+
+    // 썸네일 이미지
+    private let thumbnailImageView = UIImageView().then {
         $0.image = UIImage(named: "placeholder")
         $0.contentMode = .scaleAspectFill
-    }
-    
-    private let resultContainerView = UIView().then {
         $0.clipsToBounds = true
-        $0.layer.cornerRadius = 7
+        $0.kf.indicatorType = .activity
     }
     
-    private let resultLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 15, family: .medium)
-        $0.numberOfLines = 1
-        $0.textColor = .white
-        $0.clipsToBounds = true
-        $0.setContentHuggingPriority(.required, for: .vertical)
+    // 그라데이션 뷰
+    private(set) var gradientView = UIView()
+    
+    // 그라데이션 레이어
+    private(set) lazy var gradientLayer = CAGradientLayer().then {
+        $0.colors = [
+            UIColor.black.withAlphaComponent(0.0).cgColor,
+            UIColor.black.withAlphaComponent(0.6).cgColor,
+            UIColor.black.withAlphaComponent(0.9).cgColor
+        ]
+        $0.locations = [0.0, 0.5, 1.0]
+        $0.startPoint = CGPoint(x: 0.5, y: 0.0)
+        $0.endPoint = CGPoint(x: 0.5, y: 1.0)
+        $0.isHidden = true
     }
-    
-    private let blurEffectView = UIVisualEffectView().then {
-//        let blurEffect = UIBlurEffect(style: .dark)
-        $0.effect =  UIBlurEffect(style: .systemThickMaterialDark)
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.alpha = 0.7
-    }
-    
-    private lazy var labelsStackView = UIStackView(arrangedSubviews: [
-        matchScoreLabel,
-        ballparkLabel
-    ]).then {
-        $0.axis = .vertical
-        $0.distribution = .equalSpacing
-        $0.alignment = .leading
-        $0.distribution = .fill
-     }
-    
-    private let matchScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
-        $0.numberOfLines = 1
-        $0.textColor = .white
+
+    // 일기 제목
+    private let titleLabel = UILabel().then {
+        $0.font = UIFont.pretendard(size: 13, family: .semiBold)
+        $0.setLineSpacing(spacing: 5)
+        $0.numberOfLines = 2
+        $0.textColor = UIColor.white
         $0.textAlignment = .left
+        $0.lineBreakStrategy = .hangulWordPriority
         $0.clipsToBounds = true
     }
 
-    private let ballparkLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 14, family: .medium)
-        $0.numberOfLines = 1
-        $0.textColor = .white
-        $0.textAlignment = .left
-        $0.clipsToBounds = true
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        addSubViews()
         setupUI()
         setupLayout()
-        addShadow()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
-        backgroundImageView.image = UIImage(named: "placeholder")
-        matchScoreLabel.text = nil
-        ballparkLabel.text = nil
+        thumbnailImageView.image = UIImage(named: "placeholder")
+        titleLabel.text = nil
+        titleLabel.textColor = UIColor.white
+        gradientLayer.isHidden = true
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientView.layoutIfNeeded()
+        gradientLayer.frame = gradientView.bounds
+     }
+    
+    private func addSubViews() {
+        contentView.addSubview(thumbnailImageView)
+        contentView.addSubview(gradientView)
+        gradientView.layer.addSublayer(gradientLayer)
+        contentView.addSubview(titleLabel)
+    }
+
     private func setupUI() {
-        contentView.layer.cornerRadius = 30
-        contentView.backgroundColor = .white
-        contentView.addSubview(containerView)
-        containerView.addSubview(backgroundImageView)
-        containerView.addSubview(resultContainerView)
-        containerView.addSubview(blurEffectView)
-        resultContainerView.addSubview(resultLabel)
-        blurEffectView.contentView.addSubview(labelsStackView)
+        backgroundColor = UIColor.white
+        contentView.layer.cornerRadius = 14
+        contentView.clipsToBounds = true
     }
-    
+
     private func setupLayout() {
-        containerView.snp.makeConstraints { make in
-            make.edges
-                .equalToSuperview()
-                .inset(5)
-        }
-        
-        backgroundImageView.snp.makeConstraints { make in
+        thumbnailImageView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
         }
         
-        resultContainerView.snp.makeConstraints { make in
-            make.top.leading
-                .equalToSuperview()
-                .inset(15)
-        }
-        
-        resultLabel.snp.makeConstraints { make in
-            make.leading.trailing
-                .equalToSuperview()
-                .inset(6)
-            make.top.bottom
-                .equalToSuperview()
-                .inset(4)
-        }
-        
-        blurEffectView.snp.makeConstraints { make in
+        gradientView.snp.makeConstraints { make in
             make.leading.trailing.bottom
                 .equalToSuperview()
             make.height
-                .equalTo(80)
+                .equalTo(100)
         }
-        
-        labelsStackView.snp.makeConstraints { make in
-            make.top.leading.bottom
+
+        titleLabel.snp.makeConstraints { make in
+            make.leading.trailing
+                .equalToSuperview()
+                .inset(10)
+            make.bottom
                 .equalToSuperview()
                 .inset(15)
         }
     }
 }
 
+// MARK: - Extension
+
 extension DiaryCollectionViewCell {
-    private func addShadow() {
-        layer.masksToBounds = false
-        layer.shadowColor   = UIColor.black.cgColor
-        layer.shadowOffset  = CGSize(width: -2, height: 2)
-        layer.shadowOpacity = 0.3
-        layer.shadowRadius  = 5
-    }
-    
-    public func configure(diary: Diary) {
-        if let imageURLString = diary.imageURL, let imageURL = URL(string: imageURLString) {
-            backgroundImageView.kf.setImage(with: imageURL)
+    public func configure(with diary: Diary) {
+        titleLabel.text = diary.title
+        guard let imageUrlStr = diary.imageURL,
+              let url = URL(string: imageUrlStr)
+        else {
+            titleLabel.textColor = UIColor.Text.secondaryColor
+            return
         }
-        matchScoreLabel.text = "\(diary.homeTeam) \(diary.homeScore) vs \(diary.awayScore) \(diary.awayTeam)"
-        ballparkLabel.text = diary.ballpark
-        
-        switch diary.result {
-        case "WIN":
-            resultLabel.text = "승리"
-            resultContainerView.backgroundColor = .tossBlueColor
-        case "LOSS":
-            resultLabel.text = "패배"
-            resultContainerView.backgroundColor = .tossRedColor
-        case "DRAW":
-            resultLabel.text = "무승부"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        case "SCHEDULED":
-            resultLabel.text = "경기예정"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        case "CANCELED":
-            resultLabel.text = "경기취소"
-            resultContainerView.backgroundColor = .mainCharcoalColor
-        default:
-            resultLabel.text = "-"
-            resultContainerView.backgroundColor = .mainCharcoalColor
+        thumbnailImageView.kf.setImage(with: url) { [weak self] result in
+            guard case .success = result else { return }
+            self?.gradientLayer.isHidden = false
         }
     }
 }

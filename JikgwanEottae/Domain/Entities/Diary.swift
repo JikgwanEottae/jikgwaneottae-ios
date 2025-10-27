@@ -20,9 +20,11 @@ struct Diary: Hashable, Identifiable {
     let homeScore: Int
     let awayScore: Int
     let favoriteTeam: String
+    let title: String
     let result: String?
     let seat: String
     let memo: String
+    let content: String
     let imageURL: String?
 }
 

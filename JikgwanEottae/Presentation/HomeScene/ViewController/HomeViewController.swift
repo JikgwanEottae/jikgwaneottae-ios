@@ -12,14 +12,18 @@ import RxCocoa
 
 enum HomeSection: String, CaseIterable, Hashable {
     case stats
+    case mascot
     case todayGames
     case todayFortune
+    case nearbyTourPlace
 }
 
 enum HomeItem: Hashable {
     case stats(DiaryStats)
+    case mascot
     case todayGames(KBOGame)
     case todayFortune
+    case nearbyTourPlace
 }
 
 final class HomeViewController: UIViewController {
@@ -76,11 +80,19 @@ final class HomeViewController: UIViewController {
     /// 스냅샷을 업데이트합니다.
     private func updateSnapshot(diaryStats: DiaryStats, games: [KBOGame]) {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
-        snapshot.appendSections([.stats, .todayGames, .todayFortune])
+        snapshot.appendSections([
+            .stats,
+            .mascot,
+            .todayGames,
+            .todayFortune,
+            .nearbyTourPlace
+        ])
         snapshot.appendItems([.stats(diaryStats)], toSection: .stats)
+        snapshot.appendItems([.mascot], toSection: .mascot)
         let gameItems = games.map { HomeItem.todayGames($0) }
         snapshot.appendItems(gameItems, toSection: .todayGames)
         snapshot.appendItems([.todayFortune], toSection: .todayFortune)
+        snapshot.appendItems([.nearbyTourPlace], toSection: .nearbyTourPlace)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -92,18 +104,23 @@ final class HomeViewController: UIViewController {
                 let item = self.dataSource.itemIdentifier(for: indexPath)
                 switch item {
                 case .todayFortune:
-                    let todayFortuneRepository = TodayFortuneRepository(networkManager: TodayFortuneNetworkManager.shared)
-                    let todatFortuneUseCase = TodayFortuneUseCase(repository: todayFortuneRepository)
-                    let todayFortuneViewModel = TodayFortuneViewModel(useCase: todatFortuneUseCase)
-                    let todayFortuneViewController = TodayFortuneViewController(viewModel: todayFortuneViewModel)
-                    todayFortuneViewController.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(todayFortuneViewController, animated: true)
+                    let viewController = FortuneTeamSelectionViewController()
+                    viewController.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(viewController, animated: true)
+                case .nearbyTourPlace:
+                    let repository = TourRepository(manager: TourNetworkManager.shared)
+                    let useCase = TourUseCase(repository: repository)
+                    let viewModel = TourBallparkSelectionViewModel(useCase: useCase)
+                    let viewController = TourBallparkSelectionViewController(viewModel: viewModel)
+                    viewController.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(viewController, animated: true)
                 default:
                     break
                 }
             })
             .disposed(by: disposeBag)
     }
+    
     /// 뷰 모델과 바인드합니다.
     private func bindViewModel() {
         let input = HomeViewModel.Input(viewWillApper: viewWillAppearRelay)
@@ -141,11 +158,23 @@ extension HomeViewController {
                     ) as? TodayGameCell else { return UICollectionViewCell() }
                     cell.configure(game: game)
                     return cell
+                case .mascot:
+                    guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: MascotCell.ID,
+                        for: indexPath
+                    ) as? MascotCell else { return UICollectionViewCell() }
+                    return cell
                 case .todayFortune:
                     guard let cell = collectionView.dequeueReusableCell(
                         withReuseIdentifier: TodayFortuneCell.ID,
                         for: indexPath
                     ) as? TodayFortuneCell else { return UICollectionViewCell() }
+                    return cell
+                case .nearbyTourPlace:
+                    guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: NearbyTourPlaceCell.ID,
+                        for: indexPath
+                    ) as? NearbyTourPlaceCell else { return UICollectionViewCell() }
                     return cell
                 }
             }

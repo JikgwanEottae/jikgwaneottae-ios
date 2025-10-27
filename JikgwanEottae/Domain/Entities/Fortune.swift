@@ -13,4 +13,5 @@ struct Fortune: Equatable {
     let compatibility: String
     let description: String
     let note: String
+    let favoriteTeam: String
 }

@@ -33,13 +33,11 @@ final class TourMapViewModel: ViewModelType {
         let tourTypeSelected: PublishSubject<TourType>
         let mapCenterChanged: PublishRelay<Coordinate>
         let centerButtonTapped: Observable<Void>
-        let resetCoordinateButtonTapped: Observable<Void>
     }
     
     struct Output {
         let naviTitle: Driver<String>
         let initialCoordinate: Driver<Coordinate>
-        let resetCoordinate: Observable<Coordinate>
         let centerButtonState: Driver<Bool>
         let tourPlaces: Observable<[TourPlace]>
         let isLoading: Driver<Bool>
@@ -76,18 +74,9 @@ final class TourMapViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        // 원위치 버튼이 클릭됬을 때
-        let resetCoordinate = input.resetCoordinateButtonTapped
-            .withUnretained(self)
-            .do(onNext: { owner, _ in
-                owner.currentCoordinate.accept(initialCoordinate)
-            })
-            .map { _, _ in initialCoordinate }
-        
         return Output(
             naviTitle: Driver.just(selectedTeam.ballpark),
             initialCoordinate: Driver.just(initialCoordinate),
-            resetCoordinate: resetCoordinate,
             centerButtonState: isShowMoreMode.asDriver(),
             tourPlaces: tourPlaceRelay.asObservable(),
             isLoading: isLoadingRelay.asDriver(),
@@ -168,7 +157,6 @@ extension TourMapViewModel {
     /// 위치기반 관광지 데이터 에러 처리입니다.
     private func handleTourPlaceError(_ error: Error) {
         isLoadingRelay.accept(false)
-        print("관광지 데이터 로드 실패: \(error.localizedDescription)")
     }
     
     /// 위치기반 관광지 데이터를 패치합니다.

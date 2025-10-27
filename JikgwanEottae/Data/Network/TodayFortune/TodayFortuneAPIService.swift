@@ -14,40 +14,33 @@ enum TodayFortuneAPIService {
     case fetchTodayFortune(params: TodayFortuneRequestDTO)
 }
 
-extension TodayFortuneAPIService: TargetType, AccessTokenAuthorizable {
+extension TodayFortuneAPIService: TargetType {
     var baseURL: URL {
         URL(string: "https://api.jikgwaneottae.xyz")!
     }
+    
     var path: String {
         switch self {
         case .fetchTodayFortune:
             return "/api/saju/reading"
         }
     }
+    
     var method: Moya.Method {
         switch self {
         case .fetchTodayFortune:
             return .post
         }
     }
+    
     var task: Moya.Task {
         switch self {
         case .fetchTodayFortune(let params):
             return .requestJSONEncodable(params)
         }
     }
+    
     var headers: [String : String]? {
         return ["Content-Type": "application/json"]
-    }
-    
-    var authorizationType: Moya.AuthorizationType? {
-        switch self {
-        case .fetchTodayFortune:
-            return .bearer
-        }
-    }
-    
-    var validationType: ValidationType {
-        return .successCodes
     }
 }

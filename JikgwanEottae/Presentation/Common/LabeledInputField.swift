@@ -13,20 +13,20 @@ import Then
 public final class LabeledInputField: UIView {
     
     private let titleLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 14, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
     }
     
     private let containerView = UIView().then {
-        $0.backgroundColor = .secondaryBackgroundColor
+        $0.backgroundColor = UIColor.Background.textField
+        $0.layer.borderColor = UIColor.Background.borderColor.cgColor
         $0.layer.cornerRadius = 15
         $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.borderColor.cgColor
     }
     
     public let textField = UITextField().then {
-        $0.font = .gMarketSans(size: 15, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 15, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.clearButtonMode = .whileEditing
         $0.autocapitalizationType = .none
         $0.autocorrectionType = .no
@@ -61,6 +61,7 @@ public final class LabeledInputField: UIView {
             make.top.leading.trailing
                 .equalToSuperview()
         }
+        
         containerView.snp.makeConstraints { make in
             make.top
                 .equalTo(titleLabel.snp.bottom)
@@ -70,6 +71,7 @@ public final class LabeledInputField: UIView {
             make.height
                 .equalTo(55)
         }
+        
         textField.snp.makeConstraints { make in
             make.leading.trailing
                 .equalToSuperview()

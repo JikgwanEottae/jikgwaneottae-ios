@@ -15,10 +15,13 @@ final class AuthNetworkManager {
     private let provider: MoyaProvider<AuthAPIService>
     
     private init() {
-        self.provider = MoyaProvider(session: Session(interceptor: AuthInterceptor.shared))
+        let session = Session(interceptor: AuthInterceptor.shared)
+        self.provider = MoyaProvider<AuthAPIService>(session: session)
     }
     
-    public func authenticateWithKakao(accessToken: String) -> Single<AuthResponseDTO> {
+    public func authenticateWithKakao(
+        accessToken: String
+    ) -> Single<AuthResponseDTO> {
         return provider.rx.request(.authenticateWithKakao(accessToken: accessToken))
             .map(AuthResponseDTO.self)
     }
@@ -43,6 +46,12 @@ final class AuthNetworkManager {
     ) -> Single<AuthResponseDTO> {
         return provider.rx.request(.updateProfileImage(isRemoveImage: isImageRemoved, imageData: imageData))
             .map(AuthResponseDTO.self)
+    }
+    
+    public func updateFavoriteTeam(team: String) -> Completable {
+        return provider.rx.request(.updateFavoriteTeam(team: team))
+            .filterSuccessfulStatusCodes()
+            .asCompletable()
     }
     
     public func validateRefreshToken(_ refreshToken: String) -> Single<AuthResponseDTO> {

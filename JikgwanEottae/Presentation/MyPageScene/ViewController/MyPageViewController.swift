@@ -14,12 +14,13 @@ import RxCocoa
 final class MyPageViewController: UIViewController {
     private let myPageView = MyPageView()
     private let viewModel: MyPageViewModel
+    weak var delegate: SignOutDelegate?
     private let profileImageDataRelay = PublishRelay<(Bool, Data?)>()
     private let signOutButtonRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     private let sectionTitles = ["내 정보", "기타"]
     private let items = [
-        ["닉네임 설정"],
+        ["닉네임 설정", "응원팀 설정"],
         ["이용약관", "개인정보 처리방침", "로그아웃", "회원탈퇴"]
     ]
     
@@ -46,11 +47,12 @@ final class MyPageViewController: UIViewController {
         bindViewModel()
         bindTableView()
         profileEditButtonTapped()
-        print("accessToken: \(KeychainManager.shared.readAccessToken())")
-        print("refreshToken: \(KeychainManager.shared.readRefreshToken())")
-        print("isProfileCompleted: \(UserDefaultsManager.shared.isProfileCompleted)")
-        print("nickname: \(UserDefaultsManager.shared.nickname)")
-        print("profileImageURL: \(UserDefaultsManager.shared.profileImageURL)")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateProfileNickname()
+        updateProfileImage()
     }
     
     private func configureNaviBarButtonItem() {
@@ -84,14 +86,14 @@ final class MyPageViewController: UIViewController {
         output.signOutSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                owner.navigateToLoginScreen()
+                owner.handleSignOutComplete()
             })
             .disposed(by: disposeBag)
         
         output.updateProfileImageSuccess
             .withUnretained(self)
             .emit(onNext: { owner, _ in
-                owner.myPageView.setupProfileImage()
+                owner.updateProfileImage()
             })
             .disposed(by: disposeBag)
         
@@ -125,6 +127,8 @@ final class MyPageViewController: UIViewController {
         switch title {
         case "닉네임 설정":
             navigateToProfileNicknameEdit()
+        case "응원팀 설정":
+            navigateToFavoriteTeamEdit()
         case "이용약관":
             navigateToTermsOfService(title: title)
         case "개인정보 처리방침":
@@ -149,8 +153,13 @@ final class MyPageViewController: UIViewController {
     }
     
     /// 닉네임을 업데이트합니다.
-    public func updateProfileNickname(_ nickname: String?) {
-        self.myPageView.updateProfileNickname(nickname)
+    public func updateProfileNickname() {
+        self.myPageView.updateProfileNickname()
+    }
+    
+    /// 프로필 이미지를 업데이트 합니다.
+    public func updateProfileImage() {
+        self.myPageView.updateProfileImage()
     }
 }
 
@@ -161,11 +170,21 @@ extension MyPageViewController {
         let authUseCase = AuthUseCase(repository: authRepository)
         let nicknameEditViewModel = NicknameEditViewModel(useCase: authUseCase)
         let nicknameEditViewController = NicknameEditViewController(viewModel: nicknameEditViewModel, isInitialEdit: false)
-        nicknameEditViewController.onNicknameUpdated = { [weak self] nickname in
-            self?.updateProfileNickname(nickname)
+        nicknameEditViewController.onNicknameUpdated = { [weak self] in
+            self?.updateProfileNickname()
         }
         nicknameEditViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(nicknameEditViewController, animated: true)
+    }
+    
+    /// 응원구단 설정 화면으로 이동합니다.
+    private func navigateToFavoriteTeamEdit() {
+        let repository = AuthRepository(networkManaer: AuthNetworkManager.shared)
+        let useCase = AuthUseCase(repository: repository)
+        let viewModel = FavoriteTeamEditViewModel(useCase: useCase)
+        let viewController = FavoriteTeamEditViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     /// 개인정보 처리방침 화면으로 이동합니다.
@@ -190,16 +209,15 @@ extension MyPageViewController {
         let authUseCase = AuthUseCase(repository: authRepository)
         let withdrawalViewModel = WithdrawalViewModel(useCase: authUseCase)
         let withdrawalViewController = WithdrawalViewController(viewModel: withdrawalViewModel)
+        withdrawalViewController.delegate = self
         withdrawalViewController.title = title
         withdrawalViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(withdrawalViewController, animated: true)
     }
     
-    /// 루트 뷰 컨트롤러를 로그인 화면으로 전환합니다.
-    private func navigateToLoginScreen() {
-        guard let scene = self.view.window?.windowScene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = scene.delegate as? SceneDelegate else { return }
-        sceneDelegate.resetToLoginScreen()
+    /// 게스트 모드로 전환합니다
+    private func handleSignOutComplete() {
+        self.delegate?.signOutDidComplete()
     }
 }
 
@@ -207,9 +225,9 @@ extension MyPageViewController {
     /// 로그아웃 팝업을 표시합니다.
     private func presentSignOutConfirmationPopup(title: String) {
         self.showAlert(
-            title: title,
+            title: "알림",
             message: "정말 로그아웃할까요?",
-            doneTitle: "로그아웃",
+            doneTitle: title,
             doneStyle: .destructive,
             cancelTitle: "닫기",
             cancelStyle: .cancel,
@@ -277,8 +295,8 @@ extension MyPageViewController: UITableViewDelegate {
         let headerView = UITableViewHeaderFooterView()
         var config = UIListContentConfiguration.groupedHeader()
         config.text = sectionTitles[section]
-        config.textProperties.font = .gMarketSans(size: 11, family: .medium)
-        config.textProperties.color = .tertiaryTextColor
+        config.textProperties.font = UIFont.pretendard(size: 11, family: .medium)
+        config.textProperties.color = UIColor.Text.tertiaryColor
         headerView.contentConfiguration = config
         return headerView
     }
@@ -305,5 +323,11 @@ extension MyPageViewController: UITableViewDataSource {
     /// 섹션의 행 수를 지정합니다.
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items[section].count
+    }
+}
+
+extension MyPageViewController: SignOutDelegate {
+    func signOutDidComplete() {
+        self.handleSignOutComplete()
     }
 }

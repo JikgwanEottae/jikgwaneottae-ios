@@ -15,7 +15,7 @@ final class UserDefaultsManager {
     private enum Keys {
         static let nickname = "nickname"
         static let profileImageURL = "profileImageURL"
-        static let isProfileCompleted = "isProfileCompleted"
+        static let favoriteTeam = "favoriteTeam"
         static let hasLaunchedBefore = "hasLaunchedBefore"
     }
     
@@ -29,9 +29,12 @@ final class UserDefaultsManager {
         set { UserDefaults.standard.set(newValue, forKey: Keys.profileImageURL) }
     }
     
-    var isProfileCompleted: Bool {
-        get { UserDefaults.standard.bool(forKey: Keys.isProfileCompleted) }
-        set { UserDefaults.standard.set(newValue, forKey: Keys.isProfileCompleted) }
+    var favoriteTeam: String? {
+        get { UserDefaults.standard.string(forKey: Keys.favoriteTeam) }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Keys.favoriteTeam)
+            NotificationCenter.default.post(name: .favoriteTeamDidChange, object: nil)
+        }
     }
     
     var hasLaunchedBefore: Bool {
@@ -47,14 +50,13 @@ final class UserDefaultsManager {
         UserDefaults.standard.removeObject(forKey: Keys.profileImageURL)
     }
     
-    public func clearIsProfileCompletedKey() {
-        UserDefaults.standard.removeObject(forKey: Keys.isProfileCompleted)
+    public func clearFavoriteTeamKey() {
+        UserDefaults.standard.removeObject(forKey: Keys.favoriteTeam)
     }
     
     public func clearAllKeys() {
         UserDefaults.standard.removeObject(forKey: Keys.nickname)
         UserDefaults.standard.removeObject(forKey: Keys.profileImageURL)
-        UserDefaults.standard.removeObject(forKey: Keys.isProfileCompleted)
-        UserDefaults.standard.removeObject(forKey: Keys.hasLaunchedBefore)
+        UserDefaults.standard.removeObject(forKey: Keys.favoriteTeam)
     }
 }

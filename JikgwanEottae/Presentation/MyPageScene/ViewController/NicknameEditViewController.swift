@@ -13,7 +13,7 @@ import RxCocoa
 final class NicknameEditViewController: UIViewController {
     private let nicknameEditView = NicknameEditView()
     private let viewModel: NicknameEditViewModel
-    public var onNicknameUpdated: ((String) -> Void)?
+    public var onNicknameUpdated: (() -> Void)?
     private let isInitialEdit: Bool
     private let disposeBag = DisposeBag()
     
@@ -37,7 +37,6 @@ final class NicknameEditViewController: UIViewController {
         hideBackBarButtonItem()
         hideKeyboardWhenTappedAround()
         bindViewModel()
-        bindUnderlineColorToEditingState()
     }
     
     private func bindViewModel() {
@@ -47,13 +46,6 @@ final class NicknameEditViewController: UIViewController {
         )
         
         let output = viewModel.transform(input: input)
-        
-        output.isButtonEnabled
-            .withUnretained(self)
-            .subscribe(onNext: { owner, isEnabled in
-                owner.nicknameEditView.setButtonState(isEnabled)
-            })
-            .disposed(by: disposeBag)
         
         output.isLoading
             .drive(nicknameEditView.activityIndicator.rx.isAnimating)
@@ -66,8 +58,7 @@ final class NicknameEditViewController: UIViewController {
                     let mainTabBarController = MainTabBarController()
                     owner.transitionRoot(to: mainTabBarController)
                 } else {
-                    guard let nickname = UserDefaultsManager.shared.nickname else { return }
-                    owner.onNicknameUpdated?(nickname)
+                    owner.onNicknameUpdated?()
                     owner.navigationController?.popViewController(animated: true)
                 }
             })
@@ -77,8 +68,8 @@ final class NicknameEditViewController: UIViewController {
             .withUnretained(self)
             .emit(onNext: { owner, error in
                 owner.showAlert(
-                    title: "변경 실패",
-                    message: "이미 다른 사용자가 사용하고 있어요",
+                    title: "알림",
+                    message: "사용 중이거나 잘못된 닉네임 형식이에요",
                     doneTitle: "확인"
                 )
             })
@@ -86,26 +77,6 @@ final class NicknameEditViewController: UIViewController {
         
         output.validation
             .drive(nicknameEditView.noticeLabel.rx.isHidden)
-            .disposed(by: disposeBag)
-    }
-    
-    private func bindUnderlineColorToEditingState() {
-        nicknameEditView.nicknameInputField.textField.rx.controlEvent(.editingDidBegin)
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                UIView.animate(withDuration: 0.25) {
-                    owner.nicknameEditView.nicknameInputField.setUnderlineColor(.mainCharcoalColor)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        nicknameEditView.nicknameInputField.textField.rx.controlEvent(.editingDidEnd)
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                UIView.animate(withDuration: 0.25) {
-                    owner.nicknameEditView.nicknameInputField.setUnderlineColor(.primaryBackgroundColor)
-                }
-            })
             .disposed(by: disposeBag)
     }
 }

@@ -13,16 +13,17 @@ import Then
 // MARK: - 구단 이름과 점수를 수평으로 나열하는 스택뷰
 
 final class TeamScoreStackView: UIStackView {
-    private let teamLabel  = UILabel().then {
-        $0.font = .gMarketSans(size: 25, family: .bold)
-        $0.textColor = .secondaryTextColor
+    private let teamLabel = UILabel().then {
+        $0.font = UIFont.pretendard(size: 25, family: .semiBold)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.numberOfLines = 1
+        $0.textAlignment = .left
         $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
     private let scoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 25, family: .bold)
-        $0.textColor = .secondaryTextColor
+        $0.font = UIFont.pretendard(size: 25, family: .semiBold)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .right
         $0.setContentCompressionResistancePriority(.required, for: .horizontal)

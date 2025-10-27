@@ -13,7 +13,7 @@ import Then
 // MARK: - 구단별 관광지 조회 섹션에서 사용할 커스텀 컬렉션 뷰 셀입니다.
 
 final class TeamSelectionCell: UICollectionViewCell {
-    // 셀 재사용 아이디입니다.
+    
     static let ID = "TeamSelectionCell"
     
     private lazy var stackView = UIStackView(arrangedSubviews: [
@@ -25,17 +25,15 @@ final class TeamSelectionCell: UICollectionViewCell {
         $0.alignment = .fill
     }
     
-    // 구단 이름 레이블입니다.
     private let teamNameLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
-        $0.textColor = .secondaryTextColor
+        $0.font = UIFont.pretendard(size: 20, family: .bold)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.textAlignment = .left
     }
     
-    // 구장 레이블입니다.
     private let ballparkLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 12, family: .medium)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 12, family: .medium)
+        $0.textColor = UIColor.Text.primaryColor
         $0.textAlignment = .left
     }
 
@@ -58,7 +56,7 @@ final class TeamSelectionCell: UICollectionViewCell {
     
     private func setupUI() {
         contentView.layer.cornerRadius = Constants.cornerRadius
-        contentView.backgroundColor = .secondaryBackgroundColor
+        contentView.backgroundColor = UIColor.Background.secondaryColor
         contentView.layer.masksToBounds = true
         [stackView].forEach { self.contentView.addSubview($0) }
     }

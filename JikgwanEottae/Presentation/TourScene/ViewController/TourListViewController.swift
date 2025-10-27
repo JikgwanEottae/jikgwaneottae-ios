@@ -13,7 +13,6 @@ import RxCocoa
 // MARK: - 관광 데이터를 리스트로 보여주기 위한 뷰 컨트롤러입니다.
 
 final class TourListViewController: UIViewController {
-    
     private let tourListView = TourListView()
     private let tourPlaces: [TourPlace]
     private let disposeBag = DisposeBag()
@@ -34,6 +33,7 @@ final class TourListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        hideBackBarButtonItem()
         bindTableView()
     }
     
@@ -60,13 +60,11 @@ final class TourListViewController: UIViewController {
     
     /// 관광 장소 상세보기 화면으로 전환합니다.
     private func presentTourPlaceDetail(contentID: String) {
-        let tourRepository = TourRepository(manager: TourNetworkManager.shared)
-        let tourUseCase = TourUseCase(repository: tourRepository)
-        let tourPlaceDetailViewModel = TourPlaceDetailViewModel(useCase: tourUseCase, contentID: contentID)
-        let tourPlaceDetailViewController = TourPlaceDetailViewController(viewModel: tourPlaceDetailViewModel)
-        tourPlaceDetailViewController.modalPresentationStyle = .overFullScreen
-        tourPlaceDetailViewController.modalTransitionStyle = .crossDissolve
-        self.present(tourPlaceDetailViewController, animated: true)
+        let repository = TourRepository(manager: TourNetworkManager.shared)
+        let useCase = TourUseCase(repository: repository)
+        let viewModel = TourPlaceDetailViewModel(useCase: useCase, contentID: contentID)
+        let viewController = TourPlaceDetailViewController(viewModel: viewModel)
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

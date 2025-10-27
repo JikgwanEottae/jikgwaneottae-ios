@@ -13,6 +13,7 @@ import RxSwift
 final class TourNetworkManager {
     static let shared = TourNetworkManager()
     private let provider = MoyaProvider<TourAPIService>()
+    private let nearByProvider = MoyaProvider<NearbyTourAPIService>()
     
     private init() {}
     
@@ -25,6 +26,12 @@ final class TourNetworkManager {
     public func fetchTourPlaceCommonDetail(params: CommonDetailRequestDTO) -> Single<TourPlacePage> {
         return provider.rx.request(.fetchTourPlaceCommonDetail(params: params))
             .map(CommonDetailResponseDTO.self)
+            .map { $0.toDomain() }
+    }
+    
+    public func fetchNearbyTourPlace(team: String) -> Single<NearbyTourPlace> {
+        return nearByProvider.rx.request(.fetchNearbyTourPlace(team: team))
+            .map(TourAttractionsResponseDTO.self)
             .map { $0.toDomain() }
     }
 }

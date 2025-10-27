@@ -62,7 +62,6 @@ final class DiaryGameDateSelectionViewController: UIViewController {
         
         output.isLoading
             .drive(onNext: { [weak self] isLoading in
-                self?.diaryGameDateSelectionView.interactionBlocker.isHidden = !isLoading
                 if isLoading {
                     self?.diaryGameDateSelectionView.activityIndicator.startAnimating()
                 } else {
@@ -73,7 +72,6 @@ final class DiaryGameDateSelectionViewController: UIViewController {
     }
     
     private func bindCollectionView() {
-        // 선택한 경기 아이템을 제공받고, 직관 일기 생성 화면으로 전환
         diaryGameDateSelectionView.collectionView.rx
             .itemSelected
             .compactMap { [weak self] indexPath in
@@ -128,7 +126,7 @@ final class DiaryGameDateSelectionViewController: UIViewController {
             showGameNotAvailableAlert()
             return
         }
-        navigateToDiaryCreation(with: game)
+        navigateToDiaryGameInfoInput(for: game)
     }
     
     /// 진행 완료된 경기인지 체크합니다.
@@ -136,26 +134,21 @@ final class DiaryGameDateSelectionViewController: UIViewController {
         return game.status == "PLAYED"
     }
     
-    /// 직관 일기 생성화면으로 이동합니다.
-    private func navigateToDiaryCreation(with game: KBOGame) {
-         let diaryCreationViewController = createDiaryCreationViewController(for: game)
-         navigationController?.pushViewController(diaryCreationViewController, animated: true)
-     }
-    
-    /// 직관 일기 생성화면을 생성합니다.
-    private func createDiaryCreationViewController(for game: KBOGame) -> DiaryCreationViewController {
-        let diaryRepository = DiaryRepository(networkManger: DiaryNetworkManager.shared)
-        let diaryUseCase = DiaryUseCase(repository: diaryRepository)
-        let diaryCreationViewModel = DiaryCreationViewModel(useCase: diaryUseCase, selectedGame: game)
-        return DiaryCreationViewController(viewModel: diaryCreationViewModel)
-    }
-    
     /// 직관 일기 기록 불가 알림창을 표시합니다.
     private func showGameNotAvailableAlert() {
         showAlert(
             title: "알림",
-            message: "경기가 끝난 후에 기록할 수 있어요",
+            message: "종료된 경기만 일기 작성이 가능해요",
             doneTitle: "확인"
         )
     }
+}
+
+extension DiaryGameDateSelectionViewController {
+    /// 직관일기 게임 정보 입력 화면으로 이동합니다.
+    private func navigateToDiaryGameInfoInput(for game: KBOGame) {
+        let viewModel = DiaryGameInfoInputViewModel(game: game)
+        let viewCont = DiaryGameInfoInputViewController(viewModel: viewModel)
+        navigationController?.pushViewController(viewCont, animated: true)
+     }
 }

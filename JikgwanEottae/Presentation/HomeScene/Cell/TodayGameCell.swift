@@ -28,15 +28,15 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let statusContainerView = UIView().then {
-        $0.backgroundColor = .tagBackgroundColor
+        $0.backgroundColor = UIColor.Background.badgeColor
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 7
     }
     
     private let statusLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 11, family: .medium)
+        $0.font = UIFont.pretendard(size: 11, family: .medium)
         $0.numberOfLines = 1
-        $0.textColor = .white
+        $0.textColor = UIColor.white
         $0.clipsToBounds = true
         $0.setContentHuggingPriority(.required, for: .vertical)
     }
@@ -51,15 +51,15 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let homeTeamNameLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 17, family: .bold)
+        $0.font = UIFont.pretendard(size: 17, family: .bold)
         $0.numberOfLines = 1
         $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     private let homeTeamScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 20, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .right
         $0.clipsToBounds = true
@@ -75,24 +75,24 @@ final class TodayGameCell: UICollectionViewCell {
     }
     
     private let awayTeamNameLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 17, family: .bold)
+        $0.font = UIFont.pretendard(size: 17, family: .bold)
         $0.numberOfLines = 1
         $0.textAlignment = .left
         $0.clipsToBounds = true
     }
     
     private let awayTeamScoreLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 20, family: .bold)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 20, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
         $0.textAlignment = .right
         $0.clipsToBounds = true
     }
     
     private let ballparkLabel = UILabel().then {
-        $0.font = .gMarketSans(size: 12, family: .medium)
+        $0.font = UIFont.pretendard(size: 12, family: .medium)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.numberOfLines = 1
-        $0.textColor = .primaryTextColor
         $0.clipsToBounds = true
     }
     
@@ -163,6 +163,7 @@ final class TodayGameCell: UICollectionViewCell {
         if game.status == "PLAYED" { statusLabel.text = "경기종료" }
         else if game.status == "SCHEDULED" { statusLabel.text = "경기예정" }
         else if game.status == "CANCELED" { statusLabel.text = "경기취소" }
+        else { statusLabel.text = "기타" }
         homeTeamNameLabel.text = game.homeTeam
         homeTeamNameLabel.textColor = KBOTeam(rawValue: game.homeTeam)?.color
         if let homeScore = game.homeScore { homeTeamScoreLabel.text = "\(homeScore)" }

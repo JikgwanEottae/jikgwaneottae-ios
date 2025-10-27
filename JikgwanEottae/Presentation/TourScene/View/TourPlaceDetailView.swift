@@ -18,18 +18,11 @@ final class TourPlaceDetailView: UIView {
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
-    }
-    
-    // 관광 데이터 팝업 뷰입니다.
-    private let popupView = UIView().then {
-        $0.backgroundColor = .white
-        $0.layer.cornerRadius = Constants.cornerRadius
-        $0.clipsToBounds = true
+        $0.color = UIColor.Custom.charcoal
     }
     
     private let scrollView = UIScrollView().then {
-        $0.showsVerticalScrollIndicator = false
+        $0.showsVerticalScrollIndicator = true
         $0.showsHorizontalScrollIndicator = false
         $0.alwaysBounceVertical = false
     }
@@ -38,14 +31,15 @@ final class TourPlaceDetailView: UIView {
         arrangedSubviews: [
             imageView,
             titleLabel,
-            addressLabel,
-            overviewLabel
+            overviewLabel,
+            addressLabel
         ]
     ).then {
+        $0.layoutMargins = UIEdgeInsets(top: 10, left: 20, bottom: 20, right: 20)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
-        $0.spacing = 30
+        $0.spacing = 15
         $0.clipsToBounds = true
     }
     
@@ -58,23 +52,23 @@ final class TourPlaceDetailView: UIView {
     
     // 제목 레이블입니다.
     private let titleLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 20, family: .medium)
+        $0.font = UIFont.pretendard(size: 22, family: .bold)
+        $0.textColor = UIColor.Text.secondaryColor
         $0.numberOfLines = 0
-        $0.textColor = .primaryTextColor
-    }
-    
-    // 주소 레이블입니다.
-    private let addressLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 14, family: .medium)
-        $0.numberOfLines = 0
-        $0.textColor = .secondaryTextColor
     }
     
     // 상세 정보 레이블입니다.
     private let overviewLabel = UILabel().then {
-        $0.font = UIFont.gMarketSans(size: 14, family: .medium)
+        $0.font = UIFont.pretendard(size: 16, family: .medium)
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 0
-        $0.textColor = .secondaryTextColor
+    }
+    
+    // 주소 레이블입니다.
+    private let addressLabel = UILabel().then {
+        $0.font = UIFont.pretendard(size: 14, family: .medium)
+        $0.textColor = UIColor.Text.tertiaryColor
+        $0.numberOfLines = 0
     }
     
     override init(frame: CGRect) {
@@ -89,18 +83,21 @@ final class TourPlaceDetailView: UIView {
     }
     
     private func setupUI() {
-        self.backgroundColor = .black.withAlphaComponent(0.25)
-        self.addSubview(popupView)
-        popupView.addSubview(scrollView)
-        popupView.addSubview(activityIndicator)
+        self.backgroundColor = UIColor.white
+        self.addSubview(scrollView)
+        self.addSubview(activityIndicator)
         scrollView.addSubview(stackView)
     }
     
     private func setupLayout() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center
+                .equalToSuperview()
+        }
+        
         scrollView.snp.makeConstraints { make in
             make.edges
                 .equalToSuperview()
-                .inset(14)
         }
         
         stackView.snp.makeConstraints { make in
@@ -110,44 +107,29 @@ final class TourPlaceDetailView: UIView {
                 .equalTo(scrollView.frameLayoutGuide)
         }
         
-        stackView.setCustomSpacing(20, after: titleLabel)
-        stackView.setCustomSpacing(20, after: addressLabel)
+        stackView.setCustomSpacing(40, after: imageView)
         
-        popupView.snp.makeConstraints { make in
-            make.center
-                .equalToSuperview()
-            make.height
-                .equalTo(450)
-            make.width
-                .equalToSuperview()
-                .multipliedBy(0.8)
-        }
-        
-        activityIndicator.snp.makeConstraints { make in
-            make.center
-                .equalToSuperview()
-        }
-    
         imageView.snp.makeConstraints { make in
-            make.height.equalTo(200)
+            make.height
+                .equalTo(270)
         }
     }
     
     public func configure(with tourPlace: TourPlace) {
         updateImage(with: tourPlace.imageURL)
         updateTitle(with: tourPlace.title)
+        updateOverview(with: tourPlace.overview)
         updateAddress(
             baseAddress: tourPlace.baseAddress,
             subAddress: tourPlace.subAddress,
             zipCode: tourPlace.zipCode
         )
-        updateOverview(with: tourPlace.overview)
     }
     
     /// 이미지를 업데이트합니다.
     private func updateImage(with urlString: String) {
         guard !urlString.isEmpty, let url = URL(string: urlString) else {
-            imageView.image = UIImage(named: "imagePlaceholder")
+            imageView.image = UIImage(named: "placeholder")
             return
         }
         imageView.kf.indicatorType = .activity
@@ -182,6 +164,7 @@ final class TourPlaceDetailView: UIView {
     private func updateOverview(with text: String?) {
         guard let text = text else { return }
         overviewLabel.text = (text == "-" ? "아직 소개글이 등록되지 않은 곳이에요" : text)
-        overviewLabel.setLineSpacing(spacing: 8)
+        overviewLabel.setLineSpacing(spacing: 5)
+        overviewLabel.lineBreakStrategy = .hangulWordPriority
     }
 }

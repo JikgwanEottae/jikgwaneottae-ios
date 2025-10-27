@@ -16,41 +16,12 @@ final class StatsCell: UICollectionViewCell {
     static let ID = "StatsCell"
     
     private let titleLabel = UILabel().then {
-        $0.text = "나의 직관 승률"
-        $0.font = UIFont.gMarketSans(size: 16, family: .medium)
-        $0.textColor = .primaryTextColor
-        $0.textAlignment = .left
+        $0.font = UIFont.pretendard(size: 16, family: .semiBold)
+        $0.textColor = UIColor.Text.primaryColor
+        $0.textAlignment = .center
         $0.numberOfLines = 1
         $0.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         $0.setContentHuggingPriority(.required, for: .vertical)
-    }
-    
-    private lazy var winningRateStackView = UIStackView(arrangedSubviews: [
-        progressView,
-        percentLabel
-    ]).then {
-        $0.axis = .horizontal
-        $0.spacing = 20
-        $0.distribution = .fill
-        $0.alignment = .center
-    }
-    
-    private let progressView = UIProgressView(progressViewStyle: .default).then {
-        $0.progressTintColor = .mainCharcoalColor
-        $0.trackTintColor = .primaryBackgroundColor
-        $0.progress = 0.4
-        $0.layer.cornerRadius = 4
-        $0.clipsToBounds = true
-    }
-    
-    private let percentLabel = UILabel().then {
-        $0.text = "0%"
-        $0.font = UIFont.gMarketSans(size: 14, family: .bold)
-        $0.textColor = .primaryTextColor
-        $0.textAlignment = .right
-        $0.numberOfLines = 1
-        $0.setContentHuggingPriority(.required, for: .horizontal)
-        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
     private lazy var statsStackView = UIStackView(arrangedSubviews: [
@@ -63,11 +34,11 @@ final class StatsCell: UICollectionViewCell {
         $0.alignment = .fill
     }
     
-    private let winStatsItem = StatsItemView(title: "승리", count: 6)
-    private let firstDivideView = UIView().then { $0.backgroundColor = .borderColor }
-    private let lossStatsItem = StatsItemView(title: "패배", count: 3)
-    private let secondDivideView = UIView().then { $0.backgroundColor = .borderColor }
-    private let drawStatsItem = StatsItemView(title: "무승부", count: 1)
+    private let winStatsItem = StatsItemView(title: "승리", count: 0)
+    private let firstDivideView = UIView().then { $0.backgroundColor = UIColor.Background.borderColor }
+    private let lossStatsItem = StatsItemView(title: "패배", count: 0)
+    private let secondDivideView = UIView().then { $0.backgroundColor = UIColor.Background.borderColor }
+    private let drawStatsItem = StatsItemView(title: "무승부", count: 0)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -89,7 +60,6 @@ final class StatsCell: UICollectionViewCell {
         self.layer.cornerRadius = Constants.cornerRadius
         self.backgroundColor = .secondaryBackgroundColor
         self.contentView.addSubview(titleLabel)
-        self.contentView.addSubview(winningRateStackView)
         self.contentView.addSubview(statsStackView)
         self.contentView.addSubview(firstDivideView)
         self.contentView.addSubview(secondDivideView)
@@ -101,24 +71,9 @@ final class StatsCell: UICollectionViewCell {
                 .equalToSuperview()
         }
         
-        winningRateStackView.snp.makeConstraints { make in
-            make.top
-                .equalTo(titleLabel.snp.bottom)
-                .offset(30)
-            make.leading.trailing
-                .equalToSuperview()
-            make.height
-                .equalTo(20)
-        }
-        
-        progressView.snp.makeConstraints { make in
-            make.height
-                .equalTo(10)
-        }
-        
         statsStackView.snp.makeConstraints { make in
             make.top
-                .equalTo(winningRateStackView.snp.bottom)
+                .equalTo(titleLabel.snp.bottom)
                 .offset(30)
             make.leading.trailing.bottom
                 .equalToSuperview()
@@ -144,8 +99,7 @@ final class StatsCell: UICollectionViewCell {
     }
     
     public func configure(stats: DiaryStats) {
-        progressView.setProgress(stats.winRate / 100.0, animated: true)
-        percentLabel.text = "\(Int(stats.winRate))%"
+        titleLabel.text = "나의 직관 승률 \(Int(stats.winRate))%"
         winStatsItem.configure(count: stats.wins)
         lossStatsItem.configure(count: stats.losses)
         drawStatsItem.configure(count: stats.draws)
@@ -155,14 +109,14 @@ final class StatsCell: UICollectionViewCell {
 extension StatsCell {
     final class StatsItemView: UIView {
         private let titleLabel = UILabel().then {
-            $0.font = UIFont.gMarketSans(size: 16, family: .medium)
-            $0.textColor = .primaryTextColor
+            $0.font = UIFont.pretendard(size: 16, family: .medium)
+            $0.textColor = UIColor.Text.primaryColor
             $0.textAlignment = .center
         }
         
         private let countLabel = UILabel().then {
-            $0.font = UIFont.gMarketSans(size: 18, family: .bold)
-            $0.textColor = .primaryTextColor
+            $0.font = UIFont.pretendard(size: 18, family: .semiBold)
+            $0.textColor = UIColor.Text.primaryColor
             $0.textAlignment = .center
         }
         

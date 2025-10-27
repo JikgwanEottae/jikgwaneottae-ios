@@ -14,15 +14,15 @@ import Then
 final class MyPageView: UIView {
     public let titleLabel = UILabel().then {
         $0.text = "마이"
+        $0.font = UIFont.pretendard(size: 24, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.numberOfLines = 1
-        $0.font = UIFont.gMarketSans(size: 24, family: .bold)
-        $0.textColor = .black
     }
     
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     private(set) var tableView = UITableView(
@@ -60,8 +60,8 @@ final class MyPageView: UIView {
         var config = UIButton.Configuration.plain()
         config.image = UIImage(systemName: "plus.circle.fill")
         config.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(pointSize: 22)
-        config.baseForegroundColor = .mainCharcoalColor
-        config.background.backgroundColor = .white
+        config.baseForegroundColor = UIColor.Custom.blue
+        config.background.backgroundColor = UIColor.white
         config.cornerStyle = .capsule
         $0.configuration = config
         $0.clipsToBounds = true
@@ -70,8 +70,8 @@ final class MyPageView: UIView {
     public let nicknameLabel = UILabel().then {
         $0.text = UserDefaultsManager.shared.nickname
         $0.numberOfLines = 1
-        $0.font = UIFont.gMarketSans(size: 17, family: .bold)
-        $0.textColor = .primaryTextColor
+        $0.font = UIFont.pretendard(size: 17, family: .bold)
+        $0.textColor = UIColor.Text.primaryColor
         $0.textAlignment = .center
     }
     
@@ -79,7 +79,7 @@ final class MyPageView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
-        setupProfileImage()
+        updateProfileImage()
     }
     
     @available(*, unavailable)
@@ -88,7 +88,7 @@ final class MyPageView: UIView {
     }
     
     private func setupUI() {
-        self.backgroundColor = .white
+        self.backgroundColor = UIColor.white
         self.addSubview(tableView)
         self.addSubview(activityIndicator)
         headerView.addSubview(profileImageContainerView)
@@ -145,7 +145,7 @@ final class MyPageView: UIView {
 
 extension MyPageView {
     /// 초기 프로필 이미지를 설정합니다.
-    public func setupProfileImage() {
+    public func updateProfileImage() {
         if let profileImage = UserDefaultsManager.shared.profileImageURL {
             let url = URL(string: profileImage)
             profileImageView.kf.setImage(with: url)
@@ -155,7 +155,7 @@ extension MyPageView {
     }
     
     /// 프로필 닉네임을 업데이트합니다.
-    public func updateProfileNickname(_ nickname: String?) {
-        nicknameLabel.text = nickname
+    public func updateProfileNickname() {
+        nicknameLabel.text = UserDefaultsManager.shared.nickname
     }
 }

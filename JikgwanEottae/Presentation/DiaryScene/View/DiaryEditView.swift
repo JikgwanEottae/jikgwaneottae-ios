@@ -12,112 +12,135 @@ import SnapKit
 import Then
 
 final class DiaryEditView: UIView {
-    private(set) var dismissButton = UIButton(type: .custom).then {
-        $0.setTitle("닫기", for: .normal)
-        $0.titleLabel?.font = UIFont.gMarketSans(size: 16, family: .medium)
-        $0.setTitleColor(.primaryTextColor, for: .normal)
+    private(set) var closeBarButton = UIBarButtonItem().then {
+        let config = UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
+        $0.image = UIImage(systemName: "xmark", withConfiguration: config)
+        $0.style = .plain
     }
     
-    private(set) var deleteButton = UIButton(type: .custom).then {
-        $0.setTitle("삭제", for: .normal)
-        $0.titleLabel?.font = UIFont.gMarketSans(size: 16, family: .medium)
-        $0.setTitleColor(.tossRedColor, for: .normal)
+    private(set) var editBarButton = UIBarButtonItem().then {
+        $0.title = "수정"
+        $0.style = .plain
+        $0.setTitleTextAttributes([
+            .font: UIFont.pretendard(size: 16, family: .semiBold),
+            .foregroundColor: UIColor.Custom.blue
+        ], for: .normal)
     }
     
     public let activityIndicator = UIActivityIndicatorView().then {
         $0.style = .medium
         $0.hidesWhenStopped = true
-        $0.color = .mainCharcoalColor
+        $0.color = UIColor.Custom.charcoal
     }
     
     private let scrollView = UIScrollView().then {
-        $0.showsVerticalScrollIndicator = false
+        $0.showsVerticalScrollIndicator = true
         $0.showsHorizontalScrollIndicator = false
         $0.alwaysBounceVertical = true
-        $0.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
-        $0.scrollIndicatorInsets = $0.contentInset
+        $0.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
     }
     
     private lazy var stackView = UIStackView(
         arrangedSubviews:[
-            ImageSelectionButtonContainerView,
-            supportTeamInputField,
-            seatInputField,
-            memoInputField
+            titleTextField,
+            seperateView,
+            contentTextView,
+            photoContainerView,
+            favoriteTeamTextField,
+            seatTextField,
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        $0.layoutMargins = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.axis = .vertical
         $0.alignment = .fill
-        $0.spacing = 35
+        $0.spacing = 20
         $0.clipsToBounds = true
     }
     
-    private let ImageSelectionButtonContainerView = UIView().then {
+    // 제목
+    private(set) var titleTextField = UITextField().then {
+        $0.placeholder = "제목을 입력해주세요"
+        $0.setPlaceholder(color: UIColor.Text.placeholderColor)
+        $0.font = UIFont.pretendard(size: 18, family: .semiBold)
+        $0.textColor = UIColor.Text.secondaryColor
+        $0.autocapitalizationType = .none
+        $0.autocorrectionType = .no
+        $0.contentVerticalAlignment = .center
+    }
+    
+    // 제목과 본문 구분선
+    private let seperateView = UIView().then {
+        $0.backgroundColor = UIColor.Background.borderColor
         $0.clipsToBounds = true
     }
     
-    // 업로드할 사진을 선택하기 위한 버튼입니다.
-    public let selectImageButton = UIButton(type: .custom).then {
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
+    // 본문 메모 텍스트 뷰
+    private(set) var contentTextView = UITextView().then {
+        $0.text = Constants.Text.textViewPlaceholder
+        $0.font = UIFont.pretendard(size: 16, family: .medium)
+        $0.textColor = UIColor.Text.placeholderColor
+        $0.textContainer.lineFragmentPadding = 0
+        $0.clipsToBounds = true
+    }
+    
+    // 응원팀
+    private(set) lazy var favoriteTeamTextField = UnderlinedInputField(
+        title: "응원팀",
+        placeholder: "응원팀을 선택해주세요",
+        inputView: nil
+    )
+    
+    // 좌석
+    private(set) var seatTextField = UnderlinedInputField(
+        title: "좌석(선택사항)",
+        placeholder: "좌석을 입력해주세요",
+        inputView: nil
+    )
+    
+    // 사진 가져오기 버튼 컨테이너 뷰
+    private let photoContainerView = UIView().then {
+        $0.backgroundColor = .clear
+    }
+    
+    // 사진첩에서 사진 가져오기 버튼
+    public let photoSelectionButton = UIButton(type: .custom).then {
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
         let image = UIImage(systemName: "photo.stack")?
             .withConfiguration(symbolConfig)
             .withTintColor(.secondaryTextColor, renderingMode: .alwaysOriginal)
         $0.setImage(image, for: .normal)
         $0.contentHorizontalAlignment = .center
-        $0.contentVerticalAlignment = .center
         $0.contentMode = .scaleAspectFit
-        $0.backgroundColor = .secondaryBackgroundColor
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.borderColor.cgColor
-        $0.layer.cornerRadius = Constants.cornerRadius
-        $0.clipsToBounds = true
-        $0.adjustsImageWhenHighlighted = false
-    }
-    
-    // 업로드할 사진을 제거하기 위한 버튼입니다.
-    public let removePhotoButton = UIButton(type: .custom).then {
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 10, weight: .light)
-        let image = UIImage(named: "xMarkIcon")?
-            .withConfiguration(symbolConfig)
-            .withTintColor(.white, renderingMode: .alwaysOriginal)
-        $0.setImage(image, for: .normal)
-        $0.contentHorizontalAlignment = .center
-        $0.contentMode = .scaleAspectFit
-        $0.backgroundColor = .mainCharcoalColor
-        $0.clipsToBounds = true
-        $0.adjustsImageWhenHighlighted = false
-        $0.layer.cornerRadius = 13
-        $0.isHidden = true
-    }
-    
-    // 응원팀을 선택하는 피커 뷰입니다.
-    public let supportTeamPickerView = UIPickerView().then {
-        $0.backgroundColor = .white
-    }
-    
-    // 응원팀 입력 필드입니다.
-    private(set) lazy var supportTeamInputField = UnderlinedInputField(
-        title: "응원팀",
-        placeholder: "응원팀을 선택해주세요",
-        inputView: supportTeamPickerView
-    )
-    
-    // 좌석 입력 필드입니다.
-    private(set) var seatInputField = UnderlinedInputField(title: "좌석", placeholder: "1루 테이블석")
-    
-    // 한줄 후기 입력 필드입니다.
-    private(set) var memoInputField = UnderlinedInputField(title: "후기", placeholder: "짧은 후기를 남겨보세요")
-    
-    // 직관 일기 수정하기 버튼입니다.
-    private(set) var updateButton = UIButton(type: .custom).then {
-        $0.setTitle("수정하기", for: .normal)
-        $0.titleLabel?.font = .gMarketSans(size: 18, family: .medium)
-        $0.setTitleColor(.white, for: .normal)
-        $0.backgroundColor = .mainCharcoalColor
+        $0.backgroundColor = UIColor.Background.secondaryColor
         $0.layer.cornerRadius = 17
         $0.clipsToBounds = true
+        $0.adjustsImageWhenHighlighted = false
+    }
+    
+    // 업로드할 사진
+    private(set) var imageView = UIImageView().then {
+        $0.kf.indicatorType = .activity
+        $0.contentMode = .scaleAspectFill
+        $0.backgroundColor = UIColor.Background.secondaryColor
+        $0.layer.cornerRadius = 17
+        $0.clipsToBounds = true
+        $0.isHidden = true
+        $0.isUserInteractionEnabled = true
+    }
+    
+    // 사진 삭제 버튼
+    private(set) var removePhotoButton = UIButton(configuration: .plain()).then {
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(systemName: "xmark.circle.fill")
+        config.baseForegroundColor = UIColor.Custom.blue
+        config.contentInsets = .zero
+        config.preferredSymbolConfigurationForImage = .init(pointSize: 20, weight: .semibold)
+        $0.configuration = config
+        $0.backgroundColor = UIColor.white
+        $0.layer.cornerRadius = 11
+        $0.clipsToBounds = true
+        $0.isHidden = true
     }
     
     override init(frame: CGRect) {
@@ -135,14 +158,15 @@ final class DiaryEditView: UIView {
     private func addSubviews() {
         addSubview(scrollView)
         addSubview(activityIndicator)
-        addSubview(updateButton)
         scrollView.addSubview(stackView)
-        ImageSelectionButtonContainerView.addSubview(selectImageButton)
-        selectImageButton.addSubview(removePhotoButton)
+        photoContainerView.addSubview(photoSelectionButton)
+        photoContainerView.addSubview(imageView)
+        imageView.addSubview(removePhotoButton)
+        bringSubviewToFront(activityIndicator)
     }
     
     private func setupUI() {
-        self.backgroundColor = .white
+        self.backgroundColor = UIColor.white
     }
     
     private func setupLayout() {
@@ -152,13 +176,10 @@ final class DiaryEditView: UIView {
         }
         
         scrollView.snp.makeConstraints { make in
-            make.top
-                .equalTo(safeAreaLayoutGuide)
-            make.leading.trailing
+            make.top.leading.trailing
                 .equalToSuperview()
             make.bottom
-                .equalTo(updateButton.snp.top)
-                .offset(-10)
+                .equalTo(keyboardLayoutGuide.snp.top)
         }
         
         stackView.snp.makeConstraints { make in
@@ -168,120 +189,96 @@ final class DiaryEditView: UIView {
                 .equalTo(scrollView.frameLayoutGuide)
         }
         
-        ImageSelectionButtonContainerView.snp.makeConstraints { make in
+        stackView.setCustomSpacing(10, after: titleTextField)
+        stackView.setCustomSpacing(30, after: photoContainerView)
+        stackView.setCustomSpacing(30, after: favoriteTeamTextField)
+        
+        seperateView.snp.makeConstraints { make in
             make.height
-                .equalTo(ImageSelectionButtonContainerView.snp.width)
+                .equalTo(1)
+        }
+        
+        contentTextView.snp.makeConstraints { make in
+            make.height
+                .equalTo(200)
+        }
+        
+        photoSelectionButton.snp.makeConstraints { make in
+            make.leading.top.bottom
+                .equalToSuperview()
+            make.size
+                .equalTo(120)
+        }
+        
+        imageView.snp.makeConstraints { make in
+            make.leading
+                .equalTo(photoSelectionButton.snp.trailing)
+                .offset(14)
+            make.top.bottom
+                .equalToSuperview()
+            make.size
+                .equalTo(120)
         }
         
         removePhotoButton.snp.makeConstraints { make in
             make.top.trailing
-                .equalToSuperview().inset(10)
+                .equalToSuperview()
+                .inset(5)
             make.size
-                .equalTo(26)
-        }
-        
-        selectImageButton.snp.makeConstraints { make in
-            make.top.bottom
-                .equalToSuperview()
-                .inset(25)
-            make.leading.trailing
-                .equalToSuperview()
-                .inset(25)
-        }
-        
-        stackView.setCustomSpacing(20, after: ImageSelectionButtonContainerView)
-        
-        updateButton.snp.makeConstraints { make in
-            make.bottom
-                .equalTo(keyboardLayoutGuide.snp.top)
-                .offset(-10)
-            make.leading.trailing
-                .equalToSuperview()
-                .inset(20)
-            make.height
-                .equalTo(Constants.buttonHeight)
+                .equalTo(22)
         }
     }
 }
 
 extension DiaryEditView {
-    /// PHPicker로 사진이 선택됬을 때 해당 사진으로 교체합니다.
+    public func configureImage(with urlString: String?) {
+        guard let urlString = urlString,
+              let url = URL(string: urlString)
+        else {
+            isHiddenImageView(true)
+            return
+        }
+        imageView.kf.setImage(with: url)
+        isHiddenImageView(false)
+    }
+    
+    public func updateContentText(_ text: String) {
+        if text.isEmpty || text == Constants.Text.textViewPlaceholder {
+            contentTextView.textColor = UIColor.Text.placeholderColor
+            contentTextView.text = Constants.Text.textViewPlaceholder
+        } else {
+            contentTextView.textColor = UIColor.Text.tertiaryColor
+            contentTextView.text = text
+        }
+    }
+    
     public func didPickImage(_ image: UIImage) {
-        selectImageButton.setImage(image, for: .normal)
-        setFillImage()
+        updateImageView(with: image)
+        isHiddenImageView(false)
     }
     
-    /// 저장된 사진이 있다면 초기에 보여줄 사진으로 설정합니다.
-    public func configureImage(_ imageURL: String?) {
-        guard let imageURL = imageURL else { return }
-        guard let url = URL(string: imageURL) else { return }
-        selectImageButton.kf.setImage(with: url, for: .normal)
-        setFillImage()
-        removePhotoButton.isHidden = false
+    public func removePhoto() {
+        isHiddenImageView(true)
     }
     
-    /// 선택된 사진을 제거하기 위해 기본 사진으로 대체합니다.
-    public func removeImage() {
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 27, weight: .medium)
-        let image = UIImage(systemName: "photo.stack")?
-            .withConfiguration(symbolConfig)
-            .withTintColor(.secondaryTextColor, renderingMode: .alwaysOriginal)
-        selectImageButton.setImage(image, for: .normal)
-        setFitImage()
-        removePhotoButton.isHidden = true
+    private func updateImageView(with image: UIImage) {
+        imageView.image = image
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.Background.borderColor.cgColor
+    }
+    
+    private func isHiddenImageView(_ isHidden: Bool) {
+        imageView.isHidden = isHidden
+        removePhotoButton.isHidden = isHidden
+    }
+    
+    public func highlightFavoriteTeamField(_ isActive: Bool) {
+        let color: UIColor = isActive ? UIColor.Custom.blue : UIColor.Background.primaryColor
+        favoriteTeamTextField.setUnderlineColor(color)
+    }
+    
+    public func highlightSeatField(_ isActive: Bool) {
+        let color: UIColor = isActive ? UIColor.Custom.blue : UIColor.Background.primaryColor
+        seatTextField.setUnderlineColor(color)
     }
 }
-
-extension DiaryEditView {
-    /// 사진이 선택된 후의 레이아웃을 설정합니다.
-    private func setFillImage() {
-        selectImageButton.contentHorizontalAlignment = .fill
-        selectImageButton.contentVerticalAlignment   = .fill
-        selectImageButton.contentMode = .scaleAspectFill
-        selectImageButton.imageView?.contentMode = .scaleAspectFill
-    }
-    
-    /// 사진이 제거된 후의 레이아웃을 설정합니다.
-    private func setFitImage() {
-        selectImageButton.contentHorizontalAlignment = .center
-        selectImageButton.contentVerticalAlignment = .center
-        selectImageButton.contentMode = .scaleAspectFit
-        selectImageButton.imageView?.contentMode = .scaleAspectFit
-    }
-}
-
-extension DiaryEditView {
-    /// 툴바를 생성합니다.
-    private func createToolBar(target: Any?, action: Selector) -> UIToolbar {
-        let toolbar = UIToolbar().then {
-            $0.sizeToFit()
-            $0.backgroundColor = .white
-        }
-        let flexSpace = UIBarButtonItem(
-            barButtonSystemItem: .flexibleSpace,
-            target: nil,
-            action: nil
-        )
-        let confirmButton = UIBarButtonItem(
-            title: "확인",
-            style: .done,
-            target: target,
-            action: action
-        ).then {
-            $0.setTitleTextAttributes([
-                .font: UIFont.gMarketSans(size: 15, family: .medium),
-                .foregroundColor: UIColor.primaryTextColor
-            ], for: .normal)
-        }
-        toolbar.setItems([flexSpace, confirmButton], animated: false)
-        return toolbar
-    }
-    
-    /// 툴바를 적용합니다.
-    public func setupToolBar(target: Any?, action: Selector) {
-        let toolbar = createToolBar(target: target, action: action)
-        supportTeamInputField.textField.inputAccessoryView = toolbar
-    }
-}
-
-

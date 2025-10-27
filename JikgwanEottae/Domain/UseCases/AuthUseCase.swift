@@ -10,15 +10,31 @@ import Foundation
 import RxSwift
 
 protocol AuthUseCaseProtocol {
-    func authenticateWithKakao(accessToken: String) -> Completable
+    func authenticateWithKakao(
+        accessToken: String
+    ) -> Completable
     
-    func authenticateWithApple(identityToken: String, authorizationCode: String) -> Completable
+    func authenticateWithApple(
+        identityToken: String,
+        authorizationCode: String
+    ) -> Completable
     
-    func setProfileNickname(_ nickname: String) -> Completable
+    func setProfileNickname(
+        _ nickname: String
+    ) -> Completable
     
-    func updateProfileImage(isImageRemoved: Bool, imageData: Data?) -> Completable
+    func updateProfileImage(
+        isImageRemoved: Bool,
+        imageData: Data?
+    ) -> Completable
     
-    func validateRefreshToken(_ refreshToken: String) -> Completable
+    func updateFavoriteTeam(
+        team: String
+    ) -> Completable
+    
+    func validateRefreshToken(
+        _ refreshToken: String
+    ) -> Completable
     
     func signOut() -> Completable
     
@@ -58,6 +74,12 @@ final class AuthUseCase: AuthUseCaseProtocol {
             isImageRemoved: isImageRemoved,
             imageData: imageData
         )
+    }
+    
+    public func updateFavoriteTeam(
+        team: String
+    ) -> Completable {
+        return repository.updateFavoriteTeam(team: team)
     }
     
     public func validateRefreshToken(_ refreshToken: String) -> Completable {
