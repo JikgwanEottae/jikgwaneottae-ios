@@ -24,7 +24,7 @@ final class TourBallparkSelectionView: UIView {
     }
     
     private let subtitleLabel = UILabel().then {
-        $0.text = "해당 구장 주변 핫플을 알려드릴게요"
+        $0.text = "주변 핫플을 알려드릴게요"
         $0.font = UIFont.pretendard(size: 14, family: .medium)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 0

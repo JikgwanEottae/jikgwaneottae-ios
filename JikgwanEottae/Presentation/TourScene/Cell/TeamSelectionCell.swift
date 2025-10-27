@@ -33,7 +33,7 @@ final class TeamSelectionCell: UICollectionViewCell {
     
     private let ballparkLabel = UILabel().then {
         $0.font = UIFont.pretendard(size: 12, family: .medium)
-        $0.textColor = UIColor.Text.primaryColor
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.textAlignment = .left
     }
 

@@ -21,7 +21,7 @@ final class TourNearByPlaceView: UIView {
     }
     
     private let subtitleLabel = UILabel().then {
-        $0.text = "* 최근 1년(24.08 ~ 25.09) 방문/연관 데이터를 기준으로 추천해요"
+        $0.text = "* 최근 1년(24.08 ~ 25.09) 방문/연관 데이터 기준"
         $0.font = UIFont.pretendard(size: 12, family: .medium)
         $0.textColor = UIColor.Text.tertiaryColor
         $0.setLineSpacing(spacing: 2)
