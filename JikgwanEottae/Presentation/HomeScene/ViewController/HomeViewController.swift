@@ -135,7 +135,6 @@ final class HomeViewController: UIViewController {
             .withUnretained(self)
             .subscribe(onNext: { owner, data in
                 let (diaryStats, games) = data
-                print(games)
                 owner.updateSnapshot(diaryStats: diaryStats, games: games)
                 AppState.shared.needsStatisticsRefresh = false
             })
