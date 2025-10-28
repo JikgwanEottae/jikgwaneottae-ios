@@ -91,7 +91,7 @@ final class TodayGameCell: UICollectionViewCell {
     
     private let ballparkLabel = UILabel().then {
         $0.font = UIFont.pretendard(size: 12, family: .medium)
-        $0.textColor = UIColor.Text.secondaryColor
+        $0.textColor = UIColor.Text.tertiaryColor
         $0.numberOfLines = 1
         $0.clipsToBounds = true
     }
@@ -129,6 +129,7 @@ final class TodayGameCell: UICollectionViewCell {
     
     private func setupUI() {
         self.layer.cornerRadius = Constants.cornerRadius
+        self.backgroundColor = UIColor.Background.secondaryColor
         contentView.backgroundColor = UIColor.Background.secondaryColor
     }
     
@@ -166,10 +167,16 @@ final class TodayGameCell: UICollectionViewCell {
         else { statusLabel.text = "기타" }
         homeTeamNameLabel.text = game.homeTeam
         homeTeamNameLabel.textColor = KBOTeam(rawValue: game.homeTeam)?.color
-        if let homeScore = game.homeScore { homeTeamScoreLabel.text = "\(homeScore)" }
+        if let homeScore = game.homeScore {
+            homeTeamScoreLabel.text = "\(homeScore)"
+            homeTeamScoreLabel.textColor = KBOTeam(rawValue: game.homeTeam)?.color
+        }
         awayTeamNameLabel.text = game.awayTeam
         awayTeamNameLabel.textColor = KBOTeam(rawValue: game.awayTeam)?.color
-        if let awayScore = game.awayScore { awayTeamScoreLabel.text = "\(awayScore)" }
+        if let awayScore = game.awayScore {
+            awayTeamScoreLabel.text = "\(awayScore)"
+            awayTeamScoreLabel.textColor = KBOTeam(rawValue: game.awayTeam)?.color
+        }
         ballparkLabel.text = game.ballpark
     }
     
