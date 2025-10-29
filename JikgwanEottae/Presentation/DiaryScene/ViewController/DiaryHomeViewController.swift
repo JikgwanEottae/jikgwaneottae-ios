@@ -16,11 +16,10 @@ final class DiaryHomeViewController: UIViewController {
     
     private let diaryHomeView = DiaryHomeView()
     private let viewModel: DiaryHomeViewModel
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Diary>!
-    private enum Section: CaseIterable {
-        case main
+    private var dataSource: UICollectionViewDiffableDataSource<DiarySection, Diary>!
+    private enum DiarySection: Hashable {
+        case month(yearMonth: String)
     }
-    private var currentSortOrder = DiarySortOrder.latest
     private let selectedFilterRelay = BehaviorRelay(value: DiaryFilterType.all)
     private let refreshRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -113,21 +112,6 @@ final class DiaryHomeViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    /// 컬렉션뷰 데이터 소스를 설정합니다.
-    private func setupCollectionViewDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, Diary>(
-            collectionView: diaryHomeView.collectionView,
-            cellProvider: { collectionView, indexPath, diary in
-                guard let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: DiaryCollectionViewCell.ID,
-                    for: indexPath
-                ) as? DiaryCollectionViewCell else { return UICollectionViewCell() }
-                cell.configure(with: diary)
-                return cell
-            }
-        )
-    }
-    
     /// 직관 일기 컬렉션 뷰를 뷰 컨트롤러와 바인딩합니다.
     /// 셀 아이템 클릭 시 직관 일기 상세화면으로 이동합니다.
     private func bindCollectionView() {
@@ -149,13 +133,59 @@ final class DiaryHomeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
+}
+
+extension DiaryHomeViewController {
+    private func groupDiariesByYearMonth(_ diaries: [Diary]) -> [(key: String, value: [Diary])] {
+        let grouped = Dictionary(grouping: diaries) { diary -> String in
+            return String(diary.gameDate.prefix(7))
+        }
+        return grouped.sorted { $0.key > $1.key }
+    }
+    
+    /// 컬렉션뷰 데이터 소스를 설정합니다.
+    private func setupCollectionViewDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<DiarySection, Diary>(
+            collectionView: diaryHomeView.collectionView,
+            cellProvider: { collectionView, indexPath, diary in
+                guard let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: DiaryCollectionViewCell.ID,
+                    for: indexPath
+                ) as? DiaryCollectionViewCell else { return UICollectionViewCell() }
+                cell.configure(with: diary)
+                return cell
+            }
+        )
+        
+        dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader,
+                  let self = self else { return nil }
+            guard let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: DiarySectionHeaderView.ID,
+                for: indexPath
+            ) as? DiarySectionHeaderView else { return nil }
+            let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+            if case .month(yearMonth: let yearMonth) = section {
+                header.configure(with: yearMonth)
+            }
+            return header
+        }
+    }
     
     /// 스냅샷을 생성하고 적용합니다.
     private func applySnapshot(with items: [Diary]) {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Diary>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(items, toSection: .main)
+        var snapshot = NSDiffableDataSourceSnapshot<DiarySection, Diary>()
+        let grouped = groupDiariesByYearMonth(items)
+        
+        grouped.forEach { (yearMonth, diaries) in
+            let section = DiarySection.month(yearMonth: yearMonth)
+            snapshot.appendSections([section])
+            snapshot.appendItems(diaries, toSection: section)
+        }
+        
         dataSource.apply(snapshot, animatingDifferences: true)
+        
         if items.isEmpty {
             diaryHomeView.collectionView.setEmptyView(
                 image: UIImage(systemName: "book.pages"),
