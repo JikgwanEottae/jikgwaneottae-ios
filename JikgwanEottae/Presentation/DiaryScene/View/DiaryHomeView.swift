@@ -54,6 +54,9 @@ final class DiaryHomeView: UIView {
         $0.backgroundColor = .white
         $0.register(DiaryCollectionViewCell.self,
                     forCellWithReuseIdentifier: DiaryCollectionViewCell.ID)
+        $0.register(DiarySectionHeaderView.self,
+                    forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                    withReuseIdentifier: DiarySectionHeaderView.ID)
     }
     
     public let activityIndicator = UIActivityIndicatorView().then {
@@ -199,6 +202,18 @@ extension DiaryHomeView {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 5
         section.contentInsets = .init(top: 0, leading: 8, bottom: 8, trailing: 8)
+        
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .absolute(35)
+        )
+        let header = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .topLeading
+        )
+        section.boundarySupplementaryItems = [header]
+        
         return UICollectionViewCompositionalLayout(section: section)
     }
 }
